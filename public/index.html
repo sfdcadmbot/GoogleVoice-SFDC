@@ -1,0 +1,69 @@
+<html>
+
+<head>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="scripts/main.js"></script>
+</head>
+<script>
+        function setAttributes(el, attrs) {
+            for(var key in attrs) {
+              el.setAttribute(key, attrs[key]);
+            }
+            return el
+          }
+        function parseQuery() {
+            var queryString=window.location.search
+            var query = {};
+            var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i].split('=');
+                query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+            }
+            console.log( query);
+            var form=document.querySelector('form')
+            form.appendChild(setAttributes(document.createElement("input"),{"type": "hidden","name": "client_id","value":query.client_id }));
+            form.appendChild(setAttributes(document.createElement("input"),{"type": "hidden","name": "redirect_uri","value":query.redirect_uri }));
+            form.appendChild(setAttributes(document.createElement("input"),{"type": "hidden","name": "response_type","value":query.response_type }));
+            form.appendChild(setAttributes(document.createElement("input"),{"type": "hidden","name": "state","value":query.state }));
+        }
+        window.onload=parseQuery
+
+</script>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <h1>Welcome to Salesforce Connect</h1>
+
+            <form class="form" action="/auth/login" method="post">
+                    <label class="form-group radio">Log in to Production Org
+                        <input type="radio" checked="checked" name="org" value="Production">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="form-group radio">Log in to Sandbox Org
+                        <input type="radio" name="org" value="Sandbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="form-group text">
+                        <input type="text"  name="orgurl"  placeholder="Custom Url">
+                    </label>
+                <button type="submit" id="login-button">Login</button>
+            </form>
+        </div>
+
+        <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+</body>
+
+</html>
