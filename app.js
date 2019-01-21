@@ -42,7 +42,7 @@ server.use(function(req, res, next){
 var oauth2 = new jsforce.OAuth2(config.oauth);
 
 // Serve static assets
-app.use('/', function(req,res,next){
+server.use('/', function(req,res,next){
   
   /*
   if((req.url=='/'||req.url=='index.html') && req.session.userid){
@@ -50,13 +50,13 @@ app.use('/', function(req,res,next){
   }*/
   next();
 });
-app.use(express.static('public'))
+server.use(express.static('public'))
 
 
 /**
 * Login endpoint
 */
-app.all("/auth/login", function (req, res) {
+server.all("/auth/login", function (req, res) {
   // Redirect to Salesforce login/authorization page
   if(req.body.redirect_uri){
     console.log("Setting redirect url "+req.body.redirect_uri)
@@ -78,7 +78,7 @@ app.all("/auth/login", function (req, res) {
 /**
 * Login callback endpoint (only called by Force.com)
 */
-app.all('/token2', async (req, res) => {
+server.all('/token2', async (req, res) => {
   console.log("token"+ req.body.code||req.body.refresh_token)
   if(req.body.grant_type=='authorization_code'){
     res.json({
@@ -95,7 +95,7 @@ app.all('/token2', async (req, res) => {
       })
    }
 })
-app.get('/token', async (req, res) => {
+server.get('/token', async (req, res) => {
 
   const conn = new jsforce.Connection({ oauth2: oauth2 });
   const code = req.query.code;
