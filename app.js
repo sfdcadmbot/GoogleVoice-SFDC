@@ -27,6 +27,10 @@ const {
     BasicCard
   } = require('actions-on-google');
 
+const app = dialogflow({
+    debug: true,
+    clientId: config.oauth.clientId
+});
 //initialize session
 server.use(session({ secret: 'S3CRE7', resave: true, saveUninitialized: true }));
 server.use(bodyParser.json());
@@ -149,7 +153,7 @@ server.get('/token', async (req, res) => {
   } 
 });
 
-var app=dialogflow({clientId: '*.apps.googleusercontent.com'});
+//var app=dialogflow({clientId: '*.apps.googleusercontent.com'});
 
 app.intent('Default Welcome Intent', (conv) => {
     console.log('welcomeIntent');
@@ -479,7 +483,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	//console.log('conv.user.id',conv.user.id);
 	//console.log('conv.user.profile.payload.email',conv.user.profile.payload.email);
-    conv.ask(new SignIn('To get your account details'));
+    conv.ask(new SignIn());
 	
 });
 
