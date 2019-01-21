@@ -7,8 +7,8 @@ const jsforce = require('jsforce');
 const server = express();
 const path = require('path');
 const session = require('express-session');
-const db = require('../db');
-const config = require('../config/config');
+const db = require('./db');
+const config = require('./config/config');
 
 var strname = ''; 
 
