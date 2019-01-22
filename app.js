@@ -120,7 +120,7 @@ server.get('/token', async (req, res) => {
     req.session.refreshToken = conn.refreshToken;
     const {records}=await conn.query("SELECT Id, FirstName, LastName, Email FROM User where id='"+userInfo.id+"'")
     const user=records[0];
-  
+    console.log('The user detail in SFDC:'+user);
     await db.query('BEGIN')
     const result = await db.query('SELECT * FROM public."IdentityProviders" WHERE "instanceUrl" = $1 and "salesforceId"=$2',
       [conn.instanceUrl, userInfo.id])
@@ -136,7 +136,9 @@ server.get('/token', async (req, res) => {
         organizationId:userInfo.organizationId
       }) 
       await db.query('COMMIT')
+      console.log('The inserted detail in SFDC:'+req.session.userid);
     } else if (result) {
+	console.log('Called if result is present in the postgre table');
       console.log(JSON.stringify(result.rows))
       req.session.userid=result.rows[0].Id
     }
