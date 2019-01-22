@@ -160,7 +160,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	//console.log('conv.user.id',conv.user.id);
 	console.log('conv.user.profile.payload.email',conv.user.profile.payload.email);
-    conv.ask(new SignIn('To get your account details'));
+   // conv.ask(new SignIn('To get your account details'));
 });
 // Create a Dialogflow intent with the `actions_intent_SIGN_IN` event
 app.intent('Get Sign In', (conv, params, signin) => {
@@ -483,7 +483,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	//console.log('conv.user.id',conv.user.id);
 	//console.log('conv.user.profile.payload.email',conv.user.profile.payload.email);
-    conv.ask(new SignIn());
+    //conv.ask(new SignIn());
 	
 });
 
