@@ -19,5 +19,13 @@ module.exports = {
     const idprows = await pool.query(idpInsertStatement,idpInsertValues )
     console.log('value for IP table:'+JSON.stringify(idprows.rows[0]))
     return userrows.rows[0].Id 
+  },
+    updateUser:async (params) => {
+    //console.log(JSON.stringify(params))
+    const idpUpdateStatement = 'update public."IdentityProviders" set Google User Id = ($1) WHERE Id=($2)'
+    const idpUpdateValues = [params.userId,params.Id]
+    const idprowsupdate = await pool.query(idpUpdateStatement,idpUpdateValues)
+    console.log('value for IP table update:'+JSON.stringify(idprowsupdate.rows[0]))
+    //return idprowsupdate.rows[0].Id 
   }
 }
