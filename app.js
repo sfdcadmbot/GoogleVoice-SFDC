@@ -564,9 +564,9 @@ app.intent('Default Welcome Intent', (conv) => {
 		console.log('The value here access token-->'+resp[0].access_token);
 		console.log('The value here goog id-->'+resp[0].googleid);
 
-		if(resp[0].googleid!=null)
+		if(resp[0].googleid!='')
 		{
-			console.log('Instance Url'+ resp[0].instanceUrl);
+			console.log('Instance Url:'+ resp[0].instanceUrl);
 		}
 		else
 		{
