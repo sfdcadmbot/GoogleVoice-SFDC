@@ -539,11 +539,10 @@ app.intent('Default Welcome Intent', (conv) => {
 		}
 		else
 		{
-       console.log("Conve ID"+conv.user.raw.userId);
+        console.log("Conve ID"+conv.user.raw.userId);
 		var recid=db.updateUser({
         googleid:conv.user.raw.userId,
         Id:code
-		console.log(conv.user.raw.userId);
        }) 
            db.query('COMMIT')
           console.log('The updated detail in Heroku:'+recid);
