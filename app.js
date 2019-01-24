@@ -1,4 +1,5 @@
-// dependencies
+
+ // dependencies
 
 const express = require('express');
 const http = require('https');
@@ -216,6 +217,26 @@ var accountCreation=function (acctName){
 			
 			}
 		});
+	});
+}
+
+var dbconnect=function (){
+	return new Promise((resolve,reject)=>{
+		//console.log('Account Name is -->',acctName);
+		//const result = db.query('SELECT * FROM IdentityProviders')
+	   pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+       }
+       client.query('SELECT * FROM public."IdentityProviders"', function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+                //res.status(400).send(err);
+            }
+            console.log('The value here then-->'+result.rows);
+       })
+     })
 	});
 }
 
@@ -499,20 +520,17 @@ app.intent('Default Welcome Intent', (conv) => {
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
 	var test=parseInt(3);
-	//const result = db.query('SELECT * FROM IdentityProviders')
-	   pool.connect(function (err, client, done) {
-        if (err) {
-           console.log("Can not connect to the DB" + err);
-       }
-       client.query('SELECT * FROM public."IdentityProviders"', function (err, result) {
-            done();
-            if (err) {
-                console.log('The error ret data:'+err);
-                //res.status(400).send(err);
-            }
-            console.log('The value here then-->'+result.rows);
-       })
-   })
+	
+	return dbconnect().then((resp)=>{
+		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
+	})
+	.catch((err)=>{
+		conv.ask(new SimpleResponse({speech:"Error Guys",text:"Error Guys"}));
+	});	
+	
+	
+	
+
 	  //const result = db.query("SELECT Id from IdentityProviders where Id = 3");
      
 	 // console.log('The val fethed welcome intent:'+result[0]);
@@ -534,7 +552,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	   code='';
 		
 	}*/
-		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
+		
 	
 	
 });
@@ -763,3 +781,4 @@ server.listen(port, function () {
 	console.log('port',port);
     console.log("Server is up and running...");
 });
+
