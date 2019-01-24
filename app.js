@@ -257,7 +257,7 @@ var dbconnectupdate=function (googlevalpassed,herokutableid){
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('Update public."IdentityProviders" set "googleid" ='+googlevalpassed+' WHERE "Id" ='+herokutableid, function (err, result) {
+       client.query('Update public."IdentityProviders" set "googleid" = ($1) WHERE "Id" =($2)',[googlevalpassed,herokutableid], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
