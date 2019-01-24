@@ -502,7 +502,7 @@ app.intent('Default Welcome Intent', (conv) => {
       [code])
 	  console.log('The val fethed welcome intent:'+result[0]);
 	  console.log('The val fethed welcome intent row:'+result[0].rows);
-
+    /*
 	if(result[0].rows.Google User Id !=null)
 	{
 		console.log('The val fethed welcome intent access token :'+result[0].rows.access_token);
@@ -518,7 +518,7 @@ app.intent('Default Welcome Intent', (conv) => {
       console.log('The updated detail in Heroku:'+recid);
 	   code='';
 		
-	}
+	}*/
 		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	
 	
