@@ -497,9 +497,11 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('Google user id:'+conv.user.raw.userId);
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
-	
-	  const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
+	var test=3;
+	  //const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
       [code])
+	  const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
+      [test])
 	  console.log('The val fethed welcome intent:'+result[0]);
 	  console.log('The val fethed welcome intent row:'+result[0].rows);
     /*
