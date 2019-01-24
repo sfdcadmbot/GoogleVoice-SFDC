@@ -528,6 +528,17 @@ app.intent('Default Welcome Intent', (conv) => {
 	var test=parseInt(3);
 	
 	return dbconnect(test).then((resp)=>{
+		console.log('The value here-->'+JSON.stringify(resp));
+		console.log('The value here goog id-->'+resp.Google User Id);
+	if(resp.Google User Id ==null)
+	{
+		console.log('The val fethed welcome intent access token :'+result[0].rows.access_token);
+	  console.log('The val fethed welcome intent row refresh token:'+result[0].rows.refresh_token);
+	   console.log('The val fethed welcome intent row instanceUrl:'+result[0].rows.instanceUrl);
+	}
+
+	
+	
 		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	})
 	.catch((err)=>{
