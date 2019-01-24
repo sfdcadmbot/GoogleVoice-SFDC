@@ -572,8 +572,8 @@ app.intent('Default Welcome Intent', (conv) => {
 		{
      
 		  console.log('The user id:'+conv.user.raw.userId);
-		  console.log('The code before update:'+code);
-		  return dbconnectupdate(conv.user.raw.userId,code).then((resp)=>{
+		  console.log('The code before update:'+test);
+		  return dbconnectupdate(conv.user.raw.userId,test).then((resp)=>{
 		   console.log('resp after update--->'+resp);
 		   code='';
 		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
