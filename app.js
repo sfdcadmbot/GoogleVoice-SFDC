@@ -499,7 +499,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	var test=3;
 	  //const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
-      [code])
+      //[code])
 	  const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
       [test])
 	  console.log('The val fethed welcome intent:'+result[0]);
