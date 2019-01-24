@@ -9,7 +9,7 @@ const path = require('path');
 const session = require('express-session');
 const db = require('./db');
 const config = require('./config/config');
-
+const pg = require('pg');
 var strname = ''; 
 var googleuserid='';
 var code='';
@@ -498,13 +498,31 @@ app.intent('Default Welcome Intent', (conv) => {
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
 	var test=parseInt(3);
-	const result = db.query('SELECT * FROM IdentityProviders')
-	 
-	  
+	//const result = db.query('SELECT * FROM IdentityProviders')
+	 pg.connect('ec2-54-235-68-3.compute-1.amazonaws.com', (err, client, done) => {
+    // Handle connection errors
+    if(err) {
+      done();
+      console.log(err);
+      //return res.status(500).json({success: false, data: err});
+    }
+    // SQL Query > Select Data
+    const query = client.query('SELECT * FROM IdentityProviders;');
+    // Stream results back one row at a time
+    query.on('row', (row) => {
+      //results.push(row);
+	    console.log('Res-->'+row);
+    });
+    // After all data is returned, close connection and return results
+    query.on('end', () => {
+      done();
+      //return res.json(results);
+    });
+  });
 	  //const result = db.query("SELECT Id from IdentityProviders where Id = 3");
      
-	  console.log('The val fethed welcome intent:'+result[0]);
-	  console.log('The val fethed welcome intent row:'+result[0].rows);
+	 // console.log('The val fethed welcome intent:'+result[0]);
+	  //console.log('The val fethed welcome intent row:'+result[0].rows);
     /*
 	if(result[0].rows.Google User Id !=null)
 	{
