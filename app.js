@@ -227,14 +227,20 @@ var dbconnect=function (){
 	   pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
+		   reject(err);
        }
        client.query('SELECT * FROM public."IdentityProviders"', function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
+				reject(err);
                 //res.status(400).send(err);
             }
+			else
+			{
             console.log('The value here then-->'+result.rows);
+			 resolve(result);
+			}
        })
      })
 	});
