@@ -11,8 +11,8 @@ const db = require('./db');
 const config = require('./config/config');
 
 var strname = ''; 
-
-
+var googleuserid='';
+var code='';
 
 var conn = new jsforce.Connection({ 
     loginUrl: 'https://login.salesforce.com', //'https://login.salesforce.com', 
@@ -84,6 +84,8 @@ server.all("/auth/login", function (req, res) {
 */
 server.all('/token2', async (req, res) => {
   console.log("token"+ req.body.code||req.body.refresh_token)
+  code=req.body.code;
+ 
   if(req.body.grant_type=='authorization_code'){
     res.json({
     "token_type": "Bearer",
@@ -156,14 +158,14 @@ server.get('/token', async (req, res) => {
 });
 
 //var app=dialogflow({clientId: '*.apps.googleusercontent.com'});
-
+/*
 app.intent('Default Welcome Intent', (conv) => {
     console.log('welcomeIntent');
 	console.log('conv.user',conv.user);
 	//console.log('conv.user.id',conv.user.id);
 	console.log('conv.user.profile.payload.email',conv.user.profile.payload.email);
    // conv.ask(new SignIn('To get your account details'));
-});
+});*/
 // Create a Dialogflow intent with the `actions_intent_SIGN_IN` event
 app.intent('Get Sign In', (conv, params, signin) => {
     console.log('signIn');
@@ -463,6 +465,8 @@ var updObjInf = function(objectName,fieldNames,fieldValues){
 	});
 }
 
+
+/*
 app.intent('connect_salesforce',(conv,params)=>{
     
 	signIN.then((resp)=>{
@@ -476,16 +480,47 @@ app.intent('connect_salesforce',(conv,params)=>{
 
 
 	});
+});*/
+
+
+app.intent('connect_salesforce',(conv,params)=>{
+    
+
+
+
 });
 
+
 app.intent('Default Welcome Intent', (conv) => {
-	conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
+	//googleuserid=conv.user.raw.userId;
+
 	
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
-	//console.log('conv.user.id',conv.user.id);
-	//console.log('conv.user.profile.payload.email',conv.user.profile.payload.email);
-    //conv.ask(new SignIn());
+	
+	  const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
+      [code])
+	  console.log('The val fethed welcome intent:'+result[0]);
+	  console.log('The val fethed welcome intent row:'+result[0].rows);
+
+	if(result[0].rows.Google User Id !=null)
+	{
+		console.log('The val fethed welcome intent access token :'+result[0].rows.access_token);
+	  console.log('The val fethed welcome intent row refresh token:'+result[0].rows.refresh_token);
+	   console.log('The val fethed welcome intent row instanceUrl:'+result[0].rows.instanceUrl);
+	}
+	else{
+		  var recid=db.updateUser({
+        Google User Id:conv.user.raw.userId,
+        Id:code
+       }) 
+       db.query('COMMIT')
+      console.log('The updated detail in Heroku:'+recid);
+	   code='';
+		
+	}
+		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
+	
 	
 });
 
