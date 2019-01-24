@@ -498,8 +498,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
 	var test=parseInt(3);
-	const result = db.query('SELECT * FROM public."IdentityProviders" WHERE "id" = $1',
-          [test])
+	const result = db.query('SELECT * FROM public."IdentityProviders"')
 	 
 	  
 	  //const result = db.query("SELECT Id from IdentityProviders where Id = 3");
