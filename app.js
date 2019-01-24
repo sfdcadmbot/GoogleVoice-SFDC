@@ -246,6 +246,33 @@ var dbconnect=function (param){
 	});
 }
 
+
+var dbconnectupdate=function (googleid,herokutableid){
+	return new Promise((resolve,reject)=>{
+		console.log('param is -->',param);
+		//const result = db.query('SELECT * FROM IdentityProviders')
+	   pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   reject(err);
+       }
+       client.query('Update public."IdentityProviders" set "googleid" = '+googleid+' WHERE "Id" ='+herokutableid, function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+				reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here then-->'+JSON.stringify(result.rows));
+			 resolve(result.rows);
+			}
+       })
+     })
+	});
+}
+
 var updateAccInf = function (acctName,accFields,accFieldVals){
 	return new Promise((resolve,reject)=>{
 		
@@ -274,6 +301,9 @@ var updateAccInf = function (acctName,accFields,accFieldVals){
 		});
 	});
 }
+
+
+
 
 var getMandFields = function(objectName){
 	return new Promise((resolve,reject)=>{
@@ -539,14 +569,17 @@ app.intent('Default Welcome Intent', (conv) => {
 		}
 		else
 		{
-        console.log("Conve ID"+conv.user.raw.userId);
-		var recid=db.updateUser({
-        googleid:conv.user.raw.userId,
-        Id:code
-       }) 
-           db.query('COMMIT')
-          console.log('The updated detail in Heroku:'+recid);
-	      code='';
+     
+		  
+		  return dbconnectupdate(conv.user.raw.userId,code).then((resp)=>{
+		   console.log('resp after update--->'+resp);
+		   code='';
+	       })
+	   .catch((err)=>{
+		conv.ask(new SimpleResponse({speech:"Error while updating google user id in heroku",text:"Error while updating google user id in heroku"}));
+	    });
+		
+		  
 		}
 		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	})
