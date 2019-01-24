@@ -539,7 +539,7 @@ app.intent('Default Welcome Intent', (conv) => {
 		}
 		else
 		{
-			console.log(conv.user.raw.userId);
+       console.log("Conve ID"+conv.user.raw.userId);
 		var recid=db.updateUser({
         googleid:conv.user.raw.userId,
         Id:code
