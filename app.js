@@ -220,16 +220,16 @@ var accountCreation=function (acctName){
 	});
 }
 
-var dbconnect=function (){
+var dbconnect=function (param){
 	return new Promise((resolve,reject)=>{
-		//console.log('Account Name is -->',acctName);
+		console.log('param is -->',param);
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('SELECT * FROM public."IdentityProviders"', function (err, result) {
+       client.query('SELECT * FROM public."IdentityProviders" WHERE "Id" ='+param, function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
@@ -527,7 +527,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	var test=parseInt(3);
 	
-	return dbconnect().then((resp)=>{
+	return dbconnect(test).then((resp)=>{
 		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	})
 	.catch((err)=>{
