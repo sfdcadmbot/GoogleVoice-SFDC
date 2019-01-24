@@ -10,6 +10,7 @@ const session = require('express-session');
 const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
+const pool = new pg.Pool(config.db);
 var strname = ''; 
 var googleuserid='';
 var code='';
@@ -499,26 +500,19 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	var test=parseInt(3);
 	//const result = db.query('SELECT * FROM IdentityProviders')
-	 pg.connect(config.db.host, (err, client, done) => {
-    // Handle connection errors
-    if(err) {
-      done();
-      console.log(err);
-      //return res.status(500).json({success: false, data: err});
-    }
-    // SQL Query > Select Data
-    const query = client.query('SELECT * FROM IdentityProviders;');
-    // Stream results back one row at a time
-    query.on('row', (row) => {
-      //results.push(row);
-	    console.log('Res-->'+row);
-    });
-    // After all data is returned, close connection and return results
-    query.on('end', () => {
-      done();
-      //return res.json(results);
-    });
-  });
+	   pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+       }
+       client.query('SELECT * FROM IdentityProviders', function (err, result) {
+            done();
+            if (err) {
+                console.log(err);
+                //res.status(400).send(err);
+            }
+            console.log('The value here then-->'+result.rows);
+       })
+   })
 	  //const result = db.query("SELECT Id from IdentityProviders where Id = 3");
      
 	 // console.log('The val fethed welcome intent:'+result[0]);
