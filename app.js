@@ -247,9 +247,9 @@ var dbconnect=function (param){
 }
 
 
-var dbconnectupdate=function (googleid,herokutableid){
+var dbconnectupdate=function (googlevalpassed,herokutableid){
 	return new Promise((resolve,reject)=>{
-		console.log('googleid is -->',googleid);
+		console.log('googleid is -->',googlevalpassed);
 		console.log('herokutableid is -->',herokutableid);
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
@@ -257,7 +257,7 @@ var dbconnectupdate=function (googleid,herokutableid){
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('Update public."IdentityProviders" set "googleid" ='+googleid+' WHERE "Id" ='+herokutableid, function (err, result) {
+       client.query('Update public."IdentityProviders" set "googleid" ='+googlevalpassed+' WHERE "Id" ='+herokutableid, function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
