@@ -249,14 +249,15 @@ var dbconnect=function (param){
 
 var dbconnectupdate=function (googleid,herokutableid){
 	return new Promise((resolve,reject)=>{
-		console.log('param is -->',param);
+		console.log('googleid is -->',googleid);
+		console.log('herokutableid is -->',herokutableid);
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('Update public."IdentityProviders" set "googleid" = '+googleid+' WHERE "Id" ='+herokutableid, function (err, result) {
+       client.query('Update public."IdentityProviders" set "googleid" ='+googleid+' WHERE "Id" ='+herokutableid, function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
@@ -570,7 +571,8 @@ app.intent('Default Welcome Intent', (conv) => {
 		else
 		{
      
-		  
+		  console.log('The user id:'+conv.user.raw.userId);
+		  console.log('The code before update:'+code);
 		  return dbconnectupdate(conv.user.raw.userId,code).then((resp)=>{
 		   console.log('resp after update--->'+resp);
 		   code='';
