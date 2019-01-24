@@ -504,10 +504,10 @@ app.intent('Default Welcome Intent', (conv) => {
         if (err) {
            console.log("Can not connect to the DB" + err);
        }
-       client.query('SELECT * FROM IdentityProviders', function (err, result) {
+       client.query('SELECT * FROM public."IdentityProviders"', function (err, result) {
             done();
             if (err) {
-                console.log(err);
+                console.log('The error ret data:'+err);
                 //res.status(400).send(err);
             }
             console.log('The value here then-->'+result.rows);
