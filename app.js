@@ -499,7 +499,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('conv.user',conv.user);
 	var test=parseInt(3);
 	//const result = db.query('SELECT * FROM IdentityProviders')
-	 pg.connect('ec2-54-235-68-3.compute-1.amazonaws.com', (err, client, done) => {
+	 pg.connect(config.db.host, (err, client, done) => {
     // Handle connection errors
     if(err) {
       done();
