@@ -239,7 +239,7 @@ var dbconnect=function (param){
 			else
 			{
             console.log('The value here then-->'+JSON.stringify(result.rows));
-			 resolve(result);
+			 resolve(result.rows);
 			}
        })
      })
@@ -529,12 +529,12 @@ app.intent('Default Welcome Intent', (conv) => {
 	
 	return dbconnect(test).then((resp)=>{
 		console.log('The value here-->'+JSON.stringify(resp));
-		console.log('The value here goog id-->'+resp.Google User Id);
-	if(resp.Google User Id ==null)
+		
+		console.log('The value here access token-->'+resp.access_token);
+		console.log('The value here goog id-->'+resp.Google_User_Id);
+	if(resp.access_token!=null)
 	{
-		console.log('The val fethed welcome intent access token :'+result[0].rows.access_token);
-	  console.log('The val fethed welcome intent row refresh token:'+result[0].rows.refresh_token);
-	   console.log('The val fethed welcome intent row instanceUrl:'+result[0].rows.instanceUrl);
+		
 	}
 
 	
