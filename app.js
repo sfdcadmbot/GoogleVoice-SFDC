@@ -530,9 +530,9 @@ app.intent('Default Welcome Intent', (conv) => {
 	return dbconnect(test).then((resp)=>{
 		console.log('The value here-->'+JSON.stringify(resp));
 		
-		console.log('The value here access token-->'+resp.access_token);
-		console.log('The value here goog id-->'+resp.Google_User_Id);
-	if(resp.access_token!=null)
+		console.log('The value here access token-->'+resp[0].access_token);
+		console.log('The value here goog id-->'+resp[0].Google_User_Id);
+	if(resp[0].access_token!=null)
 	{
 		
 	}
