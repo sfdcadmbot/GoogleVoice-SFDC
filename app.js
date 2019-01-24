@@ -238,7 +238,7 @@ var dbconnect=function (){
             }
 			else
 			{
-            console.log('The value here then-->'+result.rows);
+            console.log('The value here then-->'+JSON.stringify(result.rows));
 			 resolve(result);
 			}
        })
