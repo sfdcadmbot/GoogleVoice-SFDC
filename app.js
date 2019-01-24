@@ -494,7 +494,7 @@ app.intent('connect_salesforce',(conv,params)=>{
 app.intent('Default Welcome Intent', (conv) => {
 	//googleuserid=conv.user.raw.userId;
 
-	
+	console.log('Google user id:'+conv.user.raw.userId);
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
 	
