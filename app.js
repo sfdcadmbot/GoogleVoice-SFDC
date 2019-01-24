@@ -266,8 +266,8 @@ var dbconnectupdate=function (googlevalpassed,herokutableid){
             }
 			else
 			{
-            console.log('The value here then-->'+JSON.stringify(result.rows));
-			 resolve(result.rows);
+            console.log('The value here then update-->'+JSON.stringify(result));
+			 resolve(result);
 			}
        })
      })
