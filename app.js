@@ -576,6 +576,7 @@ app.intent('Default Welcome Intent', (conv) => {
 		  return dbconnectupdate(conv.user.raw.userId,code).then((resp)=>{
 		   console.log('resp after update--->'+resp);
 		   code='';
+		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	       })
 	   .catch((err)=>{
 		conv.ask(new SimpleResponse({speech:"Error while updating google user id in heroku",text:"Error while updating google user id in heroku"}));
@@ -589,33 +590,7 @@ app.intent('Default Welcome Intent', (conv) => {
 		conv.ask(new SimpleResponse({speech:"Error Guys",text:"Error Guys"}));
 	});	
 	
-	
-	
 
-	  //const result = db.query("SELECT Id from IdentityProviders where Id = 3");
-     
-	 // console.log('The val fethed welcome intent:'+result[0]);
-	  //console.log('The val fethed welcome intent row:'+result[0].rows);
-    /*
-	if(result[0].rows.Google User Id !=null)
-	{
-		console.log('The val fethed welcome intent access token :'+result[0].rows.access_token);
-	  console.log('The val fethed welcome intent row refresh token:'+result[0].rows.refresh_token);
-	   console.log('The val fethed welcome intent row instanceUrl:'+result[0].rows.instanceUrl);
-	}
-	else{
-		  var recid=db.updateUser({
-        Google User Id:conv.user.raw.userId,
-        Id:code
-       }) 
-       db.query('COMMIT')
-      console.log('The updated detail in Heroku:'+recid);
-	   code='';
-		
-	}*/
-		
-	
-	
 });
 
 app.intent('create account',(conv,params)=>{
