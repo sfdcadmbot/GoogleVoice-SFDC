@@ -26,6 +26,6 @@ module.exports = {
     const idpUpdateValues = [params.userId,params.Id]
     const idprowsupdate = await pool.query(idpUpdateStatement,idpUpdateValues)
     console.log('value for IP table update:'+JSON.stringify(idprowsupdate.rows[0]))
-    //return idprowsupdate.rows[0].Id 
+    return idprowsupdate.rows[0].Id 
   }
 }
