@@ -556,7 +556,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('Google user id:'+conv.user.raw.userId);
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
-	var test=parseInt(3);
+	var test=parseInt(code);
 	
 	return dbconnect(test).then((resp)=>{
 		console.log('The value here-->'+JSON.stringify(resp));
