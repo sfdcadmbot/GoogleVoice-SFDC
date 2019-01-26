@@ -13,7 +13,7 @@ const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
 var strname = ''; 
-var googleuserid='';
+//var googleuserid='';
 var code='';
 
 var conn = new jsforce.Connection({ 
@@ -124,7 +124,7 @@ server.get('/token', async (req, res) => {
     req.session.refreshToken = conn.refreshToken;
     const {records}=await conn.query("SELECT Id, FirstName, LastName, Email FROM User where id='"+userInfo.id+"'")
     const user=records[0];
-    console.log('The user detail in SFDC:'+user);
+    console.log('The user detail in SFDC:'+JSON.stringify(user));
     await db.query('BEGIN')
     const result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "instanceurl" = $1 and "salesforceid"=$2',
       [conn.instanceUrl, userInfo.id])
@@ -137,7 +137,8 @@ server.get('/token', async (req, res) => {
         refreshtoken:conn.refreshToken,
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
-        organizationid:userInfo.organizationId
+        organizationid:userInfo.organizationId,
+		googleuserid:''
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -561,12 +562,12 @@ app.intent('Default Welcome Intent', (conv) => {
 	return dbconnect(test).then((resp)=>{
 		console.log('The value here-->'+JSON.stringify(resp));
 		
-		console.log('The value here access token-->'+resp[0].access_token);
+		console.log('The value here access token-->'+resp[0].accesstoken);
 		console.log('The value here goog id-->'+resp[0].googleid);
 
 		if(resp[0].googleid!='')
 		{
-			console.log('Instance Url:'+ resp[0].instanceUrl);
+			console.log('Instance Url:'+ resp[0].instanceurl);
 		}
 		else
 		{
@@ -574,7 +575,7 @@ app.intent('Default Welcome Intent', (conv) => {
 		  console.log('The user id:'+conv.user.raw.userId);
 		  console.log('The code before update:'+test);
 		  return dbconnectupdate(conv.user.raw.userId,test).then((resp)=>{
-		   console.log('resp after update--->'+resp);
+		   console.log('resp after update--->'+JSON.stringify(resp));
 		   code='';
 		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	       })
