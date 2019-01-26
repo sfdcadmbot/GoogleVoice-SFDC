@@ -126,18 +126,18 @@ server.get('/token', async (req, res) => {
     const user=records[0];
     console.log('The user detail in SFDC:'+user);
     await db.query('BEGIN')
-    const result = await db.query('SELECT * FROM public."IdentityProviders" WHERE "instanceUrl" = $1 and "salesforceId"=$2',
+    const result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "instanceurl" = $1 and "salesforceid"=$2',
       [conn.instanceUrl, userInfo.id])
     if (result && result.rows.length == 0) {
       req.session.userid=await db.insertUser({
-        Email:user.Email,
+        email:user.Email,
         firstname:user.FirstName,
         lastname:user.LastName,
-        access_token:conn.accessToken,
-        refresh_token:conn.refreshToken,
-        instanceUrl:conn.instanceUrl,
-        salesforceId:userInfo.id,
-        organizationId:userInfo.organizationId
+        accesstoken:conn.accessToken,
+        refreshtoken:conn.refreshToken,
+        instanceurl:conn.instanceUrl,
+        salesforceid:userInfo.id,
+        organizationid:userInfo.organizationId
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -229,7 +229,7 @@ var dbconnect=function (param){
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('SELECT * FROM public."IdentityProviders" WHERE "Id" ='+param, function (err, result) {
+       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "userid" ='+param, function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
@@ -257,7 +257,7 @@ var dbconnectupdate=function (googlevalpassed,herokutableid){
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('Update public."IdentityProviders" set "googleid" = ($1) WHERE "Id" =($2)',[googlevalpassed,herokutableid], function (err, result) {
+       client.query('Update public."googleauthenticatedusers" set "googleid" = ($1) WHERE "userid" =($2)',[googlevalpassed,herokutableid], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
