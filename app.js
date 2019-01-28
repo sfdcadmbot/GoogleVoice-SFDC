@@ -138,8 +138,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
         refreshtoken:conn.refreshToken,
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
-        organizationid:userInfo.organizationId,
-		googleuserid:''
+        organizationid:userInfo.organizationId
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
