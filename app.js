@@ -592,9 +592,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	res.cookie('GoogleuseridCode',conv.user.raw.userId);
 	console.log('the google cookie val:'+req.cookies.GoogleuseridCode);
 	console.log('the auth code cookie is:'+req.cookies.AuthorizationCode);
-	if(req.cookies.GoogleuseridCode!=null)
-	{
-		return dbconnectgoogleuserid(req.cookies.GoogleuseridCode).then((resp)=>{
+	return dbconnectgoogleuserid(req.cookies.GoogleuseridCode).then((resp)=>{
 		if(resp[0].googleid!='')
 		{
 			console.log('Instance Url:'+ resp[0].instanceurl);
@@ -620,7 +618,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	.catch((err)=>{
 		conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));
 	});	
-	}
+	
 
 	
 });
