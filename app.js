@@ -12,6 +12,7 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
+var cookieParser = require('cookie-parser')
 var strname = ''; 
 //var googleuserid='';
 var code='';
@@ -33,6 +34,7 @@ const app = dialogflow({
     debug: true,
     clientId: config.oauth.clientId
 });
+server.use(cookieParser())
 //initialize session
 server.use(session({ secret: 'S3CRE7', resave: true, saveUninitialized: true }));
 server.use(bodyParser.json());
@@ -88,7 +90,7 @@ server.all('/token2', async (req, res) => {
 	console.log('The request in token2:'+JSON.stringify(req.body));
   console.log("token"+ req.body.code||req.body.refresh_token)
   code=req.body.code;
- 
+   res.cookie('Authorization Code',req.body.code);
   if(req.body.grant_type=='authorization_code'){
     res.json({
     "token_type": "Bearer",
@@ -138,14 +140,15 @@ console.log('The request in token:'+JSON.stringify(req.body));
         refreshtoken:conn.refreshToken,
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
-        organizationid:userInfo.organizationId
+        organizationid:userInfo.organizationId,
+		googleuserid:''
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
     } else if (result) {
 	console.log('Called if result is present in the postgre table');
       console.log(JSON.stringify(result.rows))
-      req.session.userid=result.rows[0].Id
+      req.session.userid=result.rows[0].userid
     }
     console.log(req.session.redirect_uri)
     if( req.session.redirect_uri){
@@ -220,6 +223,7 @@ var accountCreation=function (acctName){
 		});
 	});
 }
+/*
 
 var dbconnect=function (param){
 	return new Promise((resolve,reject)=>{
@@ -245,8 +249,33 @@ var dbconnect=function (param){
        })
      })
 	});
-}
+}*/
 
+var dbconnectgoogleuserid=function (param){
+	return new Promise((resolve,reject)=>{
+		console.log('param is -->',param);
+		//const result = db.query('SELECT * FROM IdentityProviders')
+	   pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   reject(err);
+       }
+       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleuserid" ='+param, function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret google user id:'+err);
+				reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here then google user id-->'+JSON.stringify(result.rows));
+			 resolve(result.rows);
+			}
+       })
+     })
+	});
+}
 
 var dbconnectupdate=function (googlevalpassed,herokutableid){
 	return new Promise((resolve,reject)=>{
@@ -557,14 +586,13 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('Google user id:'+conv.user.raw.userId);
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
-	var test=parseInt(code);
 	
-	return dbconnect(test).then((resp)=>{
-		console.log('The value here-->'+JSON.stringify(resp));
-		
-		console.log('The value here access token-->'+resp[0].accesstoken);
-		console.log('The value here goog id-->'+resp[0].googleid);
-
+	//res.cookie('Authorization Code',req.body.code);
+	
+	res.cookie('Google user id Code',conv.user.raw.userId);
+	if(req.cookies['Google user id Code']!=null)
+	{
+		return dbconnectgoogleuserid(req.cookies['Google user id Code'])).then((resp)=>{
 		if(resp[0].googleid!='')
 		{
 			console.log('Instance Url:'+ resp[0].instanceurl);
@@ -572,11 +600,11 @@ app.intent('Default Welcome Intent', (conv) => {
 		else
 		{
      
-		  console.log('The user id:'+conv.user.raw.userId);
-		  console.log('The code before update:'+test);
-		  return dbconnectupdate(conv.user.raw.userId,test).then((resp)=>{
+		  //console.log('The user id:'+conv.user.raw.userId);
+		  //console.log('The code before update:'+test);
+		  return dbconnectupdate(conv.user.raw.userId,parseInt(req.cookies['Authorization Code'])).then((resp)=>{
 		   console.log('resp after update--->'+JSON.stringify(resp));
-		   code='';
+		   //code='';
 		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	       })
 	   .catch((err)=>{
@@ -585,13 +613,13 @@ app.intent('Default Welcome Intent', (conv) => {
 		
 		  
 		}
-		conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	})
 	.catch((err)=>{
-		conv.ask(new SimpleResponse({speech:"Error Guys",text:"Error Guys"}));
+		conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));
 	});	
-	
+	}
 
+	
 });
 
 app.intent('create account',(conv,params)=>{
