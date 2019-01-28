@@ -594,7 +594,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	console.log('the auth code cookie is:'+req.cookies.AuthorizationCode);
 	if(req.cookies.GoogleuseridCode!=null)
 	{
-		return dbconnectgoogleuserid(req.cookies.GoogleuseridCode)).then((resp)=>{
+		return dbconnectgoogleuserid(req.cookies.GoogleuseridCode).then((resp)=>{
 		if(resp[0].googleid!='')
 		{
 			console.log('Instance Url:'+ resp[0].instanceurl);
