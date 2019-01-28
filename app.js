@@ -592,7 +592,7 @@ app.intent('Default Welcome Intent', (conv) => {
 	res.cookie('GoogleuseridCode',conv.user.raw.userId);
 	console.log('the google cookie val:'+req.cookies.GoogleuseridCode);
 	console.log('the auth code cookie is:'+req.cookies.AuthorizationCode);
-	if(req.cookies['Google user id Code']!=null)
+	if(req.cookies.GoogleuseridCode!=null)
 	{
 		return dbconnectgoogleuserid(req.cookies.GoogleuseridCode)).then((resp)=>{
 		if(resp[0].googleid!='')
