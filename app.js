@@ -612,7 +612,7 @@ app.intent('Default Welcome Intent', (conv) => {
 		conv.ask(new SimpleResponse({speech:"Error while updating google user id in heroku",text:"Error while updating google user id in heroku"}));
 	    });
 		
-		  
+		     conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 		}
 	})
 	.catch((err)=>{
