@@ -590,6 +590,8 @@ app.intent('Default Welcome Intent', (conv) => {
 	//res.cookie('Authorization Code',req.body.code);
 	
 	res.cookie('Google user id Code',conv.user.raw.userId);
+	console.log('the google cookie val:'+req.cookies['Google user id Code']);
+	console.log('the auth code cookie is:'+req.cookies['Authorization Code']);
 	if(req.cookies['Google user id Code']!=null)
 	{
 		return dbconnectgoogleuserid(req.cookies['Google user id Code'])).then((resp)=>{
