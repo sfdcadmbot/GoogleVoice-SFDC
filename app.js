@@ -85,6 +85,7 @@ server.all("/auth/login", function (req, res) {
 * Login callback endpoint (only called by Force.com)
 */
 server.all('/token2', async (req, res) => {
+	console.log('The request in token2:'+req.body);
   console.log("token"+ req.body.code||req.body.refresh_token)
   code=req.body.code;
  
@@ -104,7 +105,7 @@ server.all('/token2', async (req, res) => {
    }
 })
 server.get('/token', async (req, res) => {
-
+console.log('The request in token:'+req.body);
   const conn = new jsforce.Connection({ oauth2: oauth2 });
   const code = req.query.code;
   try {
