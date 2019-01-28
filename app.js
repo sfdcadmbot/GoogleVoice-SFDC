@@ -87,10 +87,10 @@ server.all("/auth/login", function (req, res) {
 * Login callback endpoint (only called by Force.com)
 */
 server.all('/token2', async (req, res) => {
-	console.log('The request in token2:'+JSON.stringify(req.body));
+console.log('The request in token2:'+JSON.stringify(req.body));
   console.log("token"+ req.body.code||req.body.refresh_token)
   code=req.body.code;
-   res.cookie('Authorization Code',req.body.code);
+   res.cookie('AuthorizationCode',req.body.code);
   if(req.body.grant_type=='authorization_code'){
     res.json({
     "token_type": "Bearer",
@@ -141,7 +141,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
         organizationid:userInfo.organizationId,
-		googleuserid:''
+	googleuserid:''
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -589,12 +589,12 @@ app.intent('Default Welcome Intent', (conv) => {
 	
 	//res.cookie('Authorization Code',req.body.code);
 	
-	res.cookie('Google user id Code',conv.user.raw.userId);
-	console.log('the google cookie val:'+req.cookies['Google user id Code']);
-	console.log('the auth code cookie is:'+req.cookies['Authorization Code']);
+	res.cookie('GoogleuseridCode',conv.user.raw.userId);
+	console.log('the google cookie val:'+req.cookies.GoogleuseridCode);
+	console.log('the auth code cookie is:'+req.cookies.AuthorizationCode);
 	if(req.cookies['Google user id Code']!=null)
 	{
-		return dbconnectgoogleuserid(req.cookies['Google user id Code'])).then((resp)=>{
+		return dbconnectgoogleuserid(req.cookies.GoogleuseridCode)).then((resp)=>{
 		if(resp[0].googleid!='')
 		{
 			console.log('Instance Url:'+ resp[0].instanceurl);
@@ -604,7 +604,8 @@ app.intent('Default Welcome Intent', (conv) => {
      
 		  //console.log('The user id:'+conv.user.raw.userId);
 		  //console.log('The code before update:'+test);
-		  return dbconnectupdate(conv.user.raw.userId,parseInt(req.cookies['Authorization Code'])).then((resp)=>{
+			var value=parseInt(req.cookies.AuthorizationCode);
+		  return dbconnectupdate(conv.user.raw.userId,value).then((resp)=>{
 		   console.log('resp after update--->'+JSON.stringify(resp));
 		   //code='';
 		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
