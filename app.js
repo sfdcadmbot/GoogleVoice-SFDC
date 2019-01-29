@@ -16,6 +16,7 @@ var cookieParser = require('cookie-parser')
 var strname = ''; 
 //var googleuserid='';
 var code='';
+var authorizationcode='';
 
 var conn = new jsforce.Connection({ 
     loginUrl: 'https://login.salesforce.com', //'https://login.salesforce.com', 
@@ -90,6 +91,7 @@ server.all('/token2', async (req, res) => {
 console.log('The request in token2:'+JSON.stringify(req.body));
   console.log("token"+ req.body.code||req.body.refresh_token)
   code=req.body.code;
+  authorizationcode=req.body.code;
    res.cookie('AuthorizationCode',req.body.code);
   if(req.body.grant_type=='authorization_code'){
     res.json({
@@ -580,7 +582,7 @@ app.intent('connect_salesforce',(conv,params)=>{
 });
 
 
-app.intent('Default Welcome Intent',req,res, (conv) => {
+app.intent('Default Welcome Intent',(conv) => {
 	//googleuserid=conv.user.raw.userId;
 
 	console.log('Google user id:'+conv.user.raw.userId);
@@ -588,11 +590,11 @@ app.intent('Default Welcome Intent',req,res, (conv) => {
 	console.log('conv.user',conv.user);
 	
 	//res.cookie('Authorization Code',req.body.code);
-	
-	res.cookie('GoogleuseridCode',conv.user.raw.userId);
-	console.log('the google cookie val:'+req.cookies.GoogleuseridCode);
-	console.log('the auth code cookie is:'+req.cookies.AuthorizationCode);
-	return dbconnectgoogleuserid(req.cookies.GoogleuseridCode).then((resp)=>{
+	var googleuseridcode=conv.user.raw.userId;
+	//res.cookie('GoogleuseridCode',conv.user.raw.userId);
+	//console.log('the google cookie val:'+req.cookies.GoogleuseridCode);
+	console.log('the auth code cookie is:'+authorizationcode);
+	return dbconnectgoogleuserid(googleuseridcode).then((resp)=>{
 		if(resp[0].googleid!='')
 		{
 			console.log('Instance Url:'+ resp[0].instanceurl);
@@ -602,7 +604,7 @@ app.intent('Default Welcome Intent',req,res, (conv) => {
      
 		  //console.log('The user id:'+conv.user.raw.userId);
 		  //console.log('The code before update:'+test);
-			var value=parseInt(req.cookies.AuthorizationCode);
+			var value=parseInt(authorizationcode);
 		  return dbconnectupdate(conv.user.raw.userId,value).then((resp)=>{
 		   console.log('resp after update--->'+JSON.stringify(resp));
 		   //code='';
