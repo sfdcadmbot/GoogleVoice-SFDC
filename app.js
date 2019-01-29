@@ -257,21 +257,14 @@ var dbconnectgoogleuserid=function (param){
 	
 	return new Promise((resolve,reject)=>{
 		console.log('param is -->',param);
-		try
-		{
-		var stringval=param.tostring();
-		}
-	
-	catch(err) {
-  console.log('The exception:'+err.message);
-}
+
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"='+stringval, function (err, result) {
+       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"='+'"'+param+'"', function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
