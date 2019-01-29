@@ -259,7 +259,7 @@ var dbconnectgoogleuserid=function (param){
 		console.log('param is -->',param);
 		try
 		{
-		var stringval=string(param);
+		var stringval=param.tostring();
 		}
 	
 	catch(err) {
