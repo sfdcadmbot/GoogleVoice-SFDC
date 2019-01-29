@@ -605,15 +605,11 @@ app.intent('Default Welcome Intent',(conv) => {
      
 		  //console.log('The user id:'+conv.user.raw.userId);
 		  //console.log('The code before update:'+test);
-			if(authorizationcode=='')
-			{
-				var value=parseInt('4')
-			}
-			else
-			{
+			
+			
 			var value=parseInt(authorizationcode);
-			}
-		  return dbconnectupdate(conv.user.raw.userId,value).then((resp)=>{
+			
+		  return dbconnectupdate(conv.user.raw.userId,parseInt('4')).then((resp)=>{
 		   console.log('resp after update--->'+JSON.stringify(resp));
 		   //code='';
 		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
