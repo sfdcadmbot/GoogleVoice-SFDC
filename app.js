@@ -143,7 +143,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
         organizationid:userInfo.organizationId,
-	googleid:''
+	Googleid:''
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
