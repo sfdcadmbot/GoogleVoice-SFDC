@@ -14,8 +14,8 @@ module.exports = {
     const userInsertValues = [params.firstname,params.lastname,params.email]
     const  userrows  = await pool.query(userInsertStatement,userInsertValues )
     console.log('value for user table:'+JSON.stringify(userrows.rows[0]))
-    const idpInsertStatement = 'INSERT INTO public."googleauthenticatedusers"("instanceurl", "accesstoken","refreshtoken","email","userid","salesforceid","organizationid","googleuserid") VALUES($1, $2, $3, $4, $5, $6, $7,$8) RETURNING *'
-    const idpInsertValues = [params.instanceurl,params.accesstoken,params.refreshtoken,params.email,userrows.rows[0].Id,params.salesforceid,params.organizationid,params.googleuserid]
+    const idpInsertStatement = 'INSERT INTO public."googleauthenticatedusers"("instanceurl", "accesstoken","refreshtoken","email","userid","salesforceid","organizationid","googleid") VALUES($1, $2, $3, $4, $5, $6, $7,$8) RETURNING *'
+    const idpInsertValues = [params.instanceurl,params.accesstoken,params.refreshtoken,params.email,userrows.rows[0].Id,params.salesforceid,params.organizationid,params.googleid]
     const idprows = await pool.query(idpInsertStatement,idpInsertValues )
     console.log('value for IP table:'+JSON.stringify(idprows.rows[0]))
     return userrows.rows[0].Id 
