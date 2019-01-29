@@ -256,13 +256,14 @@ var dbconnect=function (param){
 var dbconnectgoogleuserid=function (param){
 	return new Promise((resolve,reject)=>{
 		console.log('param is -->',param);
+		var stringval=string(param);
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"='+param, function (err, result) {
+       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"='+stringval, function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
