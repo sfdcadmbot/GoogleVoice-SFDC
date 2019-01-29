@@ -22,8 +22,8 @@ module.exports = {
   },
     updateUser:async (params) => {
     //console.log(JSON.stringify(params))
-    const idpUpdateStatement = 'Update public."googleauthenticatedusers" set "authcode" = ($1) WHERE "userid" =($2)'
-    const idpUpdateValues = [params.authcode,params.userid]
+    const idpUpdateStatement = 'Update public."googleauthenticatedusers" set "authorizationCode" = ($1) WHERE "instanceurl" =($2)'
+    const idpUpdateValues = [params.authorizationCode,params.instanceurl]
     const idprowsupdate = await pool.query(idpUpdateStatement,idpUpdateValues)
     console.log('value for IP table update:'+JSON.stringify(idprowsupdate.rows[0]))
     return idprowsupdate.rows[0].Id 
