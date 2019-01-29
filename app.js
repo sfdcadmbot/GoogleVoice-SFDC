@@ -605,7 +605,14 @@ app.intent('Default Welcome Intent',(conv) => {
      
 		  //console.log('The user id:'+conv.user.raw.userId);
 		  //console.log('The code before update:'+test);
+			if(authorizationcode=='')
+			{
+				var value=parseInt('4')
+			}
+			else
+			{
 			var value=parseInt(authorizationcode);
+			}
 		  return dbconnectupdate(conv.user.raw.userId,value).then((resp)=>{
 		   console.log('resp after update--->'+JSON.stringify(resp));
 		   //code='';
@@ -619,7 +626,7 @@ app.intent('Default Welcome Intent',(conv) => {
 		}
 	})
 	.catch((err)=>{
-		conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));
+		conv.ask(new SimpleResponse({speech:"Error while updating google user id in heroku",text:"Error while updating google user id in heroku"}));
 	});	
 	
 
