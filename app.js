@@ -14,9 +14,8 @@ const pg = require('pg');
 const pool = new pg.Pool(config.db);
 var cookieParser = require('cookie-parser')
 var strname = ''; 
-//var googleuserid='';
-var code='';
-var authorizationcode='';
+
+
 
 var conn = new jsforce.Connection({ 
     loginUrl: 'https://login.salesforce.com', //'https://login.salesforce.com', 
@@ -90,22 +89,31 @@ server.all("/auth/login", function (req, res) {
 server.all('/token2', async (req, res) => {
 console.log('The request in token2:'+JSON.stringify(req.body));
   console.log("token"+ req.body.code||req.body.refresh_token)
-  code=req.body.code;
-  authorizationcode=req.body.code;
-   res.cookie('AuthorizationCode',req.body.code);
+  //code=req.body.code;
+ 
   if(req.body.grant_type=='authorization_code'){
-    res.json({
+	  
+	var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "authorizationcode" = $1',[req.body.code]);
+     res.json({
     "token_type": "Bearer",
-    "access_token":  req.body.code,
-    "refresh_token":  req.body.code,
-    "expires_in": 1999900999,
+    "access_token": result.rows[0].accesstoken,
+    "refresh_token":  result.rows[0].refreshtoken,
+    //"expires_in": 1999900999,
     })
+   
   }else if(req.body.grant_type=='refresh_token'){
+	  
+	   var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "refreshtoken" = $1',[req.body.refresh_token]);
+    const conn = new jsforce.Connection({ oauth2: oauth2 });
+    var refreshTokenResult =await conn.oauth2.refreshToken(result.rows[0].refreshtoken)
+    await db.query('UPDATE public."googleauthenticatedusers" SET "accesstoken" = $1 WHERE "refreshtoken" =$2',[refreshTokenResult.access_token,result.rows[0].refreshtoken])
+    console.log('Refresh token flow:'+result)
     res.json({
       "token_type": "Bearer",
-      "access_token":  req.body.refresh_token,
-      "expires_in": 1999900999,
+      "access_token":  refreshTokenResult.access_token,
+      //"expires_in": 1999900999,
       })
+  
    }
 })
 server.get('/token', async (req, res) => {
@@ -143,7 +151,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
         organizationid:userInfo.organizationId,
-	googleid:''
+        authorizationCode:code
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -154,7 +162,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
     }
     console.log(req.session.redirect_uri)
     if( req.session.redirect_uri){
-      res.redirect(req.session.redirect_uri+'?code='+req.session.userid+"&state="+req.session.state)
+      res.redirect(req.session.redirect_uri+'?code='+code+"&state="+req.session.state)
     }else
       res.redirect('/');
     ///res.send(JSON.stringify(Object.assign(userInfo,user,{session:req.session}, { rows: (!result ? result : result.rows) })))
@@ -585,50 +593,22 @@ app.intent('connect_salesforce',(conv,params)=>{
 });
 
 
-app.intent('Default Welcome Intent',(conv) => {
+app.intent('Default Welcome Intent',async(conv) => {
 	//googleuserid=conv.user.raw.userId;
 
 	console.log('Google user id:'+conv.user.raw.userId);
 	 console.log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
-	
-	//res.cookie('Authorization Code',req.body.code);
-	var googleuseridcode=conv.user.raw.userId;
-	//res.cookie('GoogleuseridCode',conv.user.raw.userId);
-	//console.log('the google cookie val:'+req.cookies.GoogleuseridCode);
-	console.log('the auth code cookie is:'+authorizationcode);
-	return dbconnectgoogleuserid(googleuseridcode).then((resp)=>{
-		if(resp[0].googleid!='')
-		{
-			console.log('Instance Url:'+ resp[0].instanceurl);
-		}
-		else
-		{
-     
-		  //console.log('The user id:'+conv.user.raw.userId);
-		  //console.log('The code before update:'+test);
-			
-			console.log('here');
-			var value=parseInt(authorizationcode);
-			
-		  return dbconnectupdate(conv.user.raw.userId,value).then((resp)=>{
-		   console.log('resp after update--->'+JSON.stringify(resp));
-		   //code='';
-		   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
-	       })
-	   .catch((err)=>{
-		conv.ask(new SimpleResponse({speech:"Error while updating google user id in heroku",text:"Error while updating google user id in heroku"}));
-	    });
-		
-		    // conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
-		}
-	})
-	.catch((err)=>{
-		conv.ask(new SimpleResponse({speech:"Error while updating google user id in heroku",text:"Error while updating google user id in heroku"}));
-	});	
-	
+		if(conv.user.access.token){
+	 var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1',[conv.user.access.token]);
+	console.log(JSON.stringify(result.rows[0]))
+	if(result.rows[0].instanceurl)
+	{
+		console.log('Instance Url:'+ result.rows[0].instanceurl);
+	}
+	   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
+	}
 
-	
 });
 
 app.intent('create account',(conv,params)=>{
