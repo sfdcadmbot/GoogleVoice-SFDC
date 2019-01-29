@@ -264,7 +264,7 @@ var dbconnectgoogleuserid=function (param){
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"='+param+'', function (err, result) {
+       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"=$1',[param], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
