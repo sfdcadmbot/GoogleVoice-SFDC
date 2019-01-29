@@ -606,7 +606,7 @@ app.intent('Default Welcome Intent',(conv) => {
 		  //console.log('The user id:'+conv.user.raw.userId);
 		  //console.log('The code before update:'+test);
 			
-			
+			console.log('here');
 			var value=parseInt(authorizationcode);
 			
 		  return dbconnectupdate(conv.user.raw.userId,value).then((resp)=>{
