@@ -254,9 +254,11 @@ var dbconnect=function (param){
 }*/
 
 var dbconnectgoogleuserid=function (param){
+	try
+	{
 	return new Promise((resolve,reject)=>{
 		console.log('param is -->',param);
-		var stringval=string(param);
+		var stringval=param.toString();
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
         if (err) {
@@ -278,6 +280,11 @@ var dbconnectgoogleuserid=function (param){
        })
      })
 	});
+	}
+	
+	catch(err) {
+  console.log('The exception:'+err.message);
+}
 }
 
 var dbconnectupdate=function (googlevalpassed,herokutableid){
