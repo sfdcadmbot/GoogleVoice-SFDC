@@ -143,7 +143,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
         organizationid:userInfo.organizationId,
-	Googleid:''
+	googleid:''
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -262,7 +262,7 @@ var dbconnectgoogleuserid=function (param){
            console.log("Can not connect to the DB" + err);
 		   reject(err);
        }
-       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "Googleid" ='+param, function (err, result) {
+       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"='+param, function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
