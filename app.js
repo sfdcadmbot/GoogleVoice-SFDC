@@ -258,7 +258,7 @@ var dbconnectgoogleuserid=function (param){
 	{
 	return new Promise((resolve,reject)=>{
 		console.log('param is -->',param);
-		var stringval=param.toString();
+		var stringval=string(param);
 		//const result = db.query('SELECT * FROM IdentityProviders')
 	   pool.connect(function (err, client, done) {
         if (err) {
