@@ -163,7 +163,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
     await db.query('BEGIN')
     const result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "instanceurl" = $1 and "salesforceid"=$2',
       [conn.instanceUrl, userInfo.id])
-    if (result && result.rows.length == 0) {
+    //if (result && result.rows.length == 0) {
       req.session.userid=await db.insertUser({
         email:user.Email,
         firstname:user.FirstName,
@@ -177,9 +177,9 @@ console.log('The request in token:'+JSON.stringify(req.body));
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
-    } else if (result) {
-	console.log('Called if result is present in the postgre table');
-      console.log(JSON.stringify(result.rows))
+    //} else if (result) {
+	//console.log('Called if result is present in the postgre table');
+      //console.log(JSON.stringify(result.rows))
       //req.session.userid=result.rows[0].userid
 	  
 	   /*await db.updateUser({
@@ -190,7 +190,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
 	})
 	  await db.query('COMMIT')*/
 	  
-	  
+	  /*
 	  	   pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
@@ -209,8 +209,9 @@ console.log('The request in token:'+JSON.stringify(req.body));
 			 //resolve(result);
 			}
        })
-     })
-    }
+     })*/
+	 
+   // }
     console.log(req.session.redirect_uri)
     if( req.session.redirect_uri){
       res.redirect(req.session.redirect_uri+'?code='+code+"&state="+req.session.state)
