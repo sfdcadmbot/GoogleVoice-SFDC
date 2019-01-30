@@ -151,7 +151,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
         organizationid:userInfo.organizationId,
-        authorizationCode:code
+        authorizationcode:code
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -163,8 +163,8 @@ console.log('The request in token:'+JSON.stringify(req.body));
 	   await db.updateUser({
         accesstoken:conn.accessToken,
         refreshtoken:conn.refreshToken,
-		authorizationCode:code,
-		salesforceid:userInfo.id
+	authorizationcode:code,
+	salesforceid:userInfo.id
 	})
 	  await db.query('COMMIT')
     }
