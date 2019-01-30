@@ -160,13 +160,34 @@ console.log('The request in token:'+JSON.stringify(req.body));
       console.log(JSON.stringify(result.rows))
       //req.session.userid=result.rows[0].userid
 	  
-	   await db.updateUser({
+	   /*await db.updateUser({
         accesstoken:conn.accessToken,
         refreshtoken:conn.refreshToken,
 	authorizationcode:code,
 	salesforceid:userInfo.id
 	})
-	  await db.query('COMMIT')
+	  await db.query('COMMIT')*/
+	  
+	  
+	  	   pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   //reject(err);
+       }
+       client.query('Update public."googleauthenticatedusers" set "authorizationcode" = ($1),"accesstoken" = ($2), "refreshtoken" =($3) WHERE "salesforceid" =($4)',[code,conn.accessToken,conn.refreshToken,userInfo.id], function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+				//reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here then update-->'+JSON.stringify(result));
+			 //resolve(result);
+			}
+       })
+     })
     }
     console.log(req.session.redirect_uri)
     if( req.session.redirect_uri){
