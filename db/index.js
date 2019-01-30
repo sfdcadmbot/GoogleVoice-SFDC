@@ -22,6 +22,10 @@ module.exports = {
   },
     updateUser:async (params) => {
     //console.log(JSON.stringify(params))
+      console.log('params.authorizationcode:'+params.authorizationcode);
+      console.log('params.accesstoken:'+params.accesstoken);
+      console.log('params.refreshtoken:'+params.refreshtoken);
+      console.log('params.salesforceid:'+params.salesforceid);
     const idpUpdateStatement = 'Update public."googleauthenticatedusers" set "authorizationcode" = ($1),"accesstoken" = ($2), "refreshtoken" =($3) WHERE "salesforceid" =($4)'
     const idpUpdateValues = [params.authorizationcode,params.accesstoken,params.refreshtoken,params.salesforceid]
     const idprowsupdate = await pool.query(idpUpdateStatement,idpUpdateValues)
