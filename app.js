@@ -158,7 +158,15 @@ console.log('The request in token:'+JSON.stringify(req.body));
     } else if (result) {
 	console.log('Called if result is present in the postgre table');
       console.log(JSON.stringify(result.rows))
-      req.session.userid=result.rows[0].userid
+      //req.session.userid=result.rows[0].userid
+	  
+	   await db.updateUser({
+        accesstoken:conn.accessToken,
+        refreshtoken:conn.refreshToken,
+		authorizationCode:code,
+		salesforceid:userInfo.id
+	})
+	  await db.query('COMMIT')
     }
     console.log(req.session.redirect_uri)
     if( req.session.redirect_uri){
