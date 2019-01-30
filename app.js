@@ -106,13 +106,35 @@ console.log('The request in token2:'+JSON.stringify(req.body));
 	   var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "refreshtoken" = $1',[req.body.refresh_token]);
     const conn = new jsforce.Connection({ oauth2: oauth2 });
     var refreshTokenResult =await conn.oauth2.refreshToken(result.rows[0].refreshtoken)
-    await db.query('UPDATE public."googleauthenticatedusers" SET "accesstoken" = $1 WHERE "refreshtoken" =$2',[refreshTokenResult.access_token,result.rows[0].refreshtoken])
-    console.log('Refresh token flow:'+result)
-    res.json({
-      "token_type": "Bearer",
-      "access_token":  refreshTokenResult.access_token,
-      //"expires_in": 1999900999,
-      })
+    //await db.query('UPDATE public."googleauthenticatedusers" SET "accesstoken" = $1 WHERE "refreshtoken" =$2',[refreshTokenResult.access_token,result.rows[0].refreshtoken])
+	
+		pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   //reject(err);
+       }
+       client.query('UPDATE public."googleauthenticatedusers" SET "accesstoken" = $1 WHERE "refreshtoken" =$2',[refreshTokenResult.access_token,result.rows[0].refreshtoken], function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data in refresh token mechanism:'+err);
+				//reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here then update refresh token mechanism-->'+JSON.stringify(result));
+					 res.json({
+			  "token_type": "Bearer",
+			  "access_token":  refreshTokenResult.access_token,
+			  //"expires_in": 1999900999,
+			  })
+			 //resolve(result);
+			}
+       })
+     })
+	 
+    //console.log('Refresh token flow:'+result)
+   
   
    }
 })
