@@ -682,34 +682,37 @@ app.intent('connect_salesforce',async(conv,params)=>{
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
 	   console.log('Salesforce accessToken :' + accessToken);
-       console.log('Salesforce res :' + res);
+       console.log('Salesforce res :' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
-		   reject(err);
+		   return err;
+		   //reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
-				reject(err);
+				return err;
+				//reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here after updating renewed access token-->'+JSON.stringify(result));
-			 resolve(result);
+			 //resolve(result);
 			}
        })
      })
 	});
  	conn.sobject("Account").create({ Name : 'testnow' }, function(error, ret) {
-					  if (error || !ret.success) { 	  
-						  reject(error); 
+					  if (error || !ret.success) { 	
+                       return error;					  
+						  //reject(error); 
 					  }
 					  else{		 
 						 console.log('created record id is-->'+ret.id);
-						 resolve(ret);
+						 //resolve(ret);
 					  }
 			 
 				});
@@ -731,34 +734,37 @@ app.intent('connect_salesforce',async(conv,params)=>{
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
 	   console.log('Salesforce accessToken :' + accessToken);
-       console.log('Salesforce res :' + res);
+       console.log('Salesforce res :' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
-		   reject(err);
+		   return err;
+		   //reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data:'+err);
-				reject(err);
+				return err;
+				//reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here after updating renewed access token line 740-->'+JSON.stringify(result));
-			 resolve(result);
+			 //resolve(result);
 			}
        })
      })
 	});
 		conn.sobject("Account").create({ Name : 'testnow' }, function(error, ret) {
-					  if (error || !ret.success) { 	  
-						  reject(error); 
+					  if (error || !ret.success) { 	
+                       return error;					  
+						  //reject(error); 
 					  }
 					  else{		 
 						 console.log('created record id is-->'+ret.id);
-						 resolve(ret);
+						 //resolve(ret);
 					  }
 			 
 				});
