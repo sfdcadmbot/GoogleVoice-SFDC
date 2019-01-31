@@ -263,9 +263,9 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-var accountCreation=async function (acctName){
+var accountCreation=  function (acctName){
 	return new Promise((resolve,reject)=>{
-     var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
+     var result = db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
  console.log('New Access Token:'+result.rows[0].accesstokennew);
  if(result.rows[0].accesstokennew=='')
  {
