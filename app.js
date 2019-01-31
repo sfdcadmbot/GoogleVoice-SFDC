@@ -663,7 +663,7 @@ var jsforcesignin = function(accesstoken,refreshtoken,instanceurl){
 }*/
 
 
-app.intent('connect_salesforce',(conv,params)=>{
+app.intent('connect_salesforce',async(conv,params)=>{
     
  var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[conv.user.access.token,conv.user.access.token]);
  console.log('New Access Token:'+result.rows[0].accesstokennew);
