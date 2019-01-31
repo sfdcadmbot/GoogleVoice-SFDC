@@ -263,7 +263,7 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-var accountCreation=  function (acctName){
+var accountCreation=  function (acctName,accesstoken){
 	console.log('acctName here-->'+acctName);
 	return new Promise((resolve,reject)=>{
      var result = db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
@@ -886,7 +886,7 @@ app.intent('Default Welcome Intent',async(conv) => {
 });
 
 app.intent('create account',(conv,params)=>{
-	return accountCreation(params.AccountName).then((resp)=>{
+	return accountCreation(params.AccountName,conv.user.access.token).then((resp)=>{
 		console.log('resp--->'+resp.id);
 		conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
 		conv.ask(new Suggestions('update account details'));
