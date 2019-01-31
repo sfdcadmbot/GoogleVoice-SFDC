@@ -263,16 +263,51 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-var accountCreation=function (acctName){
+var accountCreation=async function (acctName){
 	return new Promise((resolve,reject)=>{
-		console.log('Account Name is -->',acctName);
-		conn.login(process.env.username, process.env.pass, function(err, res){
-			if(err){
+     var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
+ console.log('New Access Token:'+result.rows[0].accesstokennew);
+ if(result.rows[0].accesstokennew=='')
+ {
+	var conn = new jsforce.Connection({
+	    oauth2 : {
+		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+		clientSecret :'4635706799290406853'
+	     },
+	  instanceUrl : result.rows[0].instanceurl,
+	  accessToken :result.rows[0].accesstoken ,
+	  refreshToken : result.rows[0].refreshtoken
+	});
+	conn.on("refresh", function(accessToken, res) {
+	  // Refresh event will be fired when renewed access token
+	  // to store it in your storage for next request
+	   console.log('Salesforce accessToken :' + accessToken);
+       console.log('Salesforce res :' + JSON.stringify(res));
+	  	pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   //return err;
+		   reject(err);
+       }
+       client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+				//return err;
 				reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here after updating renewed access token-->'+JSON.stringify(result));
+			 //resolve(result);
 			}
-			else{  
-				conn.sobject("Account").create({ Name : acctName }, function(error, ret) {
-					  if (error || !ret.success) { 	  
+       })
+     })
+	});
+ 	conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
+					  if (error || !ret.success) { 	
+                       //return error;					  
 						  reject(error); 
 					  }
 					  else{		 
@@ -281,9 +316,60 @@ var accountCreation=function (acctName){
 					  }
 			 
 				});
-			
+		
+		
+ }
+ else if(result.rows[0].accesstokennew!='')
+ {
+	 var conn = new jsforce.Connection({
+	    oauth2 : {
+		clientId : process.env.clientId,
+		clientSecret : process.env.clientSecret
+	     },
+	  instanceUrl : result.rows[0].instanceurl,
+	  accessToken :result.rows[0].accesstokennew ,
+	  refreshToken : result.rows[0].refreshtoken
+	});
+	conn.on("refresh", function(accessToken, res) {
+	  // Refresh event will be fired when renewed access token
+	  // to store it in your storage for next request
+	   console.log('Salesforce accessToken :' + accessToken);
+       console.log('Salesforce res :' + JSON.stringify(res));
+	  	pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   //return err;
+		   reject(err);
+       }
+       client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+				//return err;
+				reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here after updating renewed access token line 740-->'+JSON.stringify(result));
+			 //resolve(result);
 			}
-		});
+       })
+     })
+	});
+		conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
+					  if (error || !ret.success) { 	
+                       //return error;					  
+						  reject(error); 
+					  }
+					  else{		 
+						 console.log('created record id is-->'+ret.id);
+						 resolve(ret);
+					  }
+			 
+				});
+	 
+ }
 	});
 }
 /*
@@ -705,6 +791,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
        })
      })
 	});
+	/*
  	conn.sobject("Account").create({ Name : 'testnow31jan' }, function(error, ret) {
 					  if (error || !ret.success) { 	
                        return error;					  
@@ -715,7 +802,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
 						 //resolve(ret);
 					  }
 			 
-				});
+				});*/
 		
 		
  }
@@ -757,7 +844,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
        })
      })
 	});
-		conn.sobject("Account").create({ Name : 'testnow31jan' }, function(error, ret) {
+		/*conn.sobject("Account").create({ Name : 'testnow31jan' }, function(error, ret) {
 					  if (error || !ret.success) { 	
                        return error;					  
 						  //reject(error); 
@@ -767,7 +854,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
 						 //resolve(ret);
 					  }
 			 
-				});
+				});*/
 	 
  }
  
