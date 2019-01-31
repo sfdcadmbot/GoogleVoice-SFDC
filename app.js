@@ -173,7 +173,8 @@ console.log('The request in token:'+JSON.stringify(req.body));
         instanceurl:conn.instanceUrl,
         salesforceid:userInfo.id,
         organizationid:userInfo.organizationId,
-        authorizationcode:code
+        authorizationcode:code,
+		accesstokennew:''
       }) 
       await db.query('COMMIT')
       console.log('The inserted detail in SFDC:'+req.session.userid);
@@ -635,13 +636,138 @@ app.intent('connect_salesforce',(conv,params)=>{
 
 	});
 });*/
+/*
+var jsforcesignin = function(accesstoken,refreshtoken,instanceurl){
+		return new Promise((resolve,reject)=>{
+		var conn = new jsforce.Connection({
+	    oauth2 : {
+		clientId : process.env.clientId,
+		clientSecret : process.env.clientSecret,
+		redirectUri : 'https://node-js-google-sfdc-app.herokuapp.com/token'
+	  },
+	  instanceUrl : instanceurl,
+	  accessToken :accesstoken ,
+	  refreshToken : refreshtoken
+	});
+	conn.on("refresh", function(accessToken, res) {
+	  // Refresh event will be fired when renewed access token
+	  // to store it in your storage for next request
+	});
+
+	// Alternatively, you can use the callback style request to fetch the refresh token
+	conn.oauth2.refreshToken(refreshToken, (err, results) => {
+	  if (err) return reject(err);
+	  resolve(results);
+	});
+		});
+}*/
 
 
 app.intent('connect_salesforce',(conv,params)=>{
     
-
-
-
+ var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[conv.user.access.token,conv.user.access.token]);
+ console.log('New Access Token:'+result.rows[0].accesstokennew);
+ if(result.rows[0].accesstokennew=='')
+ {
+	var conn = new jsforce.Connection({
+	    oauth2 : {
+		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+		clientSecret :'4635706799290406853'
+	     },
+	  instanceUrl : result.rows[0].instanceurl,
+	  accessToken :result.rows[0].accesstoken ,
+	  refreshToken : result.rows[0].refreshtoken
+	});
+	conn.on("refresh", function(accessToken, res) {
+	  // Refresh event will be fired when renewed access token
+	  // to store it in your storage for next request
+	   console.log('Salesforce accessToken :' + accessToken);
+       console.log('Salesforce res :' + res);
+	  	pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   reject(err);
+       }
+       client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+				reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here after updating renewed access token-->'+JSON.stringify(result));
+			 resolve(result);
+			}
+       })
+     })
+	});
+ 	conn.sobject("Account").create({ Name : 'testnow' }, function(error, ret) {
+					  if (error || !ret.success) { 	  
+						  reject(error); 
+					  }
+					  else{		 
+						 console.log('created record id is-->'+ret.id);
+						 resolve(ret);
+					  }
+			 
+				});
+		
+		
+ }
+ else if(result.rows[0].accesstokennew!='')
+ {
+	 var conn = new jsforce.Connection({
+	    oauth2 : {
+		clientId : process.env.clientId,
+		clientSecret : process.env.clientSecret
+	     },
+	  instanceUrl : result.rows[0].instanceurl,
+	  accessToken :result.rows[0].accesstokennew ,
+	  refreshToken : result.rows[0].refreshtoken
+	});
+	conn.on("refresh", function(accessToken, res) {
+	  // Refresh event will be fired when renewed access token
+	  // to store it in your storage for next request
+	   console.log('Salesforce accessToken :' + accessToken);
+       console.log('Salesforce res :' + res);
+	  	pool.connect(function (err, client, done) {
+        if (err) {
+           console.log("Can not connect to the DB" + err);
+		   reject(err);
+       }
+       client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
+            done();
+            if (err) {
+                console.log('The error ret data:'+err);
+				reject(err);
+                //res.status(400).send(err);
+            }
+			else
+			{
+            console.log('The value here after updating renewed access token line 740-->'+JSON.stringify(result));
+			 resolve(result);
+			}
+       })
+     })
+	});
+		conn.sobject("Account").create({ Name : 'testnow' }, function(error, ret) {
+					  if (error || !ret.success) { 	  
+						  reject(error); 
+					  }
+					  else{		 
+						 console.log('created record id is-->'+ret.id);
+						 resolve(ret);
+					  }
+			 
+				});
+	 
+ }
+ 
+ 
+ conv.ask(new SimpleResponse({speech:"Hello We are able to connect to your account. How can I help you today?",text:"Hello We are able to connect to your account. How can I help you today?"}));
+ 
 });
 
 
