@@ -264,9 +264,10 @@ var signIN = new Promise((resolve,reject)=>{
 });
 
 var accountCreation=  function (acctName){
+	console.log('acctName here-->'+acctName);
 	return new Promise((resolve,reject)=>{
      var result = db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
- console.log('New Access Token:'+result.rows[0].accesstokennew);
+ console.log('New Access Token a/c creation:'+result.rows[0].accesstokennew);
  if(result.rows[0].accesstokennew=='')
  {
 	var conn = new jsforce.Connection({
@@ -281,25 +282,25 @@ var accountCreation=  function (acctName){
 	conn.on("refresh", function(accessToken, res) {
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
-	   console.log('Salesforce accessToken :' + accessToken);
-       console.log('Salesforce res :' + JSON.stringify(res));
+	   console.log('Salesforce accessToken a/c creation:' + accessToken);
+       console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
-           console.log("Can not connect to the DB" + err);
+           console.log("Can not connect to the DB a/c creation" + err);
 		   //return err;
 		   reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
             done();
             if (err) {
-                console.log('The error ret data:'+err);
+                console.log('The error ret data a/c creation:'+err);
 				//return err;
 				reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
-            console.log('The value here after updating renewed access token-->'+JSON.stringify(result));
+            console.log('The value here after updating renewed access token a/c creation-->'+JSON.stringify(result));
 			 //resolve(result);
 			}
        })
@@ -307,11 +308,11 @@ var accountCreation=  function (acctName){
 	});
  	conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
-                       //return error;					  
+                                         console.log('error here-->'+error);		  
 						  reject(error); 
 					  }
 					  else{		 
-						 console.log('created record id is-->'+ret.id);
+						 console.log('created record id is a/c creation-->'+ret.id);
 						 resolve(ret);
 					  }
 			 
@@ -321,6 +322,7 @@ var accountCreation=  function (acctName){
  }
  else if(result.rows[0].accesstokennew!='')
  {
+	 console.log('here we go');
 	 var conn = new jsforce.Connection({
 	    oauth2 : {
 		clientId : process.env.clientId,
@@ -333,25 +335,25 @@ var accountCreation=  function (acctName){
 	conn.on("refresh", function(accessToken, res) {
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
-	   console.log('Salesforce accessToken :' + accessToken);
-       console.log('Salesforce res :' + JSON.stringify(res));
+	   console.log('Salesforce accessToken line 338 :' + accessToken);
+       console.log('Salesforce res line 339:' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
-           console.log("Can not connect to the DB" + err);
+           console.log("Can not connect to the DB line 342" + err);
 		   //return err;
 		   reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
             done();
             if (err) {
-                console.log('The error ret data:'+err);
+                console.log('The error ret data line 349:'+err);
 				//return err;
 				reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
-            console.log('The value here after updating renewed access token line 740-->'+JSON.stringify(result));
+            console.log('The value here after updating renewed access token line 356-->'+JSON.stringify(result));
 			 //resolve(result);
 			}
        })
@@ -359,11 +361,12 @@ var accountCreation=  function (acctName){
 	});
 		conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
-                       //return error;					  
+						   console.log('err linr 364'+error);
+                      				  
 						  reject(error); 
 					  }
 					  else{		 
-						 console.log('created record id is-->'+ret.id);
+						 console.log('created record id is line 369-->'+ret.id);
 						 resolve(ret);
 					  }
 			 
