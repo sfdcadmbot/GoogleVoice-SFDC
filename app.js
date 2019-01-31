@@ -705,7 +705,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
        })
      })
 	});
- 	conn.sobject("Account").create({ Name : 'testnow' }, function(error, ret) {
+ 	conn.sobject("Account").create({ Name : 'testnow31jan' }, function(error, ret) {
 					  if (error || !ret.success) { 	
                        return error;					  
 						  //reject(error); 
