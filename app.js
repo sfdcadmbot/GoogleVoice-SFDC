@@ -12,7 +12,7 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
-var logger=require('./logger/logger');
+var logger=require('./logger');
 var cookieParser = require('cookie-parser')
 var strname = ''; 
 
