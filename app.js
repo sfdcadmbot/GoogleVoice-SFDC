@@ -12,6 +12,11 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
+var fileSystem=require('fs');
+//var folderName='C://Users//debsengupta//Desktop//NodeJSLoginForm//logs';
+var fileName=new Date().getDate().toString()+'-'+(new Date().getMonth()+1).toString()+'-log.txt';
+var folderName = require(path.join(__dirname + '/logs'));
+//var logger=require('./logger/logger');
 var cookieParser = require('cookie-parser')
 var strname = ''; 
 
@@ -43,7 +48,7 @@ server.use(bodyParser.urlencoded({ extended: true }))
 //Simple request time logger
 server.use(function(req, res, next){
   console.log("A new request received at " + Date.now() +" for "+req.url);
-
+   log("A new request received at " + Date.now() +" for "+req.url);
   next();
 });
 //jsForce connection
@@ -67,6 +72,7 @@ server.use(express.static('public'))
 server.all("/auth/login", function (req, res) {
   // Redirect to Salesforce login/authorization page
   if(req.body.redirect_uri){
+	  log("Setting redirect url "+req.body.redirect_uri);
     console.log("Setting redirect url "+req.body.redirect_uri)
     req.session.redirect_uri = req.body.redirect_uri
     req.session.state = req.body.state
@@ -78,7 +84,7 @@ server.all("/auth/login", function (req, res) {
   }else if((req.body.org=='Sandbox')){
     oauth2=new jsforce.OAuth2(Object.assign(config.oauth,{loginUrl:'https://test.salesforce.com'}))
   }
-  
+   log(req.body);
   console.log(req.body)
   res.redirect(oauth2.getAuthorizationUrl({ scope: 'api id web refresh_token' }));
 });
@@ -88,7 +94,9 @@ server.all("/auth/login", function (req, res) {
 */
 server.all('/token2', async (req, res) => {
 console.log('The request in token2:'+JSON.stringify(req.body));
+   log('The request in token2:'+JSON.stringify(req.body));
   console.log("token"+ req.body.code||req.body.refresh_token)
+   g("token"+ req.body.code||req.body.refresh_token);
   //code=req.body.code;
  
   if(req.body.grant_type=='authorization_code'){
@@ -110,19 +118,22 @@ console.log('The request in token2:'+JSON.stringify(req.body));
 	
 		pool.connect(function (err, client, done) {
         if (err) {
-           console.log("Can not connect to the DB" + err);
+           console.log("Can not connect to the DB line 117" + err);
+		    log("Can not connect to the DB line 117" + err);
 		   //reject(err);
        }
        client.query('UPDATE public."googleauthenticatedusers" SET "accesstoken" = $1 WHERE "refreshtoken" =$2',[refreshTokenResult.access_token,result.rows[0].refreshtoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data in refresh token mechanism:'+err);
+				log('The error ret data in refresh token mechanism:'+err);
 				//reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here then update refresh token mechanism-->'+JSON.stringify(result));
+			log('The value here then update refresh token mechanism-->'+JSON.stringify(result));
 					 res.json({
 			  "token_type": "Bearer",
 			  "access_token":  refreshTokenResult.access_token,
@@ -140,6 +151,7 @@ console.log('The request in token2:'+JSON.stringify(req.body));
 })
 server.get('/token', async (req, res) => {
 console.log('The request in token:'+JSON.stringify(req.body));
+log('The request in token:'+JSON.stringify(req.body));
   const conn = new jsforce.Connection({ oauth2: oauth2 });
   const code = req.query.code;
   try {
@@ -148,18 +160,24 @@ console.log('The request in token:'+JSON.stringify(req.body));
     //if (err) { return console.error("This error is in the auth callback: " + err); }
 
     console.log('Access Token: ' + conn.accessToken);
+	log('Access Token: ' + conn.accessToken);
     console.log('Instance URL: ' + conn.instanceUrl);
+	log('Instance URL: ' + conn.instanceUrl);
     console.log('refreshToken: ' + conn.refreshToken);
+	log('refreshToken: ' + conn.refreshToken);
     console.log('User ID: ' + userInfo.id);
+	log('User ID: ' + userInfo.id);
     console.log('Org ID: ' + userInfo.organizationId);
+	log('Org ID: ' + userInfo.organizationId);
     console.log('Org ID: ' + JSON.stringify(userInfo));
-
+     log('Org ID: ' + JSON.stringify(userInfo));
     req.session.accessToken = conn.accessToken;
     req.session.instanceUrl = conn.instanceUrl;
     req.session.refreshToken = conn.refreshToken;
     const {records}=await conn.query("SELECT Id, FirstName, LastName, Email FROM User where id='"+userInfo.id+"'")
     const user=records[0];
     console.log('The user detail in SFDC:'+JSON.stringify(user));
+	 log('The user detail in SFDC:'+JSON.stringify(user));
     await db.query('BEGIN')
     const result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "instanceurl" = $1 and "salesforceid"=$2',
       [conn.instanceUrl, userInfo.id])
@@ -177,7 +195,8 @@ console.log('The request in token:'+JSON.stringify(req.body));
 		accesstokennew:''
       }) 
       await db.query('COMMIT')
-      console.log('The inserted detail in SFDC:'+req.session.userid);
+     // console.log('The inserted detail in SFDC:'+req.session.userid);
+	  log('The inserted detail in SFDC:'+req.session.userid);
     //} else if (result) {
 	//console.log('Called if result is present in the postgre table');
       //console.log(JSON.stringify(result.rows))
@@ -214,6 +233,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
 	 
    // }
     console.log(req.session.redirect_uri)
+	log(req.session.redirect_uri);
     if( req.session.redirect_uri){
       res.redirect(req.session.redirect_uri+'?code='+code+"&state="+req.session.state)
     }else
@@ -222,6 +242,7 @@ console.log('The request in token:'+JSON.stringify(req.body));
   } catch (e) {
     await db.query('ROLLBACK')
     console.log(e.message)
+	log(e.message);
     res.send(JSON.stringify(e))
   } 
 });
@@ -239,14 +260,14 @@ app.intent('Default Welcome Intent', (conv) => {
 app.intent('Get Sign In', (conv, params, signin) => {
     console.log('signIn');
     if (signin.status === 'OK') {
-        console.log('userId', conv.user.raw.userId);
-		console.log('conv.user.raw.accessToken', conv.user.raw.accessToken);
-	    console.log('user det', conv.user.raw);
+        //console.log('userId', conv.user.raw.userId);
+		//console.log('conv.user.raw.accessToken', conv.user.raw.accessToken);
+	    //console.log('user det', conv.user.raw);
 
 		conv.ask(new SimpleResponse({speech:"Hi Sagnik ! We are able to connect to your account. How can I help you today?",text:"Hi Sagnik ! We are able to connect to your account. How can I help you today?"}));
         //conv.ask(`I got your account details. your userId is ${conv.user.raw.userId}. What do you want to do next?`);
     } else {
-        console.log('not signed in');
+        //console.log('not signed in');
         //conv.ask('I won't be able to save your data, but what do you want to do next?');
 		conv.ask(new SimpleResponse({speech:"Error while connecting to salesforce",text:"Error while connecting to salesforce"}));
     }
@@ -263,27 +284,37 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
+var log= function (data){
+	
+	
+	var stream=fileSystem.createWriteStream(path.join(folderName,fileName),{flags:'a'});
+    stream.write(new Date()+' '+data+'\r\n');
+	
+}
 var accountCreation=  function (acctName,accesstoken){
-	console.log('acctName here-->'+acctName);
+	//console.log('acctName here-->'+acctName);
+	log('acctName here-->'+acctName);
 	return new Promise((resolve,reject)=>{
      //var result = db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
 	 
 	    pool.connect(function (err, client, done) {
         if (err) {
-           console.log("Can not connect to the DB" + err);
+           console.log("Can not connect to the DB line 290" + err);
+		   log("Can not connect to the DB line 290" + err);
 		   reject(err);
        }
        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
+				  log('The error ret google user id:'+err);
 				reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here then google user id-->'+JSON.stringify(result.rows));
-			
+			log('The value here then google user id-->'+JSON.stringify(result.rows));
 			 if(result.rows[0].accesstokennew=='')
            {
 	var conn = new jsforce.Connection({
@@ -299,10 +330,13 @@ var accountCreation=  function (acctName,accesstoken){
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
 	   console.log('Salesforce accessToken a/c creation:' + accessToken);
+	   	log('Salesforce accessToken a/c creation:' + accessToken);
        console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
+	    log('Salesforce res access a/c creation :' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB a/c creation" + err);
+		    log("Can not connect to the DB a/c creation" + err);
 		   //return err;
 		   reject(err);
        }
@@ -310,6 +344,7 @@ var accountCreation=  function (acctName,accesstoken){
             done();
             if (err) {
                 console.log('The error ret data a/c creation:'+err);
+				   log('The error ret data a/c creation:'+err);
 				//return err;
 				reject(err);
                 //res.status(400).send(err);
@@ -317,6 +352,7 @@ var accountCreation=  function (acctName,accesstoken){
 			else
 			{
             console.log('The value here after updating renewed access token a/c creation-->'+JSON.stringify(result));
+			 log('The value here after updating renewed access token a/c creation-->'+JSON.stringify(result));
 			 //resolve(result);
 			}
        })
@@ -324,10 +360,12 @@ var accountCreation=  function (acctName,accesstoken){
 	});
  	conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
-                                         console.log('error here-->'+error);		  
+                             console.log('error here-->'+error);
+                            log('error here-->'+error);										 
 						  reject(error); 
 					  }
 					  else{		 
+					         log('created record id is a/c creation-->'+ret.id);	
 						 console.log('created record id is a/c creation-->'+ret.id);
 						 resolve(ret);
 					  }
@@ -338,7 +376,7 @@ var accountCreation=  function (acctName,accesstoken){
  }
  else if(result.rows[0].accesstokennew!='')
  {
-	 console.log('here we go');
+	 //console.log('here we go');
 	 var conn = new jsforce.Connection({
 	    oauth2 : {
 		clientId : process.env.clientId,
@@ -352,10 +390,13 @@ var accountCreation=  function (acctName,accesstoken){
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
 	   console.log('Salesforce accessToken line 338 :' + accessToken);
+	    log('Salesforce accessToken line 338 :' + accessToken);	
        console.log('Salesforce res line 339:' + JSON.stringify(res));
+	    log('Salesforce res line 339:' + JSON.stringify(res));	
 	  	pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB line 342" + err);
+		    log("Can not connect to the DB line 342" + err);	
 		   //return err;
 		   reject(err);
        }
@@ -363,6 +404,7 @@ var accountCreation=  function (acctName,accesstoken){
             done();
             if (err) {
                 console.log('The error ret data line 349:'+err);
+				 log('The error ret data line 349:'+err);	
 				//return err;
 				reject(err);
                 //res.status(400).send(err);
@@ -370,6 +412,7 @@ var accountCreation=  function (acctName,accesstoken){
 			else
 			{
             console.log('The value here after updating renewed access token line 356-->'+JSON.stringify(result));
+			log('The value here after updating renewed access token line 356-->'+JSON.stringify(result));	
 			 //resolve(result);
 			}
        })
@@ -378,11 +421,13 @@ var accountCreation=  function (acctName,accesstoken){
 		conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
 						   console.log('err linr 364'+error);
+						   log('err linr 364'+error);	
                       				  
 						  reject(error); 
 					  }
 					  else{		 
 						 console.log('created record id is line 369-->'+ret.id);
+						 log('created record id is line 369-->'+ret.id);	
 						 resolve(ret);
 					  }
 			 
@@ -779,6 +824,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
     
  var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[conv.user.access.token,conv.user.access.token]);
  console.log('New Access Token:'+result.rows[0].accesstokennew);
+ log('New Access Token:'+result.rows[0].accesstokennew);
  if(result.rows[0].accesstokennew=='')
  {
 	var conn = new jsforce.Connection({
@@ -794,10 +840,13 @@ app.intent('connect_salesforce',async(conv,params)=>{
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
 	   console.log('Salesforce accessToken :' + accessToken);
+	   log('Salesforce accessToken :' + accessToken);
        console.log('Salesforce res :' + JSON.stringify(res));
+	    log('Salesforce res :' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
+		   log("Can not connect to the DB" + err);
 		   return err;
 		   //reject(err);
        }
@@ -805,6 +854,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
             done();
             if (err) {
                 console.log('The error ret data:'+err);
+				log('The error ret data:'+err);
 				return err;
 				//reject(err);
                 //res.status(400).send(err);
@@ -812,6 +862,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
 			else
 			{
             console.log('The value here after updating renewed access token-->'+JSON.stringify(result));
+			log('The value here after updating renewed access token-->'+JSON.stringify(result));
 			 //resolve(result);
 			}
        })
@@ -847,10 +898,13 @@ app.intent('connect_salesforce',async(conv,params)=>{
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
 	   console.log('Salesforce accessToken :' + accessToken);
+	   log('Salesforce accessToken :' + accessToken);
        console.log('Salesforce res :' + JSON.stringify(res));
+	    log('Salesforce res :' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
+		   log("Can not connect to the DB" + err);
 		   return err;
 		   //reject(err);
        }
@@ -858,6 +912,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
             done();
             if (err) {
                 console.log('The error ret data:'+err);
+				log('The error ret data:'+err);
 				return err;
 				//reject(err);
                 //res.status(400).send(err);
@@ -865,6 +920,7 @@ app.intent('connect_salesforce',async(conv,params)=>{
 			else
 			{
             console.log('The value here after updating renewed access token line 740-->'+JSON.stringify(result));
+			log('The value here after updating renewed access token line 740-->'+JSON.stringify(result));
 			 //resolve(result);
 			}
        })
@@ -894,14 +950,18 @@ app.intent('Default Welcome Intent',async(conv) => {
 	//googleuserid=conv.user.raw.userId;
 
 	console.log('Google user id:'+conv.user.raw.userId);
+	log('Google user id:'+conv.user.raw.userId);
 	 console.log('welcomeIntent line new');
+	 log('welcomeIntent line new');
 	console.log('conv.user',conv.user);
+	log('conv.user:'+conv.user);
 		if(conv.user.access.token){
 	 var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1',[conv.user.access.token]);
 	console.log(JSON.stringify(result.rows[0]))
 	if(result.rows[0].instanceurl)
 	{
 		console.log('Instance Url:'+ result.rows[0].instanceurl);
+		log('Instance Url:'+ result.rows[0].instanceurl);
 	}
 	   conv.ask(new SimpleResponse({speech:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",text:"Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"}));
 	}
@@ -911,6 +971,7 @@ app.intent('Default Welcome Intent',async(conv) => {
 app.intent('create account',(conv,params)=>{
 	return accountCreation(params.AccountName,conv.user.access.token).then((resp)=>{
 		console.log('resp--->'+resp.id);
+		log('resp--->'+resp.id);
 		conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
 		conv.ask(new Suggestions('update account details'));
 	})
@@ -1130,6 +1191,8 @@ server.post('/fulfillment',app);
 
 server.listen(port, function () {
 	console.log('port',port);
+	log('port--->'+port);
     console.log("Server is up and running...");
+	log("Server is up and running...");
 });
 
