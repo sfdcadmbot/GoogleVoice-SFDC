@@ -1180,7 +1180,7 @@ server.post('/fulfillment',app);
 
 server.listen(port, function () {
 	console.log('port',port);
-	logger.log('port--->'+port);
+	//logger.log('port--->'+port);
     console.log("Server is up and running...");
 	logger.log("Server is up and running...");
 });
