@@ -739,8 +739,12 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		  {
 		   nameSpace = JSON.parse(JSON.stringify(result.records));
 		  nameSpace1 = nameSpace[0].NamespacePrefix;
+		  var restURL = "/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName;
+		  if (nameSpace1) {
+		    restURL = "/" + namespace1 + restURL;
+		  }
 		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-		  	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res)
+		  	conn.apex.get(restURL,options,function(err, res)
 			{
 					
                     if (err) {
