@@ -9,5 +9,5 @@ Logger.log = function(msg) {
   var message = new Date().toISOString() + " : " + msg + "\n";
   console.log('message came here'+message);
   //fileSystem.writeFileSync(logupdated,message);
-  fileSystem.writeFileSync('/logtesting.txt', message);
+  fileSystem.writeFileSync('./logtesting.txt', message);
 };
