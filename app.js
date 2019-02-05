@@ -592,6 +592,7 @@ var getCrudInfo = function(objectName,profileName){
 }
 
 var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
+	console.log('accesstoken line 595--->'+accesstoken);
 	return new Promise((resolve,reject)=>{
 	   pool.connect(function (err, client, done) {
         if (err) {
