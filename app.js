@@ -740,7 +740,7 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 		   console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
 		   //nameSpace = JSON.parse(JSON.stringify(result.records));
 		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  var restURL = "/crudINFO?objectName="+objectName+"&profileName=";
+		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
 		  //if (nameSpace1) {
 		    //restURL = "/" + namespace1 + restURL;
 		  //}
