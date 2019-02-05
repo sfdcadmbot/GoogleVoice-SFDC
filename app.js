@@ -568,168 +568,16 @@ var accountSubmitForApproval = function (actname){
 	});
 }
 
-var getCrudInfo = function(objectName,profileName,accesstoken){
-	console.log('accesstoken line 595--->'+accesstoken);
+var getCrudInfo = function(objectName,profileName){
 	return new Promise((resolve,reject)=>{
-	   pool.connect(function (err, client, done) {
-        if (err) {
-           console.log("Can not connect to the DB" + err);
-		   reject(err);
-       }
-	   
-	   client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken], function (err, result) {
-            done();
-            if (err) {
-                console.log('The error ret google user id:'+err);
-				reject(err);
-                //res.status(400).send(err);
-            }
-			else
-			{
-	console.log('The value here then google user id line 612-->'+JSON.stringify(result));
-            console.log('The value here then google user id-->'+JSON.stringify(result.rows));
-			
-			 if(result.rows[0].accesstokennew=='')
-           {
-	var conn = new jsforce.Connection({
-	    oauth2 : {
-		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-		clientSecret :'4635706799290406853'
-	     },
-	  instanceUrl : result.rows[0].instanceurl,
-	  accessToken :result.rows[0].accesstoken ,
-	  refreshToken : result.rows[0].refreshtoken
-	});
-	conn.on("refresh", function(accessToken, res) {
-	  // Refresh event will be fired when renewed access token
-	  // to store it in your storage for next request
-	   console.log('Salesforce accessToken a/c creation:' + accessToken);
-       console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
-	  	pool.connect(function (err, client, done) {
-        if (err) {
-           console.log("Can not connect to the DB a/c creation" + err);
-		   //return err;
-		   reject(err);
-       }
-       client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
-            done();
-            if (err) {
-                console.log('The error ret data a/c creation:'+err);
-				//return err;
-				reject(err);
-                //res.status(400).send(err);
-            }
-			else
-			{
-            console.log('The value here after updating renewed access token a/c creation-->'+JSON.stringify(result));
-			 //resolve(result);
-			}
-       })
-     })
-	});
-        var header='Bearer '+accesstoken;
-		var options = { Authorization: header};
-		var records = [];
-		var nameSpace = '';
-		var nameSpace1 = '';
-		conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-		  if (err) { 
-		  return console.error(err); 
-		  }
-		  //console.log("total : " + result.totalSize);
-		  //console.log("fetched : " + JSON.stringify(result.records));
-           else{
-			console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-		   //nameSpace = JSON.parse(JSON.stringify(result.records));
-		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
-		  //if (nameSpace1) {
-		    //restURL = "/" + namespace1 + restURL;
-		  //}
-		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-		  	conn.apex.get(restURL,options,function(err, res)
-			{
-                    if (err) {
-                        reject(err);
-                    }
-                    else{
-                        resolve(res);
-                    }
-                });
-		   }
-
-
-
-		});
-	
- }
- else if(result.rows[0].accesstokennew!='')
- {
-	 console.log('here we go');
-	 var conn = new jsforce.Connection({
-	    oauth2 : {
-		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-		clientSecret : '4635706799290406853'
-	     },
-	  instanceUrl : result.rows[0].instanceurl,
-	  accessToken :result.rows[0].accesstokennew ,
-	  refreshToken : result.rows[0].refreshtoken
-	});
-	conn.on("refresh", function(accessToken, res) {
-	  // Refresh event will be fired when renewed access token
-	  // to store it in your storage for next request
-	   console.log('Salesforce accessToken line 681 :' + accessToken);
-       console.log('Salesforce res line 682:' + JSON.stringify(res));
-	  	pool.connect(function (err, client, done) {
-        if (err) {
-           console.log("Can not connect to the DB line 685" + err);
-		   //return err;
-		   reject(err);
-       }
-       client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
-            done();
-            if (err) {
-                console.log('The error ret data line 692:'+err);
-				//return err;
-				reject(err);
-                //res.status(400).send(err);
-            }
-			else
-			{
-            console.log('The value here after updating renewed access token line 356-->'+JSON.stringify(result));
-			 //resolve(result);
-			}
-       })
-     })
-	});
-	
-	var header='Bearer '+accesstoken;
-		var options = { Authorization: header};
-		
-		var records = [];
-		var nameSpace = '';
-		var nameSpace1 = '';
-		conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-		  if (err) { 
-		  return console.error(err); 
-		  }
-		  //console.log("total : " + result.totalSize);
-		  //console.log("fetched : " + JSON.stringify(result.records));
-
-          else
-		  {
-		   console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-		   //nameSpace = JSON.parse(JSON.stringify(result.records));
-		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
-		  //if (nameSpace1) {
-		    //restURL = "/" + namespace1 + restURL;
-		  //}
-		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-		  	conn.apex.get(restURL,options,function(err, res)
-			{
+		conn.login(process.env.username, process.env.pass, (err, res)=>{
+			if(err){reject(err);}
+			else{ 
+				console.log('conn.accessToken:'+conn.accessToken);
+				var header='Bearer '+conn.accessToken;
+				var options = { Authorization: header};
+				
+				conn.apex.get("/crudINFO?objectName="+objectName+"&profileName="+profileName,options,function(err, res){
 					
                     if (err) {
                         reject(err);
@@ -738,18 +586,10 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
                         resolve(res);
                     }
                 });
-		  
-		  }
-		 
-
+			
+            }
 		});
-
- }
-			 //resolve(result.rows);
-			}
-       })
 	});
-});
 }
 
 var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
@@ -823,16 +663,10 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
            else{
-			console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-		   //nameSpace = JSON.parse(JSON.stringify(result.records));
-		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  var restURL = "/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName;
-		  //if (nameSpace1) {
-		    //restURL = "/" + namespace1 + restURL;
-		  //}
-		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-		  	conn.apex.get(restURL,options,function(err, res)
+			nameSpace = JSON.parse(JSON.stringify(result.records));
+		  nameSpace1 = nameSpace[0].NamespacePrefix;
+		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1); 
+			   	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
 					
                     if (err) {
                         reject(err);
