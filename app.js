@@ -653,7 +653,7 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
         var header='Bearer '+accesstoken;
 		var options = { Authorization: header};
 		
-		conn.apex.get("/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
+		conn.apex.get("/learnlite/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
 					
                     if (err) {
                         reject(err);
@@ -706,7 +706,7 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 	var header='Bearer '+accesstoken;
 		var options = { Authorization: header};
 		
-		conn.apex.get("/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
+		conn.apex.get("/learnlite/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
 					
                     if (err) {
                         reject(err);
