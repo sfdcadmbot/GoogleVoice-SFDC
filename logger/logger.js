@@ -8,6 +8,5 @@ Logger.log = function(msg) {
   console.log('Req came here'+msg);
   var message = new Date().toISOString() + " : " + msg + "\n";
   console.log('message came here'+message);
-  fileSystem.writeFileSync(message);
+  fileSystem.writeFileSync(logupdated,message);
 };
-
