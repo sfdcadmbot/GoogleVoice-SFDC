@@ -737,8 +737,10 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 
           else
 		  {
+		   console.log('nameSpace1 -- Line 665.1 --> ' + nameSpace1);
 		   nameSpace = JSON.parse(JSON.stringify(result.records));
 		  nameSpace1 = nameSpace[0].NamespacePrefix;
+		  console.log('nameSpace1 -- Line 665.1 --> ' + nameSpace1);
 		  var restURL = "/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName;
 		  if (nameSpace1) {
 		    restURL = "/" + namespace1 + restURL;
