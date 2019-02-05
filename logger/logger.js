@@ -5,9 +5,9 @@ var Logger = exports.Logger = {};
 //var logupdated = fileSystem.createWriteStream('logtesting.txt',{flags:'a'});
 
 Logger.log = function(msg) {
-  console.log('Req came here');
+  console.log('Req came here'+msg);
   var message = new Date().toISOString() + " : " + msg + "\n";
-  
+  console.log('message came here'+message);
     fileSystem.appendFile('logtesting.txt',message, (err) => {
         //response.writeHead(200);
         //response.end();
