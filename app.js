@@ -737,17 +737,16 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 
           else
 		  {
-		   console.log('nameSpace1 -- Line 665.1 --> ' + nameSpace1);
+		   console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
 		   //nameSpace = JSON.parse(JSON.stringify(result.records));
 		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  console.log('nameSpace1 -- Line 665.1 --> ' + nameSpace1);
 		  var restURL = "/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName;
 		  //if (nameSpace1) {
 		    //restURL = "/" + namespace1 + restURL;
 		  //}
 		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
 		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-		  	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res)
+		  	conn.apex.get(restURL,options,function(err, res)
 			{
 					
                     if (err) {
@@ -1289,4 +1288,3 @@ server.listen(port, function () {
 	//logger.log(port);
     console.log("Server is up and running...");
 });
-
