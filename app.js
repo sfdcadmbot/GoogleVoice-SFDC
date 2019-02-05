@@ -657,17 +657,16 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		var nameSpace = '';
 		var nameSpace1 = '';
 		conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-		  if (err) { return console.error(err); }
+		  if (err) { 
+		  return console.error(err); 
+		  }
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
-
-
-		  nameSpace = JSON.parse(JSON.stringify(result.records));
+           else{
+			nameSpace = JSON.parse(JSON.stringify(result.records));
 		  nameSpace1 = nameSpace[0].NamespacePrefix;
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-
-		});
-		conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
+		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1); 
+			   	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
 					
                     if (err) {
                         reject(err);
@@ -676,6 +675,12 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
                         resolve(res);
                     }
                 });
+		   }
+
+
+
+		});
+	
  }
  else if(result.rows[0].accesstokennew!='')
  {
@@ -724,17 +729,19 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		var nameSpace = '';
 		var nameSpace1 = '';
 		conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-		  if (err) { return console.error(err); }
+		  if (err) { 
+		  return console.error(err); 
+		  }
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
 
-
-		  nameSpace = JSON.parse(JSON.stringify(result.records));
+          else
+		  {
+		   nameSpace = JSON.parse(JSON.stringify(result.records));
 		  nameSpace1 = nameSpace[0].NamespacePrefix;
 		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-
-		});
-		conn.apex.get("/"+nameSpace1+"/learnlite/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
+		  	conn.apex.get("/"+nameSpace1+"/learnlite/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res)
+			{
 					
                     if (err) {
                         reject(err);
@@ -743,8 +750,12 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
                         resolve(res);
                     }
                 });
-		
-	 
+		  
+		  }
+		 
+
+		});
+
  }
 			 //resolve(result.rows);
 			}
