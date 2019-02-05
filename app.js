@@ -1183,6 +1183,6 @@ server.listen(port, function () {
 	//logger.log('port--->'+port);
     console.log("Server is up and running...");
 	//logger.log("Server is up and running...");
-	logger.log('Server is up and running');
+	logger.log(port);
 });
 
