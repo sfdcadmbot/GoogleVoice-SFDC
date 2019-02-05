@@ -1021,7 +1021,7 @@ app.intent('Check Permission Set Assignment',(conv,{permSetName,userName})=>{
 	})
 	.catch((err)=>{
         console.log('error',err);
-	    conv.ask(new SimpleResponse({speech:"Error while doing permission set assignment check",text:"Error while doing permission set assignment check"}));
+	    conv.ask(new SimpleResponse({speech:"Error while doing permission set assignment check",text:err}));
 	});	
 });
 
