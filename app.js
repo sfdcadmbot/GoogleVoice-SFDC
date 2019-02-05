@@ -609,6 +609,7 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
             }
 			else
 			{
+	console.log('The value here then google user id line 612-->'+JSON.stringify(result));
             console.log('The value here then google user id-->'+JSON.stringify(result.rows));
 			
 			 if(result.rows[0].accesstokennew=='')
