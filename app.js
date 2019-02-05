@@ -740,7 +740,7 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		   nameSpace = JSON.parse(JSON.stringify(result.records));
 		  nameSpace1 = nameSpace[0].NamespacePrefix;
 		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-		  	conn.apex.get("/"+nameSpace1+"/learnlite/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res)
+		  	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res)
 			{
 					
                     if (err) {
