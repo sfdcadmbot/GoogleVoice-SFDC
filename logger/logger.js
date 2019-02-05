@@ -14,3 +14,4 @@ Logger.log = function(msg) {
 
     console.log("The file was saved!");
 });
+};
