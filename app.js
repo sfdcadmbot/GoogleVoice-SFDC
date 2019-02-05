@@ -593,7 +593,7 @@ var accountSubmitForApproval = function (actname){
 }*/
 
 var getCrudInfo = function(objectName,profileName,accesstoken){
-	console.log('accesstoken line 595--->'+accesstoken);
+	console.log('accesstoken line 596--->'+accesstoken);
 	return new Promise((resolve,reject)=>{
 	   pool.connect(function (err, client, done) {
         if (err) {
@@ -663,10 +663,14 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
            else{
-			nameSpace = JSON.parse(JSON.stringify(result.records));
-		  nameSpace1 = nameSpace[0].NamespacePrefix;
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1); 
-			   	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
+			var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
+		  //if (nameSpace1) {
+		    //restURL = "/" + namespace1 + restURL;
+		  //}
+		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
+		  console.log('671 restURL ----> ' + restURL);
+		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
+		  	conn.apex.get(restURL,options,function(err, res)
 					
                     if (err) {
                         reject(err);
@@ -740,12 +744,13 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 		   console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
 		   //nameSpace = JSON.parse(JSON.stringify(result.records));
 		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  var restURL = "/crudINFO?objectName="+objectName+"&profileName=";
+		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
 		  //if (nameSpace1) {
 		    //restURL = "/" + namespace1 + restURL;
 		  //}
 		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
+		  console.log('nameSpace1 -- Line 752 --> ' + nameSpace1);
+		  console.log('753 restURL ----> ' + restURL);
 		  	conn.apex.get(restURL,options,function(err, res)
 			{
 					
