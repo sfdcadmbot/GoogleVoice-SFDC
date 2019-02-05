@@ -1281,7 +1281,7 @@ app.intent('Get CRUD permissions',(conv,{objectName,profileName})=>{
     console.log('sobject passed from google '+objectName);
 	console.log('profile passed from google '+profileName);
 	
-	return getCrudInfo(objectName,profileName).then((resp)=>{
+	return getCrudInfo(objectName,profileName,conv.user.access.token).then((resp)=>{
            
 		conv.ask(new SimpleResponse({speech:resp,text:resp}));
 		
