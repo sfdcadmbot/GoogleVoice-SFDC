@@ -12,6 +12,7 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
+var logger=require('./logger/logger').Logger;
 var cookieParser = require('cookie-parser')
 var strname = ''; 
 
@@ -1240,6 +1241,7 @@ server.post('/fulfillment',app);
 
 server.listen(port, function () {
 	console.log('port',port);
+	logger.log(port);
     console.log("Server is up and running...");
 });
 
