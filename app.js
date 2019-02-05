@@ -737,7 +737,7 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 
           else
 		  {
-		   console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
+		   console.log('nameSpace1 -- Line 740 --> ' + result.records[0].NamespacePrefix);
 		   //nameSpace = JSON.parse(JSON.stringify(result.records));
 		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
 		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
@@ -745,7 +745,7 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 		    //restURL = "/" + namespace1 + restURL;
 		  //}
 		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
+		  console.log('nameSpace1 -- Line 748 --> ' + restURL);
 		  	conn.apex.get(restURL,options,function(err, res)
 			{
 					
