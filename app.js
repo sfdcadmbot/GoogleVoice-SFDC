@@ -663,10 +663,16 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
            else{
-			nameSpace = JSON.parse(JSON.stringify(result.records));
-		  nameSpace1 = nameSpace[0].NamespacePrefix;
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1); 
-			   	conn.apex.get("learnlite/crudINFO?objectName="+objectName+"&profileName="+profileName,options,function(err, res){
+			console.log('nameSpace1 -- Line 740 --> ' + result.records[0].NamespacePrefix);
+		   //nameSpace = JSON.parse(JSON.stringify(result.records));
+		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
+		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
+		  //if (nameSpace1) {
+		    //restURL = "/" + namespace1 + restURL;
+		  //}
+		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
+		  console.log('nameSpace1 -- Line 748 --> ' + restURL);
+		  	conn.apex.get(restURL,options,function(err, res)
 					
                     if (err) {
                         reject(err);
@@ -841,10 +847,16 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
            else{
-			nameSpace = JSON.parse(JSON.stringify(result.records));
-		  nameSpace1 = nameSpace[0].NamespacePrefix;
-		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1); 
-			   	conn.apex.get("/"+nameSpace1+"/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName,options,function(err, res){
+			console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
+		   //nameSpace = JSON.parse(JSON.stringify(result.records));
+		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
+		  var restURL = "/checkPermSetAssignment?permSetName="+permSetName+"&userName="+userName;
+		  //if (nameSpace1) {
+		    //restURL = "/" + namespace1 + restURL;
+		  //}
+		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
+		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
+		  	conn.apex.get(restURL,options,function(err, res)
 					
                     if (err) {
                         reject(err);
