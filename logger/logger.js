@@ -2,7 +2,7 @@ var fileSystem=require('fs');
 
 var Logger = exports.Logger = {};
 
-var logupdated = fileSystem.createWriteStream('logtesting.txt',{flags:'a'});
+var logupdated = fileSystem.createWriteStream('logtesting.txt');
 
 Logger.log = function(msg) {
   console.log('Req came here'+msg);
