@@ -1074,7 +1074,7 @@ app.intent('Check Permission Set Assignment',(conv,{permSetName,userName})=>{
     console.log('perm set passed from google '+permSetName);
 	console.log('userName passed from google '+userName);
 	
-	return permSetAsgnmentCheck(permSetName,userName).then((resp)=>{
+	return permSetAsgnmentCheck(permSetName,userName,conv.user.access.token).then((resp)=>{
            
 		conv.ask(new SimpleResponse({speech:resp,text:resp}));
 		
