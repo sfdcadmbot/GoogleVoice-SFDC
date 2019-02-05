@@ -668,8 +668,8 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 	 console.log('here we go');
 	 var conn = new jsforce.Connection({
 	    oauth2 : {
-		clientId : process.env.clientId,
-		clientSecret : process.env.clientSecret
+		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+		clientSecret : '4635706799290406853'
 	     },
 	  instanceUrl : result.rows[0].instanceurl,
 	  accessToken :result.rows[0].accesstokennew ,
@@ -678,18 +678,18 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 	conn.on("refresh", function(accessToken, res) {
 	  // Refresh event will be fired when renewed access token
 	  // to store it in your storage for next request
-	   console.log('Salesforce accessToken line 338 :' + accessToken);
-       console.log('Salesforce res line 339:' + JSON.stringify(res));
+	   console.log('Salesforce accessToken line 681 :' + accessToken);
+       console.log('Salesforce res line 682:' + JSON.stringify(res));
 	  	pool.connect(function (err, client, done) {
         if (err) {
-           console.log("Can not connect to the DB line 342" + err);
+           console.log("Can not connect to the DB line 685" + err);
 		   //return err;
 		   reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
             done();
             if (err) {
-                console.log('The error ret data line 349:'+err);
+                console.log('The error ret data line 692:'+err);
 				//return err;
 				reject(err);
                 //res.status(400).send(err);
