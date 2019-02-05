@@ -663,17 +663,14 @@ var getCrudInfo = function(objectName,profileName,accesstoken){
 		  //console.log("total : " + result.totalSize);
 		  //console.log("fetched : " + JSON.stringify(result.records));
            else{
-			console.log('nameSpace1 -- Line 740 --> ' + result.records[0].NamespacePrefix);
-		   //nameSpace = JSON.parse(JSON.stringify(result.records));
-		   //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-		  var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
+			var restURL = "/crudINFO?objectName="+objectName+"&profileName="+profileName;
 		  //if (nameSpace1) {
 		    //restURL = "/" + namespace1 + restURL;
 		  //}
 		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
 		  console.log('nameSpace1 -- Line 748 --> ' + restURL);
 		  	conn.apex.get(restURL,options,function(err, res)
-					
+			{
                     if (err) {
                         reject(err);
                     }
@@ -857,7 +854,7 @@ var permSetAsgnmentCheck = function(permSetName,userName,accesstoken){
 		  restURL =(result.records[0].NamespacePrefix!=null)?("/" + result.records[0].NamespacePrefix + restURL):(restURL);
 		  console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
 		  	conn.apex.get(restURL,options,function(err, res)
-					
+			{
                     if (err) {
                         reject(err);
                     }
