@@ -1267,7 +1267,8 @@ app.intent('Default Welcome Intent',async(conv) => {
 
 app.intent('create account',(conv,params)=>{
 	//var conn=EstablishConnection(conv.user.access.token);
-	
+	return new Promise((resolve,reject)=>
+	{
 	EstablishConnection(conv.user.access.token,function(response){ 
 console.log('Val fetched-->'+response);
 	//console.log('Val fetched JSON-->'+JSON.stringify(response));
@@ -1288,6 +1289,9 @@ console.log('Val fetched-->'+response);
 				conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
 		conv.ask(new Suggestions('update account details'));
 
+});
+conv.ask(new SimpleResponse({speech:"We are able to create your account named 1 "+params.AccountName,text:"We are able to create your account named 1 "+params.AccountName}));
+		conv.ask(new Suggestions('update account details'));
 });
 	
 });
