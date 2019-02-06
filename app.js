@@ -1268,7 +1268,7 @@ app.intent('create account',(conv,params)=>{
 	
 	EstablishConnection(conv.user.access.token,function(response){ 
 console.log('Val fetched-->'+response);
-	console.log('Val fetched JSON-->'+JSON.stringify(response));
+	//console.log('Val fetched JSON-->'+JSON.stringify(response));
 	
 		return accountCreation1(params.AccountName,response).then((resp)=>{
 		//console.log('resp--->'+resp.id);
