@@ -264,7 +264,7 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-var EstablishConnection=  function (accesstoken){
+var EstablishConnection=  function (accesstoken,callback){
 
 	pool.connect(function (err, client, done) {
         if (err) {
@@ -320,7 +320,7 @@ var EstablishConnection=  function (accesstoken){
        })
      })
 	});
-	return conn;
+	callback(conn); 
  
 		
 		
@@ -364,7 +364,7 @@ var EstablishConnection=  function (accesstoken){
        })
      })
 	});
-	return conn;
+	callback(conn); 
 		
  }
 			 //resolve(result.rows);
@@ -1264,11 +1264,13 @@ app.intent('Default Welcome Intent',async(conv) => {
 });
 
 app.intent('create account',(conv,params)=>{
-	var conn=EstablishConnection(conv.user.access.token);
-	console.log('Val fetched-->'+conn);
-	console.log('Val fetched-->'+JSON.stringify(conn));
+	//var conn=EstablishConnection(conv.user.access.token);
 	
-	return accountCreation1(params.AccountName,conn).then((resp)=>{
+	EstablishConnection(conv.user.access.token,function(response){ 
+console.log('Val fetched-->'+response);
+	console.log('Val fetched JSON-->'+JSON.stringify(response));
+	
+		return accountCreation1(params.AccountName,response).then((resp)=>{
 		//console.log('resp--->'+resp.id);
 		conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
 		conv.ask(new Suggestions('update account details'));
@@ -1277,8 +1279,8 @@ app.intent('create account',(conv,params)=>{
 		console.log('err here:'+JSON.stringify(err));
 		conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));
 	});	
+});
 	
-
 });
 
 
