@@ -1271,16 +1271,23 @@ app.intent('create account',(conv,params)=>{
 	EstablishConnection(conv.user.access.token,function(response){ 
 console.log('Val fetched-->'+response);
 	//console.log('Val fetched JSON-->'+JSON.stringify(response));
-	
-		return accountCreation1(params.AccountName,response).then((resp)=>{
-		//console.log('resp--->'+resp.id);
-		conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
+	  response.sobject("Account").create({ Name : params.AccountName}, function(error, ret) {
+					  if (error || !ret.success) { 	
+						   console.log('err linr 364'+error);
+                      				  
+						  //reject(error); 
+						  //return error;
+					  }
+					  else{		 
+						 console.log('created record id is line 369-->'+ret.id);
+						 //resolve(ret);
+						 //return ret;
+					  }
+			 
+				});
+				conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
 		conv.ask(new Suggestions('update account details'));
-	})
-	.catch((err)=>{
-		console.log('err here:'+JSON.stringify(err));
-		conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));
-	});	
+
 });
 	
 });
