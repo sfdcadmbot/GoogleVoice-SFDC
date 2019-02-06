@@ -378,17 +378,16 @@ var EstablishConnection=function(accesstoken)
 	
 var accountCreation=  function (acctName,accesstoken){
 	console.log('acctName here-->'+acctName);
-  return new Promise((resolve,reject)=>{
-    return EstablishConnection(accesstoken).then((resp)=>{
+  return EstablishConnection(accesstoken).then((resp)=>{
         	resp.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
 						   console.log('err linr 385'+error);
                       				  
-						  reject(error); 
+						  //reject(error); 
 					  }
 					  else{		 
 						 console.log('created record id is line 390-->'+ret.id);
-						 resolve(ret);
+						 //resolve(ret);
 					  }
 			 
 				});	
@@ -397,7 +396,7 @@ var accountCreation=  function (acctName,accesstoken){
 		console.log('error',err);
 	    conv.ask(new SimpleResponse({speech:"Error while creating Account Record",text:"Error while creating Account Record"}));
 	});	
-});
+
 }
 /*
 
