@@ -375,23 +375,14 @@ var EstablishConnection=  function (accesstoken){
 }
 
 
-var accountCreation=  function (acctName,accesstoken){
-	console.log('acctName here-->'+acctName);
+var accountCreation=  function (accesstoken){
+	//console.log('acctName here-->'+acctName);
 	//return EstablishConnection(accesstoken);
 	return new Promise((resolve,reject)=>{
        console.log('Call came here');
-	 	return EstablishConnection(accesstoken).sobject("Account").create({ Name : acctName}, function(error, ret) {
-					  if (error || !ret.success) { 	
-						   console.log('err linr 364'+error);
-                      				  
-						  reject(error); 
-					  }
-					  else{		 
-						 console.log('created record id is line 369-->'+ret.id);
-						 resolve(ret);
-					  }
-			 
-				});
+	   
+	   resolve(EstablishConnection(accesstoken));
+	 
 	});
 }
 /*
@@ -1246,8 +1237,21 @@ app.intent('Default Welcome Intent',async(conv) => {
 });
 
 app.intent('create account',(conv,params)=>{
-	return accountCreation(params.AccountName,conv.user.access.token).then((resp)=>{
-		console.log('resp--->'+resp.id);
+	return accountCreation(conv.user.access.token).then((resp)=>{
+		//console.log('resp--->'+resp.id);
+		
+		resp.sobject("Account").create({ Name : params.AccountName}, function(error, ret) {
+					  if (error || !ret.success) { 	
+						   console.log('err linr 364'+error);
+                      				  
+						  //reject(error); 
+					  }
+					  else{		 
+						 console.log('created record id is line 369-->'+ret.id);
+						 //resolve(ret);
+					  }
+			 
+				});
 		conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
 		conv.ask(new Suggestions('update account details'));
 	})
