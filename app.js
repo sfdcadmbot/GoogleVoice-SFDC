@@ -264,18 +264,21 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-function EstablishConnection(accesstoken)
+var EstablishConnection=function(accesstoken)
 {
-pool.connect(function (err, client, done) {
+	return new Promise((resolve,reject)=>{
+   
+	 
+	    pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
-		   //reject(err);
+		   reject(err);
        }
        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
-				//reject(err);
+				reject(err);
                 //res.status(400).send(err);
             }
 			else
@@ -302,35 +305,33 @@ pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB a/c creation" + err);
 		   //return err;
-		   //reject(err);
+		   reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data a/c creation:'+err);
 				//return err;
-				//reject(err);
+				reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here after updating renewed access token a/c creation-->'+JSON.stringify(result));
-			 //resolve(conn);
+			 resolve(conn);
 			}
        })
      })
 	});
 	
-		
-	return conn;	
  }
  else if(result.rows[0].accesstokennew!='')
  {
 	 console.log('here we go');
 	 var conn = new jsforce.Connection({
 	    oauth2 : {
-		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-		clientSecret : '4635706799290406853'
+		clientId : process.env.clientId,
+		clientSecret : process.env.clientSecret
 	     },
 	  instanceUrl : result.rows[0].instanceurl,
 	  accessToken :result.rows[0].accesstokennew ,
@@ -345,31 +346,31 @@ pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB line 342" + err);
 		   //return err;
-		   //reject(err);
+		   reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data line 349:'+err);
 				//return err;
-				//reject(err);
+				reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here after updating renewed access token line 356-->'+JSON.stringify(result));
-			   //resolve(conn);
+			   resolve(conn);
 			}
        })
      })
 	});
-	return conn;
 	 
  }
-			 
 }
        })
      })
+	 
+ });
 	
 }
 
@@ -377,21 +378,25 @@ pool.connect(function (err, client, done) {
 	
 var accountCreation=  function (acctName,accesstoken){
 	console.log('acctName here-->'+acctName);
-return new Promise((resolve,reject)=>{
-	var conn=EstablishConnection(accesstoken);
-	conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
+  return new Promise((resolve,reject)=>{
+    return EstablishConnection(accesstoken).then((resp)=>{
+        	resp.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
-						   console.log('err linr 364'+error);
+						   console.log('err linr 385'+error);
                       				  
 						  reject(error); 
 					  }
 					  else{		 
-						 console.log('created record id is line 369-->'+ret.id);
+						 console.log('created record id is line 390-->'+ret.id);
 						 resolve(ret);
 					  }
 			 
-				});
-	
+				});	
+	})
+	.catch((err)=>{
+		console.log('error',err);
+	    conv.ask(new SimpleResponse({speech:"Error while creating Account Record",text:"Error while creating Account Record"}));
+	});	
 });
 }
 /*
