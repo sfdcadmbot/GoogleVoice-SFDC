@@ -1473,8 +1473,9 @@ app.intent('create a generic object record',(conv,params)=>{
 						}
 						conv.ask(new SimpleResponse({speech:"Hey, there are mandatory fields required for record creation. They are " +resp+ " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields.",text:"Hey, there are mandatory fields required for record creation. They are " +resp+ " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields." }));
 						
-						resolve(resp);
+						
 					}	
+					resolve(resp);
 				}
 			});
 		});
