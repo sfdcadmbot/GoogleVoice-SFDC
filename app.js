@@ -1276,22 +1276,23 @@ console.log('Val fetched-->'+response);
 					  if (error || !ret.success) { 	
 						   console.log('err linr 364'+error);
                       				  
-						  //reject(error); 
+						  reject(error); 
 						  //return error;
 					  }
 					  else{		 
 						 console.log('created record id is line 369-->'+ret.id);
-						 //resolve(ret);
+						 conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
+		                 conv.ask(new Suggestions('update account details'));
+						 resolve(ret);
 						 //return ret;
+						 
 					  }
 			 
 				});
-				conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
-		conv.ask(new Suggestions('update account details'));
+				
 
 });
-conv.ask(new SimpleResponse({speech:"We are able to create your account named 1 "+params.AccountName,text:"We are able to create your account named 1 "+params.AccountName}));
-		conv.ask(new Suggestions('update account details'));
+
 });
 	
 });
