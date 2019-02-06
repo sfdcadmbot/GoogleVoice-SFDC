@@ -380,11 +380,13 @@ var accountCreation1=  function (acctName,conn){
 					  if (error || !ret.success) { 	
 						   console.log('err linr 364'+error);
                       				  
-						  reject(error); 
+						  //reject(error); 
+						  return error;
 					  }
 					  else{		 
 						 console.log('created record id is line 369-->'+ret.id);
-						 resolve(ret);
+						 //resolve(ret);
+						 return ret;
 					  }
 			 
 				});
