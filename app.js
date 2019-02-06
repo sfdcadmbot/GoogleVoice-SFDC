@@ -1267,7 +1267,7 @@ app.intent('Default Welcome Intent',async(conv) => {
 
 });
 
-app.intent('create account',(conv,params)=>{
+/*app.intent('create account',(conv,params)=>{
 	//var conn=EstablishConnection(conv.user.access.token);
 	return new Promise((resolve,reject)=>
 	{
@@ -1295,7 +1295,7 @@ console.log('Val fetched-->'+response);
 
 });
 	
-});
+});*/
 
 
 app.intent('update acc info',(conv,params)=>{
@@ -1452,23 +1452,32 @@ app.intent('create a generic object record',(conv,params)=>{
     
     console.log('sobject label passed from google'+params.objectName);
 	
-	
-	return getMandFields(params.objectName).then((resp)=>{
-        var strName = '';
-		if(resp.length == 1){
-			conv.ask(new SimpleResponse({speech:"Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " ." ,text:"Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " ."}));
-		}
-		else{
+	return new Promise((resolve,reject)=>{
+		EstablishConnection(conv.user.access.token,function(response){ 
+			var header = 'Bearer '+ conv.user.access.token;
+			var options = { Authorization: header};
+			response.apex.get("/getMandFields/?objectName="+params.objectName,options,function(err, resp) {
+				if (err){
+					conv.ask(new SimpleResponse({speech:"Error while creating generic record",text:"Error while creating generic record"}));
+					reject(err); 
+				}
+				else{
+					console.log("response: ", resp);
+					if(resp.length == 1){
+						conv.ask(new SimpleResponse({speech:"Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " ." ,text:"Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " ."}));
+					}
+					else{
 			
-			for (var i = 0; i < resp.length; i++) {
-				strName += resp[i] + ',';
-			}
-			conv.ask(new SimpleResponse({speech:"Hey, there are mandatory fields required for record creation. They are " +resp+ " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields.",text:"Hey, there are mandatory fields required for record creation. They are " +resp+ " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields." }));
-		}		
-	})
-	.catch((err)=>{
-		console.log('error',err);
-	    conv.ask(new SimpleResponse({speech:"Error while creating generic record",text:"Error while creating generic record"}));
+						for (var i = 0; i < resp.length; i++) {
+							strName += resp[i] + ',';
+						}
+						conv.ask(new SimpleResponse({speech:"Hey, there are mandatory fields required for record creation. They are " +resp+ " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields.",text:"Hey, there are mandatory fields required for record creation. They are " +resp+ " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields." }));
+						
+						resolve(resp);
+					}	
+				}
+			});
+		});
 	});	
 });
 
