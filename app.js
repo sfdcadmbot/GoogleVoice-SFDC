@@ -329,8 +329,8 @@ pool.connect(function (err, client, done) {
 	 console.log('here we go');
 	 var conn = new jsforce.Connection({
 	    oauth2 : {
-		clientId : process.env.clientId,
-		clientSecret : process.env.clientSecret
+		clientId : '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+		clientSecret : '4635706799290406853'
 	     },
 	  instanceUrl : result.rows[0].instanceurl,
 	  accessToken :result.rows[0].accesstokennew ,
