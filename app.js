@@ -1252,6 +1252,7 @@ app.intent('create account',(conv,params)=>{
 		conv.ask(new Suggestions('update account details'));
 	})
 	.catch((err)=>{
+		console.log('err here:'+JSON.stringify(err));
 		conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));
 	});	
 	
