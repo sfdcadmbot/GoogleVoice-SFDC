@@ -264,21 +264,18 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-var accountCreation=  function (acctName,accesstoken){
-	console.log('acctName here-->'+acctName);
-	return new Promise((resolve,reject)=>{
-     //var result = db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken]);
-	 
-	    pool.connect(function (err, client, done) {
+function EstablishConnection(accesstoken)
+{
+pool.connect(function (err, client, done) {
         if (err) {
            console.log("Can not connect to the DB" + err);
-		   reject(err);
+		   //reject(err);
        }
        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2',[accesstoken,accesstoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret google user id:'+err);
-				reject(err);
+				//reject(err);
                 //res.status(400).send(err);
             }
 			else
@@ -305,37 +302,27 @@ var accountCreation=  function (acctName,accesstoken){
         if (err) {
            console.log("Can not connect to the DB a/c creation" + err);
 		   //return err;
-		   reject(err);
+		   //reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)',[accessToken,result.rows[0].accesstoken], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data a/c creation:'+err);
 				//return err;
-				reject(err);
+				//reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here after updating renewed access token a/c creation-->'+JSON.stringify(result));
-			 //resolve(result);
+			 //resolve(conn);
 			}
        })
      })
 	});
- 	conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
-					  if (error || !ret.success) { 	
-                                         console.log('error here-->'+error);		  
-						  reject(error); 
-					  }
-					  else{		 
-						 console.log('created record id is a/c creation-->'+ret.id);
-						 resolve(ret);
-					  }
-			 
-				});
+	
 		
-		
+	return conn;	
  }
  else if(result.rows[0].accesstokennew!='')
  {
@@ -358,25 +345,41 @@ var accountCreation=  function (acctName,accesstoken){
         if (err) {
            console.log("Can not connect to the DB line 342" + err);
 		   //return err;
-		   reject(err);
+		   //reject(err);
        }
        client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)',[accessToken,result.rows[0].accesstokennew], function (err, result) {
             done();
             if (err) {
                 console.log('The error ret data line 349:'+err);
 				//return err;
-				reject(err);
+				//reject(err);
                 //res.status(400).send(err);
             }
 			else
 			{
             console.log('The value here after updating renewed access token line 356-->'+JSON.stringify(result));
-			 //resolve(result);
+			   //resolve(conn);
 			}
        })
      })
 	});
-		conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
+	return conn;
+	 
+ }
+			 
+}
+       })
+     })
+	
+}
+
+	
+	
+var accountCreation=  function (acctName,accesstoken){
+	console.log('acctName here-->'+acctName);
+return new Promise((resolve,reject)=>{
+	var conn=EstablishConnection(accesstoken);
+	conn.sobject("Account").create({ Name : acctName}, function(error, ret) {
 					  if (error || !ret.success) { 	
 						   console.log('err linr 364'+error);
                       				  
@@ -388,16 +391,8 @@ var accountCreation=  function (acctName,accesstoken){
 					  }
 			 
 				});
-	 
- }
-			 //resolve(result.rows);
-			}
-       })
-     })
-	 
- //console.log('New Access Token a/c creation:'+result.rows[0].accesstokennew);
-
-	});
+	
+});
 }
 /*
 
