@@ -264,7 +264,9 @@ var signIN = new Promise((resolve,reject)=>{
 	});
 });
 
-var EstablishConnection=  function (accesstoken,callback){
+var EstablishConnection=  function (accesstoken,callback)
+{
+	
 
 	pool.connect(function (err, client, done) {
         if (err) {
@@ -1275,7 +1277,7 @@ console.log('Val fetched-->'+response);
 	  response.sobject("Account").create({ Name : params.AccountName}, function(error, ret) {
 					  if (error || !ret.success) { 	
 						   console.log('err linr 364'+error);
-                      				  
+                      	conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));	  
 						  reject(error); 
 						  //return error;
 					  }
@@ -1289,8 +1291,6 @@ console.log('Val fetched-->'+response);
 					  }
 			 
 				});
-				
-
 });
 
 });
