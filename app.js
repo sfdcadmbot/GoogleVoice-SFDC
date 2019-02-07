@@ -1497,7 +1497,7 @@ app.intent('Submit for Approval - account', (conv, params) => {
         });
 });
 
-app.intent('Get CRUD permissions', (conv, {
+/*app.intent('Get CRUD permissions', (conv, {
     objectName,
     profileName
 }) => {
@@ -1520,6 +1520,40 @@ app.intent('Get CRUD permissions', (conv, {
                 text: "Error while fetching CRUD info"
             }));
         });
+});*/
+
+app.intent('Get CRUD permissions', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					var restURL = "/crudINFO?objectName=" + params.objectName + "&profileName=" + params.profileName;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Error while checking CRUD Permission",
+								text: "Error while creating CRUD Permission"
+							}));
+							reject(err);
+						} else {
+							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
 });
 
 /*app.intent('Check Permission Set Assignment', (conv, {
@@ -1566,8 +1600,8 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
 							conv.ask(new SimpleResponse({
-								speech: "Error while creating generic record",
-								text: "Error while creating generic record"
+								speech: "Error while checking permission set assignment",
+								text: "Error while checking permission set assignment"
 							}));
 							reject(err);
 						} else {
