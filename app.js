@@ -1555,7 +1555,9 @@ app.intent('Check Permission Set Assignment', (conv, params) => {
                 Authorization: header
             };
 			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-				if (err) {
+				console.log('Namespace result ----> ' + result);
+				conv.ask(new SimpleResponse({speech:result,text:result}));
+				/*if (err) {
                     conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
 				}
 				else{
@@ -1573,7 +1575,7 @@ app.intent('Check Permission Set Assignment', (conv, params) => {
 							resolve(resp);
 						}
 					});
-				}
+				}*/
 			});
         });
     });
