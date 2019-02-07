@@ -1554,13 +1554,13 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
             var options = {
                 Authorization: header
             };
-			//response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-				//console.log('Namespace result ----> ' + result);
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
 				//conv.ask(new SimpleResponse({speech:result,text:result}));
-				///*if (err) {
-                   //conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
-				//}
-				//else{
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
 					var restURL = "/learnlite/checkPermSetAssignment?permSetName=" + params.permSetName + "&userName=" + params.userName;
                     //restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
@@ -1575,8 +1575,8 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
 							resolve(resp);
 						}
 					});
-				//}*/
-			//});
+				}
+			});
         });
     });
 });
