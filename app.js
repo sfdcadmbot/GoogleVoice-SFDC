@@ -1547,22 +1547,22 @@ app.intent('Get CRUD permissions', (conv, {
         });
 });*/
 
-app.intent('Check Permission Set Assignment', (conv,{permSetName,userName}) => {
+app.intent('Check Permission Set Assignment', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
             var options = {
                 Authorization: header
             };
-			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-				console.log('Namespace result ----> ' + result);
-				conv.ask(new SimpleResponse({speech:result,text:result}));
-				if (err) {
-                   conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
-				}
-				else{
-					var restURL = "/checkPermSetAssignment?permSetName=" + permSetName + "&userName=" + userName;
-                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+			//response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				//console.log('Namespace result ----> ' + result);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				///*if (err) {
+                   //conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				//}
+				//else{
+					var restURL = "/learnlite/checkPermSetAssignment?permSetName=" + params.permSetName + "&userName=" + params.userName;
+                    //restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
 							conv.ask(new SimpleResponse({
@@ -1575,8 +1575,8 @@ app.intent('Check Permission Set Assignment', (conv,{permSetName,userName}) => {
 							resolve(resp);
 						}
 					});
-				}
-			});
+				//}*/
+			//});
         });
     });
 });
