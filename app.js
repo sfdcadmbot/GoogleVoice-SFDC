@@ -10,11 +10,8 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
-var morgan = require('morgan');
 //var logger=require('./logger/logger').Logger;
-const log = require('./logger/logger');
-const winston = require('winston');
-var fs = require('fs');
+//const log = require('./logger/logger');
 //const successlog = require('./logger/logger').successlog;
 var cookieParser = require('cookie-parser')
 var strname = '';
@@ -45,8 +42,6 @@ server.use(session({
     resave: true,
     saveUninitialized: true
 }));
-server.use(morgan('combined', { "stream": winston.stream.write}));
-
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({
     extended: true
@@ -1763,7 +1758,7 @@ app.intent('BatchSize-Default', (conv, params) => {
 });
 
 
-app.intent('Check Batch Job Status', (conv, params) => {
+/*app.intent('Check Batch Job Status', (conv, params) => {
     console.log(params.className);
     return checkBatchStatus(params.className).then((resp) => {
             console.log('resp in check batch status intent handler-->' + resp);
@@ -1787,6 +1782,53 @@ app.intent('Check Batch Job Status', (conv, params) => {
             }));
         });
 });
+*/
+
+app.intent('Check Permission Set Assignment', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					var restURL = "/BatchJobStatus?batchClassName=" + params.batchClassName;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Error while checking job status",
+								text: "Error while checking job status"
+							}));
+							reject(err);
+						} else {
+							/*conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);*/
+							if (!resp.includes('There')) {
+								conv.ask(new SimpleResponse({
+									speech: "Sure! Status of batch job for class named " + params.className + " is " + resp + ".",
+									text: "Sure! Status of batch job for class named " + params.className + " is " + resp + "."
+								}));
+							} else {
+								conv.ask(new SimpleResponse({
+									speech: "There are no batch jobs for class " + params.className + ".",
+									text: "There are no batch jobs for class " + params.className + "."
+								}));
+							}
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
 
 app.intent('Update Custom Label Value', (conv, {
     customLabelVal,
@@ -1909,6 +1951,5 @@ server.listen(port, function() {
     //logger.log(port);
 	
     console.log("Server is up and running...");
-
-	log.info('Server is up and running...');
+	//log.info('Server is up and running...');
 });
