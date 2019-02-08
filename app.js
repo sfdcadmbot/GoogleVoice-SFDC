@@ -1784,7 +1784,7 @@ app.intent('BatchSize-Default', (conv, params) => {
 });
 */
 
-app.intent('Check Permission Set Assignment', (conv,params) => {
+app.intent('Check Batch Job Status', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
