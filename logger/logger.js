@@ -1,14 +1,14 @@
 var appRoot = require('app-root-path');
-var path = require('path');
-var a= __dirname+'/test';
-console.log('appRoot'+a);
+//var path = require('path');
+var path= __dirname+'/logs/';
+console.log('appRoot'+path);
 
 var winston = require('winston');
 
 var options = {
   file: {
     level: 'info',
-    filename: '${appRoot}/logs/app.log',
+    filename: path+'app.log',
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
@@ -17,7 +17,7 @@ var options = {
   },
   errorFile: {
     level: 'error',
-    filename: '${appRoot}/logs/error.log',
+    filename: path+'error.log',
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
