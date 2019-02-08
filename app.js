@@ -1904,5 +1904,5 @@ server.listen(port, function() {
     //logger.log(port);
 	
     console.log("Server is up and running...");
-	//successlog.info('Server is up and running...');
+	log.info('Server is up and running...');
 });
