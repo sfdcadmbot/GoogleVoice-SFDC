@@ -1,6 +1,6 @@
 var appRoot = require('app-root-path');
 //var path = require('path');
-var path= __dirname+'/logs/';
+var path= __dirname+'/';
 console.log('appRoot'+path);
 
 var winston = require('winston');
