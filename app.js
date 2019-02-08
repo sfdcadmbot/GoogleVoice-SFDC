@@ -1812,7 +1812,7 @@ app.intent('Check Batch Job Status', (conv,params) => {
 						} else {
 							//conv.ask(new SimpleResponse({speech:resp,text:resp}));
 							resolve(resp);
-							var s = params.className.replace('(//s)/g','').replace('underscore/g','_');
+							var s = params.className.replace(/\s/g,'').replace(/underscore/g,'_');
 							if (!resp.includes('There')) {
 								conv.ask(new SimpleResponse({
 									speech: "Sure! Status of batch job for class named " + s + " is " + resp + ".",
