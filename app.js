@@ -1958,5 +1958,5 @@ server.listen(port, function() {
 	
     console.log("Server is up and running...");
 	//log.info('Server is up and running...');
-	logger.logger('Server is up and running');
+	//logger.logger('Server is up and running');
 });
