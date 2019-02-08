@@ -11,7 +11,7 @@ const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
 //var logger=require('./logger/logger').Logger;
-const log = require('./logger/logger');
+//const log = require('./logger/logger');
 //const successlog = require('./logger/logger').successlog;
 var cookieParser = require('cookie-parser')
 var strname = '';
@@ -1904,5 +1904,5 @@ server.listen(port, function() {
     //logger.log(port);
 	
     console.log("Server is up and running...");
-	log.info('Server is up and running...');
+	//log.info('Server is up and running...');
 });
