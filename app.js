@@ -1798,7 +1798,9 @@ app.intent('Check Batch Job Status', (conv,params) => {
                     conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
 				}
 				else{
-					var restURL = "/BatchJobStatus?batchClassName=" + params.batchClassName;
+					console.log('params.className ---> ' + params.className);
+					console.log('params ---> ' + JSON.stringify(params));
+					var restURL = "/BatchJobStatus?batchClassName=" + params.className;
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
