@@ -1902,5 +1902,7 @@ server.post('/fulfillment', app);
 server.listen(port, function() {
     console.log('port', port);
     //logger.log(port);
+	
     console.log("Server is up and running...");
+	successlog.info('Server is up and running...');
 });
