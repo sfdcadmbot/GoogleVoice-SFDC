@@ -44,7 +44,7 @@ server.use(session({
     resave: true,
     saveUninitialized: true
 }));
-server.use(morgan('combined', { "stream": winston.stream}));
+server.use(morgan('combined', { "stream": winston.stream.write}));
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({
