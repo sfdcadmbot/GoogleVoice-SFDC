@@ -1,32 +1,38 @@
-/*var fileSystem=require('fs');
+var appRoot = require('app-root-path');
+var winston = require('winston');
 
-var Logger = exports.Logger = {};
+var options = {
+  file: {
+    level: 'info',
+    name: 'file.info',
+    filename: '${appRoot}/logs/app.log',
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 100,
+    colorize: true,
+  },
+  errorFile: {
+    level: 'error',
+    name: 'file.error',
+    filename: '${appRoot}/logs/error.log',
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 100,
+    colorize: true,
+  },
+  console: {
+    level: 'debug',
+    handleExceptions: true,
+    json: false,
+    colorize: true,
+  },
+};
 
-//var logupdated = fileSystem.createWriteStream('logtesting.txt');
-
-Logger.log = function(msg) {
-  console.log('Req came here'+msg);
-  var message = new Date().toISOString() + " : " + msg + "\n";
-  console.log('message came here'+message);
-  //fileSystem.writeFileSync(logupdated,message);
-  fileSystem.writeFileSync('./logtesting.txt', message);
-};*/
-
-
-/**
- * Configurations of logger.
- */
-const winston = require('winston');
-const winstonRotator = require('winston-daily-rotate-file');
-
-const consoleConfig = [
-  new winston.transports.Console({
-    'colorize': true
-  })
-];
 
 // your centralized logger object
-let createLogger = winston.createLogger({
+let logger = winston.createLogger({
   transports: [
     new (winston.transports.Console)(options.console),
     new (winston.transports.File)(options.errorFile),
@@ -35,24 +41,5 @@ let createLogger = winston.createLogger({
   exitOnError: false, // do not exit on handled exceptions
 });
 
-
-const successLogger = createLogger;
-successLogger.add(winstonRotator, {
-  'name': 'access-file',
-  'level': 'info',
-  'filename': './logs/access.log',
-  'json': false,
-  'datePattern': 'yyyy-MM-dd-',
-  'prepend': true
-});
-
-const errorLogger = createLogger;
-errorLogger.add(winstonRotator, {
-  'name': 'error-file',
-  'level': 'error',
-  'filename': './logs/error.log',
-  'json': false,
-  'datePattern': 'yyyy-MM-dd-',
-  'prepend': true
-});
+module.exports = logger;
 
