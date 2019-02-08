@@ -4,7 +4,6 @@ var winston = require('winston');
 var options = {
   file: {
     level: 'info',
-    name: 'file.info',
     filename: '${appRoot}/logs/app.log',
     handleExceptions: true,
     json: true,
@@ -14,7 +13,6 @@ var options = {
   },
   errorFile: {
     level: 'error',
-    name: 'file.error',
     filename: '${appRoot}/logs/error.log',
     handleExceptions: true,
     json: true,
@@ -42,4 +40,9 @@ let logger = winston.createLogger({
 });
 
 module.exports = logger;
+module.exports.stream = {
+    write: function(message, encoding){
+        logger.info(message);
+    }
+};
 
