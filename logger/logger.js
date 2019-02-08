@@ -25,9 +25,16 @@ const consoleConfig = [
   })
 ];
 
-const createLogger = new winston.Logger({
-  'transports': consoleConfig
+// your centralized logger object
+let createLogger = winston.createLogger({
+  transports: [
+    new (winston.transports.Console)(options.console),
+    new (winston.transports.File)(options.errorFile),
+    new (winston.transports.File)(options.file)
+  ],
+  exitOnError: false, // do not exit on handled exceptions
 });
+
 
 const successLogger = createLogger;
 successLogger.add(winstonRotator, {
