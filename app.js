@@ -10,8 +10,9 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
+var morgan = require('morgan');
 //var logger=require('./logger/logger').Logger;
-//const log = require('./logger/logger');
+const log = require('./logger/logger');
 //const successlog = require('./logger/logger').successlog;
 var cookieParser = require('cookie-parser')
 var strname = '';
@@ -42,6 +43,8 @@ server.use(session({
     resave: true,
     saveUninitialized: true
 }));
+server.use(morgan('combined', { "stream": winston.stream}));
+
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({
     extended: true
@@ -1904,5 +1907,5 @@ server.listen(port, function() {
     //logger.log(port);
 	
     console.log("Server is up and running...");
-	//log.info('Server is up and running...');
+	log.info('Server is up and running...');
 });
