@@ -1808,8 +1808,8 @@ app.intent('Check Batch Job Status', (conv,params) => {
 							}));
 							reject(err);
 						} else {
-							/*conv.ask(new SimpleResponse({speech:resp,text:resp}));
-							resolve(resp);*/
+							//conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
 							if (!resp.includes('There')) {
 								conv.ask(new SimpleResponse({
 									speech: "Sure! Status of batch job for class named " + params.className + " is " + resp + ".",
@@ -1825,6 +1825,7 @@ app.intent('Check Batch Job Status', (conv,params) => {
 					});
 				}
 			});
+			console.log('Here');
         });
     });
 });
