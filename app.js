@@ -14,6 +14,7 @@ var morgan = require('morgan');
 //var logger=require('./logger/logger').Logger;
 const log = require('./logger/logger');
 const winston = require('winston');
+var fs = require('fs');
 //const successlog = require('./logger/logger').successlog;
 var cookieParser = require('cookie-parser')
 var strname = '';
@@ -1908,5 +1909,10 @@ server.listen(port, function() {
     //logger.log(port);
 	
     console.log("Server is up and running...");
+	
+var logDir = 'logs';
+if ( !fs.existsSync( logDir ) ) {
+   fs.mkdirSync( logDir );
+}
 	log.info('Server is up and running...');
 });
