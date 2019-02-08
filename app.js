@@ -13,6 +13,7 @@ const pool = new pg.Pool(config.db);
 var morgan = require('morgan');
 //var logger=require('./logger/logger').Logger;
 const log = require('./logger/logger');
+const log = require('winston');
 //const successlog = require('./logger/logger').successlog;
 var cookieParser = require('cookie-parser')
 var strname = '';
