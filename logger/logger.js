@@ -4,7 +4,7 @@ var winston = require('winston');
 var options = {
   file: {
     level: 'info',
-    filename: './logs/app.log',
+    filename: '${appRoot}/logs/app.log',
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
@@ -13,7 +13,7 @@ var options = {
   },
   errorFile: {
     level: 'error',
-    filename: './logs/error.log',
+    filename: '${appRoot}/logs/error.log',
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
