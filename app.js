@@ -11,8 +11,8 @@ const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
 //var logger=require('./logger/logger').Logger;
-//const errorLog = require('./logger/logger').errorlog;
-//const successlog = require('./logger/logger').successlog;
+const errorLog = require('./logger/logger').errorlog;
+const successlog = require('./logger/logger').successlog;
 var cookieParser = require('cookie-parser')
 var strname = '';
 
