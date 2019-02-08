@@ -1,5 +1,5 @@
 var appRoot = require('app-root-path');
-console.log('The value in logger:'+ '${appRoot}');
+console.log('${appRoot}');
 var winston = require('winston');
 
 var options = {
