@@ -9,7 +9,7 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
-var logger=require('./logger/logger');
+//var logger=require('./logger/logger');
 
 
 const {
@@ -682,6 +682,46 @@ app.intent('Enter Mandatory Fields Data', (conv,params) => {
 });
 
 
+app.intent('Get Opportunity Details', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					
+					var restURL = "/getOpptyInfo?oppName=" + params.oppName + "&fieldNames=" + params.fieldNames;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err){
+							conv.ask(new SimpleResponse({
+								speech: "Error while fetching information",
+								text: "Error while fetching information"
+							}));
+							reject(err);
+						} 
+						else{
+							
+							conv.ask(new SimpleResponse({
+									speech: resp,
+									text: resp
+							}));
+							resolve(resp);
+							
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
 
 var port = process.env.PORT || 3000;
 
@@ -696,5 +736,5 @@ server.post('/fulfillment', app);
 server.listen(port, function() {
     console.log('port', port);
     console.log("Server is up and running...");
-	logger.logger('Server is up and running..');
+	//logger.logger('Server is up and running..');
 });
