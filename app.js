@@ -9,6 +9,7 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
+var logger=require('./logger/logger);
 
 
 const {
@@ -695,4 +696,5 @@ server.post('/fulfillment', app);
 server.listen(port, function() {
     console.log('port', port);
     console.log("Server is up and running...");
+	logger.logger('Server is up and running..');
 });
