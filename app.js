@@ -461,57 +461,7 @@ var dbconnect=function (param){
 	});
 }*/
 
-var dbconnectgoogleuserid = function(param) {
 
-    return new Promise((resolve, reject) => {
-        console.log('param is -->', param);
-
-        //const result = db.query('SELECT * FROM IdentityProviders')
-        pool.connect(function(err, client, done) {
-            if (err) {
-                console.log("Can not connect to the DB" + err);
-                reject(err);
-            }
-            client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid"=$1', [param], function(err, result) {
-                done();
-                if (err) {
-                    console.log('The error ret google user id:' + err);
-                    reject(err);
-                    //res.status(400).send(err);
-                } else {
-                    console.log('The value here then google user id-->' + JSON.stringify(result.rows));
-                    resolve(result.rows);
-                }
-            })
-        })
-    });
-
-}
-
-var dbconnectupdate = function(googlevalpassed, herokutableid) {
-    return new Promise((resolve, reject) => {
-        console.log('googleid is -->', googlevalpassed);
-        console.log('herokutableid is -->', herokutableid);
-        //const result = db.query('SELECT * FROM IdentityProviders')
-        pool.connect(function(err, client, done) {
-            if (err) {
-                console.log("Can not connect to the DB" + err);
-                reject(err);
-            }
-            client.query('Update public."googleauthenticatedusers" set "googleid" = ($1) WHERE "userid" =($2)', [googlevalpassed, herokutableid], function(err, result) {
-                done();
-                if (err) {
-                    console.log('The error ret data:' + err);
-                    reject(err);
-                    //res.status(400).send(err);
-                } else {
-                    console.log('The value here then update-->' + JSON.stringify(result));
-                    resolve(result);
-                }
-            })
-        })
-    });
-}
 
 var updateAccInf = function(acctName, accFields, accFieldVals) {
     return new Promise((resolve, reject) => {
@@ -545,33 +495,7 @@ var updateAccInf = function(acctName, accFields, accFieldVals) {
 
 
 
-var getMandFields = function(objectName) {
-    return new Promise((resolve, reject) => {
-        console.log('objectName in generic record creation ' + objectName);
-        conn.login(process.env.username, process.env.pass, function(err, res) {
-            if (err) {
-                reject(err);
-                console.log(err);
-            } else {
-                console.log('conn.accessToken:' + conn.accessToken);
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
 
-
-                conn.apex.get("/getMandFields/?objectName=" + objectName, options, function(err, res) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        console.log("response: ", res);
-                        resolve(res);
-                    }
-                });
-            }
-        });
-    });
-}
 
 var accountSubmitForApproval = function(actname) {
     return new Promise((resolve, reject) => {
@@ -598,570 +522,7 @@ var accountSubmitForApproval = function(actname) {
     });
 }
 
-/*var getCrudInfo = function(objectName,profileName){
-	return new Promise((resolve,reject)=>{
-		conn.login(process.env.username, process.env.pass, (err, res)=>{
-			if(err){reject(err);}
-			else{ 
-				console.log('conn.accessToken:'+conn.accessToken);
-				var header='Bearer '+conn.accessToken;
-				var options = { Authorization: header};
-				
-				conn.apex.get("/crudINFO?objectName="+objectName+"&profileName="+profileName,options,function(err, res){
-					
-                    if (err) {
-                        reject(err);
-                    }
-                    else{
-                        resolve(res);
-                    }
-                });
-			
-            }
-		});
-	});
-}*/
 
-var getCrudInfo = function(objectName, profileName, accesstoken) {
-    console.log('accesstoken line 595--->' + accesstoken);
-    return new Promise((resolve, reject) => {
-        pool.connect(function(err, client, done) {
-            if (err) {
-                console.log("Can not connect to the DB" + err);
-                reject(err);
-            }
-
-            client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2', [accesstoken, accesstoken], function(err, result) {
-                done();
-                if (err) {
-                    console.log('The error ret google user id:' + err);
-                    reject(err);
-                    //res.status(400).send(err);
-                } else {
-                    console.log('The value here then google user id line 612-->' + JSON.stringify(result));
-                    console.log('The value here then google user id-->' + JSON.stringify(result.rows));
-
-                    if (result.rows[0].accesstokennew == '') {
-                        var conn = new jsforce.Connection({
-                            oauth2: {
-                                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                                clientSecret: '4635706799290406853'
-                            },
-                            instanceUrl: result.rows[0].instanceurl,
-                            accessToken: result.rows[0].accesstoken,
-                            refreshToken: result.rows[0].refreshtoken
-                        });
-                        conn.on("refresh", function(accessToken, res) {
-                            // Refresh event will be fired when renewed access token
-                            // to store it in your storage for next request
-                            console.log('Salesforce accessToken a/c creation:' + accessToken);
-                            console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
-                            pool.connect(function(err, client, done) {
-                                if (err) {
-                                    console.log("Can not connect to the DB a/c creation" + err);
-                                    //return err;
-                                    reject(err);
-                                }
-                                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
-                                    done();
-                                    if (err) {
-                                        console.log('The error ret data a/c creation:' + err);
-                                        //return err;
-                                        reject(err);
-                                        //res.status(400).send(err);
-                                    } else {
-                                        console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
-                                        //resolve(result);
-                                    }
-                                })
-                            })
-                        });
-                        var header = 'Bearer ' + accesstoken;
-                        var options = {
-                            Authorization: header
-                        };
-                        var records = [];
-                        var nameSpace = '';
-                        var nameSpace1 = '';
-                        conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            //console.log("total : " + result.totalSize);
-                            //console.log("fetched : " + JSON.stringify(result.records));
-                            else {
-                                var restURL = "/crudINFO?objectName=" + objectName + "&profileName=" + profileName;
-                                //if (nameSpace1) {
-                                //restURL = "/" + namespace1 + restURL;
-                                //}
-                                restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-                                console.log('nameSpace1 -- Line 748 --> ' + restURL);
-                                conn.apex.get(restURL, options, function(err, res) {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(res);
-                                    }
-                                });
-                            }
-
-
-
-                        });
-
-                    } else if (result.rows[0].accesstokennew != '') {
-                        console.log('here we go');
-                        var conn = new jsforce.Connection({
-                            oauth2: {
-                                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                                clientSecret: '4635706799290406853'
-                            },
-                            instanceUrl: result.rows[0].instanceurl,
-                            accessToken: result.rows[0].accesstokennew,
-                            refreshToken: result.rows[0].refreshtoken
-                        });
-                        conn.on("refresh", function(accessToken, res) {
-                            // Refresh event will be fired when renewed access token
-                            // to store it in your storage for next request
-                            console.log('Salesforce accessToken line 681 :' + accessToken);
-                            console.log('Salesforce res line 682:' + JSON.stringify(res));
-                            pool.connect(function(err, client, done) {
-                                if (err) {
-                                    console.log("Can not connect to the DB line 685" + err);
-                                    //return err;
-                                    reject(err);
-                                }
-                                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)', [accessToken, result.rows[0].accesstokennew], function(err, result) {
-                                    done();
-                                    if (err) {
-                                        console.log('The error ret data line 692:' + err);
-                                        //return err;
-                                        reject(err);
-                                        //res.status(400).send(err);
-                                    } else {
-                                        console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
-                                        //resolve(result);
-                                    }
-                                })
-                            })
-                        });
-
-                        var header = 'Bearer ' + accesstoken;
-                        var options = {
-                            Authorization: header
-                        };
-
-                        var records = [];
-                        var nameSpace = '';
-                        var nameSpace1 = '';
-                        conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            //console.log("total : " + result.totalSize);
-                            //console.log("fetched : " + JSON.stringify(result.records));
-                            else {
-                                console.log('nameSpace1 -- Line 740 --> ' + result.records[0].NamespacePrefix);
-                                //nameSpace = JSON.parse(JSON.stringify(result.records));
-                                //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-                                var restURL = "/crudINFO?objectName=" + objectName + "&profileName=" + profileName;
-                                //if (nameSpace1) {
-                                //restURL = "/" + namespace1 + restURL;
-                                //}
-                                restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-                                console.log('nameSpace1 -- Line 748 --> ' + restURL);
-                                conn.apex.get(restURL, options, function(err, res) {
-
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(res);
-                                    }
-                                });
-
-                            }
-
-
-                        });
-
-                    }
-                    //resolve(result.rows);
-                }
-            })
-        });
-    });
-}
-
-var permSetAsgnmentCheck = function(permSetName, userName, accesstoken) {
-    console.log('accesstoken line 595--->' + accesstoken);
-    return new Promise((resolve, reject) => {
-        pool.connect(function(err, client, done) {
-            if (err) {
-                console.log("Can not connect to the DB" + err);
-                reject(err);
-            }
-
-            client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2', [accesstoken, accesstoken], function(err, result) {
-                done();
-                if (err) {
-                    console.log('The error ret google user id:' + err);
-                    reject(err);
-                    //res.status(400).send(err);
-                } else {
-                    console.log('The value here then google user id line 612-->' + JSON.stringify(result));
-                    console.log('The value here then google user id-->' + JSON.stringify(result.rows));
-
-                    if (result.rows[0].accesstokennew == '') {
-                        var conn = new jsforce.Connection({
-                            oauth2: {
-                                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                                clientSecret: '4635706799290406853'
-                            },
-                            instanceUrl: result.rows[0].instanceurl,
-                            accessToken: result.rows[0].accesstoken,
-                            refreshToken: result.rows[0].refreshtoken
-                        });
-                        conn.on("refresh", function(accessToken, res) {
-                            // Refresh event will be fired when renewed access token
-                            // to store it in your storage for next request
-                            console.log('Salesforce accessToken a/c creation:' + accessToken);
-                            console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
-                            pool.connect(function(err, client, done) {
-                                if (err) {
-                                    console.log("Can not connect to the DB a/c creation" + err);
-                                    //return err;
-                                    reject(err);
-                                }
-                                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
-                                    done();
-                                    if (err) {
-                                        console.log('The error ret data a/c creation:' + err);
-                                        //return err;
-                                        reject(err);
-                                        //res.status(400).send(err);
-                                    } else {
-                                        console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
-                                        //resolve(result);
-                                    }
-                                })
-                            })
-                        });
-                        var header = 'Bearer ' + accesstoken;
-                        var options = {
-                            Authorization: header
-                        };
-                        var records = [];
-                        var nameSpace = '';
-                        var nameSpace1 = '';
-                        conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            //console.log("total : " + result.totalSize);
-                            //console.log("fetched : " + JSON.stringify(result.records));
-                            else {
-                                console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-                                //nameSpace = JSON.parse(JSON.stringify(result.records));
-                                //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-                                var restURL = "/checkPermSetAssignment?permSetName=" + permSetName + "&userName=" + userName;
-                                //if (nameSpace1) {
-                                //restURL = "/" + namespace1 + restURL;
-                                //}
-                                restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-                                console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-                                conn.apex.get(restURL, options, function(err, res) {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(res);
-                                    }
-                                });
-                            }
-
-
-
-                        });
-
-                    } else if (result.rows[0].accesstokennew != '') {
-                        console.log('here we go');
-                        var conn = new jsforce.Connection({
-                            oauth2: {
-                                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                                clientSecret: '4635706799290406853'
-                            },
-                            instanceUrl: result.rows[0].instanceurl,
-                            accessToken: result.rows[0].accesstokennew,
-                            refreshToken: result.rows[0].refreshtoken
-                        });
-                        conn.on("refresh", function(accessToken, res) {
-                            // Refresh event will be fired when renewed access token
-                            // to store it in your storage for next request
-                            console.log('Salesforce accessToken line 681 :' + accessToken);
-                            console.log('Salesforce res line 682:' + JSON.stringify(res));
-                            pool.connect(function(err, client, done) {
-                                if (err) {
-                                    console.log("Can not connect to the DB line 685" + err);
-                                    //return err;
-                                    reject(err);
-                                }
-                                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)', [accessToken, result.rows[0].accesstokennew], function(err, result) {
-                                    done();
-                                    if (err) {
-                                        console.log('The error ret data line 692:' + err);
-                                        //return err;
-                                        reject(err);
-                                        //res.status(400).send(err);
-                                    } else {
-                                        console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
-                                        //resolve(result);
-                                    }
-                                })
-                            })
-                        });
-
-                        var header = 'Bearer ' + accesstoken;
-                        var options = {
-                            Authorization: header
-                        };
-
-                        var records = [];
-                        var nameSpace = '';
-                        var nameSpace1 = '';
-                        conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            //console.log("total : " + result.totalSize);
-                            //console.log("fetched : " + JSON.stringify(result.records));
-                            else {
-                                console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-                                //nameSpace = JSON.parse(JSON.stringify(result.records));
-                                //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-                                var restURL = "/checkPermSetAssignment?permSetName=" + permSetName + "&userName=" + userName;
-                                //if (nameSpace1) {
-                                //restURL = "/" + namespace1 + restURL;
-                                //}
-                                restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-                                console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-                                conn.apex.get(restURL, options, function(err, res) {
-
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(res);
-                                    }
-                                });
-
-                            }
-
-
-                        });
-
-                    }
-                    //resolve(result.rows);
-                }
-            })
-        });
-    });
-}
-
-var permSetAsgnmentCheck = function(permSetName, userName, accesstoken) {
-    console.log('accesstoken line 595--->' + accesstoken);
-    return new Promise((resolve, reject) => {
-        pool.connect(function(err, client, done) {
-            if (err) {
-                console.log("Can not connect to the DB" + err);
-                reject(err);
-            }
-
-            client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2', [accesstoken, accesstoken], function(err, result) {
-                done();
-                if (err) {
-                    console.log('The error ret google user id:' + err);
-                    reject(err);
-                    //res.status(400).send(err);
-                } else {
-                    console.log('The value here then google user id line 612-->' + JSON.stringify(result));
-                    console.log('The value here then google user id-->' + JSON.stringify(result.rows));
-
-                    if (result.rows[0].accesstokennew == '') {
-                        var conn = new jsforce.Connection({
-                            oauth2: {
-                                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                                clientSecret: '4635706799290406853'
-                            },
-                            instanceUrl: result.rows[0].instanceurl,
-                            accessToken: result.rows[0].accesstoken,
-                            refreshToken: result.rows[0].refreshtoken
-                        });
-                        conn.on("refresh", function(accessToken, res) {
-                            // Refresh event will be fired when renewed access token
-                            // to store it in your storage for next request
-                            console.log('Salesforce accessToken a/c creation:' + accessToken);
-                            console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
-                            pool.connect(function(err, client, done) {
-                                if (err) {
-                                    console.log("Can not connect to the DB a/c creation" + err);
-                                    //return err;
-                                    reject(err);
-                                }
-                                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
-                                    done();
-                                    if (err) {
-                                        console.log('The error ret data a/c creation:' + err);
-                                        //return err;
-                                        reject(err);
-                                        //res.status(400).send(err);
-                                    } else {
-                                        console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
-                                        //resolve(result);
-                                    }
-                                })
-                            })
-                        });
-                        var header = 'Bearer ' + accesstoken;
-                        var options = {
-                            Authorization: header
-                        };
-                        var records = [];
-                        var nameSpace = '';
-                        var nameSpace1 = '';
-                        conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            //console.log("total : " + result.totalSize);
-                            //console.log("fetched : " + JSON.stringify(result.records));
-                            else {
-                                console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-                                //nameSpace = JSON.parse(JSON.stringify(result.records));
-                                //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-                                var restURL = "/assignPermSet?permSetName=" + permSetName + "&userName=" + userName;
-                                //if (nameSpace1) {
-                                //restURL = "/" + namespace1 + restURL;
-                                //}
-                                restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-                                console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-                                conn.apex.get(restURL, options, function(err, res) {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(res);
-                                    }
-                                });
-                            }
-
-
-
-                        });
-
-                    } else if (result.rows[0].accesstokennew != '') {
-                        console.log('here we go');
-                        var conn = new jsforce.Connection({
-                            oauth2: {
-                                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                                clientSecret: '4635706799290406853'
-                            },
-                            instanceUrl: result.rows[0].instanceurl,
-                            accessToken: result.rows[0].accesstokennew,
-                            refreshToken: result.rows[0].refreshtoken
-                        });
-                        conn.on("refresh", function(accessToken, res) {
-                            // Refresh event will be fired when renewed access token
-                            // to store it in your storage for next request
-                            console.log('Salesforce accessToken line 681 :' + accessToken);
-                            console.log('Salesforce res line 682:' + JSON.stringify(res));
-                            pool.connect(function(err, client, done) {
-                                if (err) {
-                                    console.log("Can not connect to the DB line 685" + err);
-                                    //return err;
-                                    reject(err);
-                                }
-                                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)', [accessToken, result.rows[0].accesstokennew], function(err, result) {
-                                    done();
-                                    if (err) {
-                                        console.log('The error ret data line 692:' + err);
-                                        //return err;
-                                        reject(err);
-                                        //res.status(400).send(err);
-                                    } else {
-                                        console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
-                                        //resolve(result);
-                                    }
-                                })
-                            })
-                        });
-
-                        var header = 'Bearer ' + accesstoken;
-                        var options = {
-                            Authorization: header
-                        };
-
-                        var records = [];
-                        var nameSpace = '';
-                        var nameSpace1 = '';
-                        conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            //console.log("total : " + result.totalSize);
-                            //console.log("fetched : " + JSON.stringify(result.records));
-                            else {
-                                console.log('nameSpace1 -- Line 665.1 --> ' + result.records[0].NamespacePrefix);
-                                //nameSpace = JSON.parse(JSON.stringify(result.records));
-                                //nameSpace1 = JSON.parse(JSON.stringify(result.records)).NamespacePrefix;
-                                var restURL = "/assignPermSet?permSetName=" + permSetName + "&userName=" + userName;
-                                //if (nameSpace1) {
-                                //restURL = "/" + namespace1 + restURL;
-                                //}
-                                restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-                                console.log('nameSpace1 -- Line 665 --> ' + nameSpace1);
-                                conn.apex.get(restURL, options, function(err, res) {
-
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(res);
-                                    }
-                                });
-
-                            }
-
-
-                        });
-
-                    }
-                    //resolve(result.rows);
-                }
-            })
-        });
-    });
-}
-
-/*var assignPermSet = function(permSetName, userName) {
-    return new Promise((resolve, reject) => {
-        conn.login(process.env.username, process.env.pass, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-
-                conn.apex.get("/assignPermSet?permSetName=" + permSetName + "&userName=" + userName, options, function(err, res) {
-
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-
-            }
-        });
-    });
-}*/
 
 var executeBatchWithSize = function(batchClassName, batchSize) {
     return new Promise((resolve, reject) => {
@@ -1237,7 +598,7 @@ var updateLabel = function(labelVal, labelName) {
     });
 }
 
-var updObjInf = function(objectName, fieldNames, fieldValues) {
+/*var updObjInf = function(objectName, fieldNames, fieldValues) {
     return new Promise((resolve, reject) => {
         conn.login(process.env.username, process.env.pass, (err, res) => {
             if (err) {
@@ -1260,159 +621,8 @@ var updObjInf = function(objectName, fieldNames, fieldValues) {
         });
     });
 }
+*/
 
-
-/*
-app.intent('connect_salesforce',(conv,params)=>{
-    
-	signIN.then((resp)=>{
-		console.log(resp);
-		conv.ask(new SimpleResponse({speech:"Hi Sagnik ! We are able to connect to your account. How can I help you today?",text:"Hi Sagnik ! We are able to connect to your account. How can I help you today?"}));	
-	},
-	(error) => {
-		console.log('Promise rejected.');
-		console.log(error.message);
-		conv.ask(new SimpleResponse({speech:"Error while connecting to salesforce",text:"Error while connecting to salesforce"}));
-
-
-	});
-});*/
-/*
-var jsforcesignin = function(accesstoken,refreshtoken,instanceurl){
-		return new Promise((resolve,reject)=>{
-		var conn = new jsforce.Connection({
-	    oauth2 : {
-		clientId : process.env.clientId,
-		clientSecret : process.env.clientSecret,
-		redirectUri : 'https://node-js-google-sfdc-app.herokuapp.com/token'
-	  },
-	  instanceUrl : instanceurl,
-	  accessToken :accesstoken ,
-	  refreshToken : refreshtoken
-	});
-	conn.on("refresh", function(accessToken, res) {
-	  // Refresh event will be fired when renewed access token
-	  // to store it in your storage for next request
-	});
-
-	// Alternatively, you can use the callback style request to fetch the refresh token
-	conn.oauth2.refreshToken(refreshToken, (err, results) => {
-	  if (err) return reject(err);
-	  resolve(results);
-	});
-		});
-}*/
-
-
-app.intent('connect_salesforce', async (conv, params) => {
-
-    var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2', [conv.user.access.token, conv.user.access.token]);
-    console.log('New Access Token:' + result.rows[0].accesstokennew);
-    if (result.rows[0].accesstokennew == '') {
-        var conn = new jsforce.Connection({
-            oauth2: {
-                clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                clientSecret: '4635706799290406853'
-            },
-            instanceUrl: result.rows[0].instanceurl,
-            accessToken: result.rows[0].accesstoken,
-            refreshToken: result.rows[0].refreshtoken
-        });
-        conn.on("refresh", function(accessToken, res) {
-            // Refresh event will be fired when renewed access token
-            // to store it in your storage for next request
-            console.log('Salesforce accessToken :' + accessToken);
-            console.log('Salesforce res :' + JSON.stringify(res));
-            pool.connect(function(err, client, done) {
-                if (err) {
-                    console.log("Can not connect to the DB" + err);
-                    return err;
-                    //reject(err);
-                }
-                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
-                    done();
-                    if (err) {
-                        console.log('The error ret data:' + err);
-                        return err;
-                        //reject(err);
-                        //res.status(400).send(err);
-                    } else {
-                        console.log('The value here after updating renewed access token-->' + JSON.stringify(result));
-                        //resolve(result);
-                    }
-                })
-            })
-        });
-        /*
- 	conn.sobject("Account").create({ Name : 'testnow31jan' }, function(error, ret) {
-					  if (error || !ret.success) { 	
-                       return error;					  
-						  //reject(error); 
-					  }
-					  else{		 
-						 console.log('created record id is-->'+ret.id);
-						 //resolve(ret);
-					  }
-			 
-				});*/
-
-
-    } else if (result.rows[0].accesstokennew != '') {
-        var conn = new jsforce.Connection({
-            oauth2: {
-                clientId: process.env.clientId,
-                clientSecret: process.env.clientSecret
-            },
-            instanceUrl: result.rows[0].instanceurl,
-            accessToken: result.rows[0].accesstokennew,
-            refreshToken: result.rows[0].refreshtoken
-        });
-        conn.on("refresh", function(accessToken, res) {
-            // Refresh event will be fired when renewed access token
-            // to store it in your storage for next request
-            console.log('Salesforce accessToken :' + accessToken);
-            console.log('Salesforce res :' + JSON.stringify(res));
-            pool.connect(function(err, client, done) {
-                if (err) {
-                    console.log("Can not connect to the DB" + err);
-                    return err;
-                    //reject(err);
-                }
-                client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)', [accessToken, result.rows[0].accesstokennew], function(err, result) {
-                    done();
-                    if (err) {
-                        console.log('The error ret data:' + err);
-                        return err;
-                        //reject(err);
-                        //res.status(400).send(err);
-                    } else {
-                        console.log('The value here after updating renewed access token line 740-->' + JSON.stringify(result));
-                        //resolve(result);
-                    }
-                })
-            })
-        });
-        /*conn.sobject("Account").create({ Name : 'testnow31jan' }, function(error, ret) {
-					  if (error || !ret.success) { 	
-                       return error;					  
-						  //reject(error); 
-					  }
-					  else{		 
-						 console.log('created record id is-->'+ret.id);
-						 //resolve(ret);
-					  }
-			 
-				});*/
-
-    }
-
-
-    conv.ask(new SimpleResponse({
-        speech: "Hello We are able to connect to your account. How can I help you today?",
-        text: "Hello We are able to connect to your account. How can I help you today?"
-    }));
-
-});
 
 
 app.intent('Default Welcome Intent', async (conv) => {
@@ -1435,35 +645,6 @@ app.intent('Default Welcome Intent', async (conv) => {
 
 });
 
-/*app.intent('create account',(conv,params)=>{
-	//var conn=EstablishConnection(conv.user.access.token);
-	return new Promise((resolve,reject)=>
-	{
-	EstablishConnection(conv.user.access.token,function(response){ 
-console.log('Val fetched-->'+response);
-	//console.log('Val fetched JSON-->'+JSON.stringify(response));
-	  response.sobject("Account").create({ Name : params.AccountName}, function(error, ret) {
-					  if (error || !ret.success) { 	
-						   console.log('err linr 364'+error);
-                      	conv.ask(new SimpleResponse({speech:"Error while creating salesforce account",text:"Error while creating salesforce account"}));	  
-						  reject(error); 
-						  //return error;
-					  }
-					  else{		 
-						 console.log('created record id is line 369-->'+ret.id);
-						 conv.ask(new SimpleResponse({speech:"We are able to create your account named "+params.AccountName,text:"We are able to create your account named "+params.AccountName}));
-		                 conv.ask(new Suggestions('update account details'));
-						 resolve(ret);
-						 //return ret;
-						 
-					  }
-			 
-				});
-});
-
-});
-	
-});*/
 
 
 app.intent('update acc info', (conv, params) => {
@@ -1501,30 +682,7 @@ app.intent('Submit for Approval - account', (conv, params) => {
         });
 });
 
-/*app.intent('Get CRUD permissions', (conv, {
-    objectName,
-    profileName
-}) => {
 
-    console.log('sobject passed from google ' + objectName);
-    console.log('profile passed from google ' + profileName);
-
-    return getCrudInfo(objectName, profileName, conv.user.access.token).then((resp) => {
-
-            conv.ask(new SimpleResponse({
-                speech: resp,
-                text: resp
-            }));
-
-        })
-        .catch((err) => {
-            console.log('error', err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while fetching CRUD info",
-                text: "Error while fetching CRUD info"
-            }));
-        });
-});*/
 
 app.intent('Get CRUD permissions', (conv,params) => {
     return new Promise((resolve, reject) => {
@@ -1560,30 +718,7 @@ app.intent('Get CRUD permissions', (conv,params) => {
     });
 });
 
-/*app.intent('Check Permission Set Assignment', (conv, {
-    permSetName,
-    userName
-}) => {
 
-    console.log('perm set passed from google ' + permSetName);
-    console.log('userName passed from google ' + userName);
-
-    return permSetAsgnmentCheck(permSetName, userName, conv.user.access.token).then((resp) => {
-
-            conv.ask(new SimpleResponse({
-                speech: resp,
-                text: resp
-            }));
-
-        })
-        .catch((err) => {
-            console.log('error', err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while doing permission set assignment check",
-                text: "Error while doing permission set assignment check"
-            }));
-        });
-});*/
 
 app.intent('Check Permission Set Assignment', (conv,params) => {
     return new Promise((resolve, reject) => {
@@ -1620,31 +755,6 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
 });
 
 
-/*app.intent('Assign Permission Set', (conv, {
-    permSetName,
-    userName
-}) => {
-
-    console.log('perm set passed from google ' + permSetName);
-    console.log('userName passed from google ' + userName);
-
-    return assignPermissionSet(permSetName, userName, conv.user.access.token).then((resp) => {
-
-            conv.ask(new SimpleResponse({
-                speech: resp,
-                text: resp
-            }));
-
-        })
-        .catch((err) => {
-            console.log('error', err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while doing permission set assignment check",
-                text: "Error while doing permission set assignment check"
-            }));
-        });
-});*/
-
 app.intent('Assign Permission Set', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
@@ -1679,27 +789,6 @@ app.intent('Assign Permission Set', (conv,params) => {
     });
 });
 
-/*app.intent('assignPermSet', (conv) => {
-    //console.log(conv.contexts.get('checkpermissionsetassignment-followup'));
-    const prmSet = conv.contexts.get('checkpermissionsetassignment-followup').parameters['permSetName'];
-    const uName = conv.contexts.get('checkpermissionsetassignment-followup').parameters['userName'];
-
-    console.log('perm set passed from google in perm set followup' + prmSet);
-    console.log('userName passed from google in perm set followup' + uName);
-    return assignPermSet(prmSet, uName).then((resp) => {
-            conv.ask(new SimpleResponse({
-                speech: "Sure. Permission set " + prmSet + " has been assigned to " + uName,
-                text: "Sure. Permission set " + prmSet + " has been assigned to " + uName
-            }));
-        })
-        .catch((err) => {
-            console.log('err-->' + err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while assigning permission set",
-                text: "Error while assigning permission set"
-            }));
-        });
-});*/
 
 app.intent('BatchSize-Custom', (conv, params) => {
 
@@ -1760,31 +849,7 @@ app.intent('BatchSize-Default', (conv, params) => {
 });
 
 
-/*app.intent('Check Batch Job Status', (conv, params) => {
-    console.log(params.className);
-    return checkBatchStatus(params.className).then((resp) => {
-            console.log('resp in check batch status intent handler-->' + resp);
-            if (!resp.includes('There')) {
-                conv.ask(new SimpleResponse({
-                    speech: "Sure! Status of batch job for class named " + params.className + " is " + resp + ".",
-                    text: "Sure! Status of batch job for class named " + params.className + " is " + resp + "."
-                }));
-            } else {
-                conv.ask(new SimpleResponse({
-                    speech: "There are no batch jobs for class " + params.className + ".",
-                    text: "There are no batch jobs for class " + params.className + "."
-                }));
-            }
-        })
-        .catch((err) => {
-            console.log('err-->' + err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while checking job status",
-                text: "Error while checking job status"
-            }));
-        });
-});
-*/
+
 
 app.intent('Check Batch Job Status', (conv,params) => {
     return new Promise((resolve, reject) => {
@@ -1867,6 +932,7 @@ app.intent('Update Custom Label Value', (conv, {
         });
 });
 
+
 app.intent('create a generic object record', (conv, params) => {
 
     console.log('sobject label passed from google' + params.objectName);
@@ -1884,15 +950,17 @@ app.intent('create a generic object record', (conv, params) => {
                         text: "Error while creating generic record"
                     }));
                     reject(err);
-                } else {
+                }
+				else {
                     console.log("response: ", resp);
                     if (resp.length == 1) {
                         conv.ask(new SimpleResponse({
-                            speech: "Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " .",
-                            text: "Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " ."
+                            speech: "Hey, there is a mandatory field named " + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation " + " , " + " enter the values for " + resp[0] + " .",
+                            text: "Hey, there is a mandatory field named " + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation " + " , " + " enter the values for " + resp[0] + " ."
                         }));
-                    } else {
-			var strName ='';
+                    } 
+					else{
+						var strName = '';
                         for (var i = 0; i < resp.length; i++) {
                             strName += resp[i] + ',';
                         }
@@ -1911,6 +979,54 @@ app.intent('create a generic object record', (conv, params) => {
 });
 
 
+app.intent('Enter Mandatory Fields Data', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					const objectName = conv.contexts.get('createagenericobjectrecord-followup').parameters['objectName'];
+					var restURL = "/insertGenericRecSrvc?objectName=" + objectName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err){
+							conv.ask(new SimpleResponse({
+								speech: "Error while creating record",
+								text: "Error while creating record"
+							}));
+							reject(err);
+						} 
+						else{
+							if (resp === 'Success') {
+								conv.ask(new SimpleResponse({
+										speech: objectName + " record has been created successfully.",
+										text: objectName + " record has been created successfully."
+								}));
+							} 
+							else{
+								conv.ask(new SimpleResponse({
+									speech: "Error received while creating record . " + resp,
+									text: "Error received while creating record . " + resp
+								}));
+							}
+							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
+/*
 app.intent('update record information', (conv, params) => {
 
     const objectName = conv.contexts.get('createagenericobjectrecord-followup').parameters['objectName'];
@@ -1939,6 +1055,7 @@ app.intent('update record information', (conv, params) => {
             }));
         });
 });
+*/
 
 var port = process.env.PORT || 3000;
 //var port=3306;
