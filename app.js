@@ -1009,15 +1009,17 @@ app.intent('Enter Mandatory Fields Data', (conv,params) => {
 										speech: objectName + " record has been created successfully.",
 										text: objectName + " record has been created successfully."
 								}));
+								resolve(resp);
 							} 
 							else{
 								conv.ask(new SimpleResponse({
 									speech: "Error received while creating record . " + resp,
 									text: "Error received while creating record . " + resp
 								}));
+								reject(err);
 							}
-							conv.ask(new SimpleResponse({speech:resp,text:resp}));
-							resolve(resp);
+							//conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							
 						}
 					});
 				}
