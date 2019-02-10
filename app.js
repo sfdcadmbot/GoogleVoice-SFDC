@@ -24,7 +24,7 @@ const app = dialogflow({
     debug: true,
     clientId: config.oauth.clientId
 });
-server.use(cookieParser())
+
 //initialize session
 server.use(session({
     secret: 'S3CRE7',
