@@ -16,7 +16,7 @@ const pool = new pg.Pool(config.db);
 var cookieParser = require('cookie-parser');
 var logger=require('./logger/logger');
 
-var strname = '';
+//var strname = '';
 
 
 
@@ -1892,7 +1892,7 @@ app.intent('create a generic object record', (conv, params) => {
                             text: "Hey, there is a mandatory field named" + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation" + " , " + "enter the values for " + resp[0] + " ."
                         }));
                     } else {
-
+			var strName ='';
                         for (var i = 0; i < resp.length; i++) {
                             strName += resp[i] + ',';
                         }
