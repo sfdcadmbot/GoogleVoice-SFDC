@@ -1,6 +1,5 @@
 // dependencies
 const express = require('express');
-const http = require('https');
 const bodyParser = require('body-parser');
 const jsforce = require('jsforce');
 const server = express();
@@ -10,20 +9,8 @@ const db = require('./db');
 const config = require('./config/config');
 const pg = require('pg');
 const pool = new pg.Pool(config.db);
-//var logger=require('./logger/logger').Logger;
-//const log = require('./logger/logger');
-//const successlog = require('./logger/logger').successlog;
-var cookieParser = require('cookie-parser');
-var logger=require('./logger/logger');
-
-//var strname = '';
 
 
-
-var conn = new jsforce.Connection({
-    loginUrl: 'https://login.salesforce.com', //'https://login.salesforce.com', 
-    version: '43.0'
-});
 const {
     dialogflow,
     SignIn,
@@ -247,47 +234,6 @@ server.get('/token', async (req, res) => {
     }
 });
 
-//var app=dialogflow({clientId: '*.apps.googleusercontent.com'});
-/*
-app.intent('Default Welcome Intent', (conv) => {
-    console.log('welcomeIntent');
-	console.log('conv.user',conv.user);
-	//console.log('conv.user.id',conv.user.id);
-	console.log('conv.user.profile.payload.email',conv.user.profile.payload.email);
-   // conv.ask(new SignIn('To get your account details'));
-});*/
-// Create a Dialogflow intent with the `actions_intent_SIGN_IN` event
-app.intent('Get Sign In', (conv, params, signin) => {
-    console.log('signIn');
-    if (signin.status === 'OK') {
-        console.log('userId', conv.user.raw.userId);
-        console.log('conv.user.raw.accessToken', conv.user.raw.accessToken);
-        console.log('user det', conv.user.raw);
-
-        conv.ask(new SimpleResponse({
-            speech: "Hi Sagnik ! We are able to connect to your account. How can I help you today?",
-            text: "Hi Sagnik ! We are able to connect to your account. How can I help you today?"
-        }));
-        //conv.ask(`I got your account details. your userId is ${conv.user.raw.userId}. What do you want to do next?`);
-    } else {
-        console.log('not signed in');
-        //conv.ask('I won't be able to save your data, but what do you want to do next?');
-        conv.ask(new SimpleResponse({
-            speech: "Error while connecting to salesforce",
-            text: "Error while connecting to salesforce"
-        }));
-    }
-});
-
-var signIN = new Promise((resolve, reject) => {
-    conn.login(process.env.username, process.env.pass, function(err, res) {
-        if (err) {
-            reject(err);
-        } else {
-            resolve(res);
-        }
-    });
-});
 
 var EstablishConnection = function(accesstoken, callback) {
 
@@ -391,137 +337,6 @@ var EstablishConnection = function(accesstoken, callback) {
 
 }
 
-var accountCreation1 = function(acctName, conn) {
-
-    conn.sobject("Account").create({
-        Name: acctName
-    }, function(error, ret) {
-        if (error || !ret.success) {
-            console.log('err linr 364' + error);
-
-            //reject(error); 
-            return error;
-        } else {
-            console.log('created record id is line 369-->' + ret.id);
-            //resolve(ret);
-            return ret;
-        }
-
-    });
-}
-
-
-var accountCreation = function(acctName, accesstoken) {
-    console.log('acctName here-->' + acctName);
-    //return EstablishConnection(accesstoken);
-    return new Promise((resolve, reject) => {
-
-        console.log('Call came here');
-
-        return EstablishConnection(accesstoken).sobject("Account").create({
-            Name: acctName
-        }, function(error, ret) {
-            if (error || !ret.success) {
-                console.log('err linr 364' + error);
-
-                reject(error);
-            } else {
-                console.log('created record id is line 369-->' + ret.id);
-                resolve(ret);
-            }
-
-        });
-    });
-}
-/*
-
-var dbconnect=function (param){
-	return new Promise((resolve,reject)=>{
-		console.log('param is -->',param);
-		//const result = db.query('SELECT * FROM IdentityProviders')
-	   pool.connect(function (err, client, done) {
-        if (err) {
-           console.log("Can not connect to the DB" + err);
-		   reject(err);
-       }
-       client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "userid" ='+param, function (err, result) {
-            done();
-            if (err) {
-                console.log('The error ret data:'+err);
-				reject(err);
-                //res.status(400).send(err);
-            }
-			else
-			{
-            console.log('The value here then-->'+JSON.stringify(result.rows));
-			 resolve(result.rows);
-			}
-       })
-     })
-	});
-}*/
-
-
-
-var updateAccInf = function(acctName, accFields, accFieldVals) {
-    return new Promise((resolve, reject) => {
-
-        console.log('Account Name in update function is -->', acctName);
-        console.log('Account Fields is -->', accFields);
-
-        conn.login(process.env.username, process.env.pass, function(err, res) {
-            if (err) {
-                reject(err);
-            } else {
-                console.log('conn.accessToken:' + conn.accessToken);
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-
-
-                conn.apex.get("/updateAccInf/?acctName=" + acctName + "&accFields=" + accFields + "&accFieldVals=" + accFieldVals, options, function(err, res) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-            }
-        });
-    });
-}
-
-
-
-
-
-
-var accountSubmitForApproval = function(actname) {
-    return new Promise((resolve, reject) => {
-        console.log('actname -->', actname);
-
-        conn.login(process.env.username, process.env.pass, function(err, res) {
-            if (err) {
-                reject(err);
-            } else {
-                console.log('conn.accessToken:' + conn.accessToken);
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-                conn.apex.get("/accSubmitForApproval/" + actname, options, function(err, res) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-            }
-        });
-    });
-}
-
 
 
 var executeBatchWithSize = function(batchClassName, batchSize) {
@@ -549,138 +364,6 @@ var executeBatchWithSize = function(batchClassName, batchSize) {
     });
 }
 
-var checkBatchStatus = function(batchClassName) {
-    return new Promise((resolve, reject) => {
-        conn.login(process.env.username, process.env.pass, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-
-                conn.apex.get("/BatchJobStatus?batchClassName=" + batchClassName, options, function(err, res) {
-
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-
-            }
-        });
-    });
-}
-
-var updateLabel = function(labelVal, labelName) {
-    return new Promise((resolve, reject) => {
-        conn.login(process.env.username, process.env.pass, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-
-                conn.apex.get("/UpdateCustomLabel?labelName=" + labelName + "&labelVal=" + labelVal, options, function(err, res) {
-
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-            }
-        });
-    });
-}
-
-/*var updObjInf = function(objectName, fieldNames, fieldValues) {
-    return new Promise((resolve, reject) => {
-        conn.login(process.env.username, process.env.pass, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-
-                conn.apex.get("/insertGenericRecSrvc?objectName=" + objectName + "&fieldNames=" + fieldNames + "&fieldValues=" + fieldValues, options, function(err, res) {
-
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-            }
-        });
-    });
-}
-*/
-
-
-
-app.intent('Default Welcome Intent', async (conv) => {
-    //googleuserid=conv.user.raw.userId;
-
-    console.log('Google user id:' + conv.user.raw.userId);
-    console.log('welcomeIntent line new');
-    console.log('conv.user', conv.user);
-    if (conv.user.access.token) {
-        var result = await db.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1', [conv.user.access.token]);
-        console.log(JSON.stringify(result.rows[0]))
-        if (result.rows[0].instanceurl) {
-            console.log('Instance Url:' + result.rows[0].instanceurl);
-        }
-        conv.ask(new SimpleResponse({
-            speech: "Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?",
-            text: "Hello, this is your friendly salesforce bot.I can help you with some basic salesforce functionalities.What can I do for you today?"
-        }));
-    }
-
-});
-
-
-
-app.intent('update acc info', (conv, params) => {
-    const accName = conv.contexts.get('createaccount-followup').parameters['AccountName'];
-    console.log(accName);
-    return updateAccInf(accName, params.accFieldsToUpd, params.accFieldValues).then((resp) => {
-            conv.ask(new SimpleResponse({
-                speech: "Account Information Updated.",
-                text: "Account Information Updated."
-            }));
-            conv.ask(new Suggestions('Submit for approval'));
-        })
-        .catch((err) => {
-            conv.ask(new SimpleResponse({
-                speech: "Error while updating",
-                text: "Error while updating"
-            }));
-        });
-});
-
-app.intent('Submit for Approval - account', (conv, params) => {
-    const accName = conv.contexts.get('createaccount-followup').parameters['AccountName'];
-    console.log('Account name in approval intent--> ' + accName);
-    return accountSubmitForApproval(accName).then((resp) => {
-            conv.ask(new SimpleResponse({
-                speech: "Account record has been submitted for approval succesfully.",
-                text: "Account record has been submitted for approval succesfully."
-            }));
-        })
-        .catch((err) => {
-            conv.ask(new SimpleResponse({
-                speech: "Error in submitting for approval.",
-                text: "Error in submitting for approval."
-            }));
-        });
-});
 
 
 
@@ -901,36 +584,7 @@ app.intent('Check Batch Job Status', (conv,params) => {
 });
 
 
-app.intent('Update Custom Label Value', (conv, {
-    customLabelVal,
-    customLabelName
-}) => {
 
-    console.log('LabelName passed from google' + customLabelName);
-    console.log('Value passed from google' + customLabelVal);
-
-    return updateLabel(customLabelVal, customLabelName).then((resp) => {
-            if (resp == 'Custom label updated successfully') {
-                conv.ask(new SimpleResponse({
-                    speech: "Custom Label named " + customLabelName + " updated successfully",
-                    text: "Custom Label named " + customLabelName + " updated successfully"
-                }));
-            } else {
-                conv.ask(new SimpleResponse({
-                    speech: "Custom Label named " + customLabelName + " not found",
-                    text: "Custom Label named " + customLabelName + " not found"
-                }));
-            }
-
-        })
-        .catch((err) => {
-            console.log('error', err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while updating Custom Label",
-                text: "Error while updating Custom Label"
-            }));
-        });
-});
 
 
 app.intent('create a generic object record', (conv, params) => {
@@ -1018,8 +672,6 @@ app.intent('Enter Mandatory Fields Data', (conv,params) => {
 								}));
 								reject(err);
 							}
-							//conv.ask(new SimpleResponse({speech:resp,text:resp}));
-							
 						}
 					});
 				}
@@ -1028,40 +680,9 @@ app.intent('Enter Mandatory Fields Data', (conv,params) => {
     });
 });
 
-/*
-app.intent('update record information', (conv, params) => {
 
-    const objectName = conv.contexts.get('createagenericobjectrecord-followup').parameters['objectName'];
-    console.log('objectName in update acc followup ' + objectName);
-
-    return updObjInf(objectName, params.fieldNames, params.fieldValues).then((resp) => {
-
-            if (resp === 'Success') {
-                conv.ask(new SimpleResponse({
-                    speech: objectName + " record has been created successfully.",
-                    text: objectName + " record has been created successfully."
-                }));
-            } else {
-                conv.ask(new SimpleResponse({
-                    speech: "Error received while creating record . " + resp,
-                    text: "Error received while creating record . " + resp
-                }));
-            }
-
-        })
-        .catch((err) => {
-            console.log('error', err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while creating record",
-                text: "Error while creating record"
-            }));
-        });
-});
-*/
 
 var port = process.env.PORT || 3000;
-//var port=3306;
-//var arr = new Array();
 
 
 server.get('/', (req, res) => {
@@ -1073,9 +694,5 @@ server.post('/fulfillment', app);
 
 server.listen(port, function() {
     console.log('port', port);
-    //logger.log(port);
-	
     console.log("Server is up and running...");
-	//log.info('Server is up and running...');
-	//logger.logger('Server is up and running');
 });
