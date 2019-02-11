@@ -736,8 +736,12 @@ app.intent('Update Opportunity', (conv,params) => {
                     conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
 				}
 				else{
-					const oppName = conv.contexts.get('GetOpportunityDetails-followup').parameters['oppName'];
-					var restURL = "/updateOpptyInfo?oppName=" + oppName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;;
+					console.log('should be here');
+					
+					const opptName = conv.contexts.get('GetOpportunityDetails-followup').parameters['oppName'];
+					console.log(opptName);
+					
+					var restURL = "/updateOpptyInfo?oppName=" + opptName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;;
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err){
