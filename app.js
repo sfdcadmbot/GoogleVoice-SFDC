@@ -723,6 +723,47 @@ app.intent('Get Opportunity Details', (conv,params) => {
 });
 
 
+app.intent('Update Opportunity', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					const oppName = conv.contexts.get('GetOpportunityDetails-followup').parameters['oppName'];
+					var restURL = "/updateOpptyInfo?oppName=" + oppName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err){
+							conv.ask(new SimpleResponse({
+								speech: "Error while fetching information. Request you to report this issue to your admin team.",
+								text: "Error while fetching information. Request you to report this issue to your admin team."
+							}));
+							reject(err);
+						} 
+						else{
+							
+							conv.ask(new SimpleResponse({
+									speech: resp,
+									text: resp
+							}));
+							resolve(resp);
+							
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
+
 var port = process.env.PORT || 3000;
 
 
