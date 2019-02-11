@@ -481,8 +481,8 @@ app.intent('Run a batch job', (conv,params) => {
 							} 
 							else {
 								conv.ask(new SimpleResponse({
-									speech: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name.",
-									text: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name."
+									speech: "There is no batch class with name " + params.batchClassName + ". Please try again with the correct class name.",
+									text: "There is no batch class with name " + params.batchClassName + ". Please try again with the correct class name."
 								}));
 							}
 							resolve(resp);
