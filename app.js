@@ -483,8 +483,8 @@ app.intent('BatchSize-Custom', (conv,params) => {
 							} 
 							else {
 								conv.ask(new SimpleResponse({
-									speech: "There is no batch class with " + batchClassName,
-									text: "There is no batch class " + batchClassName
+									speech: "There is no batch class with name " + batchClassName + " Please try again with the correct class name.",
+									text: "There is no batch class with name " + batchClassName + " Please try again with the correct class name."
 								}));
 							}
 							resolve(resp);
@@ -533,8 +533,8 @@ app.intent('BatchSize-Default', (conv,params) => {
 							} 
 							else {
 								conv.ask(new SimpleResponse({
-									speech: "There is no batch class with " + batchClassName,
-									text: "There is no batch class " + batchClassName
+									speech: "There is no batch class with name " + batchClassName + " Please try again with the correct class name.",
+									text: "There is no batch class with name " + batchClassName + " Please try again with the correct class name."
 								}));
 							}
 							resolve(resp);
