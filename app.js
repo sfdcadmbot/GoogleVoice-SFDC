@@ -741,6 +741,9 @@ app.intent('Update Opportunity', (conv,params) => {
 					const opptName = conv.contexts.get('GetOpportunityDetails-followup').parameters['oppName'];
 					console.log(opptName);
 					
+					console.log('fieldNames-->'+params.fieldNames);
+					console.log('fieldVal---->'+params.fieldValues);
+					
 					var restURL = "/updateOpptyInfo?oppName=" + opptName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
@@ -754,11 +757,10 @@ app.intent('Update Opportunity', (conv,params) => {
 						else{
 							
 							conv.ask(new SimpleResponse({
-									speech: resp,
-									text: resp
+								speech: resp,
+								text: resp
 							}));
-							resolve(resp);
-							
+							resolve(resp);							
 						}
 					});
 				}
