@@ -448,6 +448,52 @@ app.intent('Assign Permission Set', (conv,params) => {
 });
 
 
+app.intent('Run a batch job', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					String blnkBatchsIZE = '';
+					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + blnkBatchsIZE;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Exception encountered. Please contact your admin team",
+								text: "Exception encountered. Please contact your admin team"
+							}));
+							reject(err);
+						} 
+						else {
+							if (resp == 'Pass') {
+								conv.ask(new SimpleResponse({
+								speech: "Would you like to set any specific batch size ?  Please note that if you don't then default size of the batch would be set to 200.",
+								text: "Would you like to set any specific batch size ?  Please note that if you don't then default size of the batch would be set to 200."
+								}));
+							} 
+							else {
+								conv.ask(new SimpleResponse({
+									speech: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name.",
+									text: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name."
+								}));
+							}
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
 app.intent('BatchSize-Custom', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
