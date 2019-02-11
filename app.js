@@ -835,6 +835,47 @@ app.intent('Update Opportunity', (conv,params) => {
 });
 
 
+app.intent('Create Task on Opportunity', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					
+					var restURL = "/createTask?oppName=" + params.oppName + "&taskSubject=" + params.taskSubject + "&taskPriority=" + params.taskPriority;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err){
+							conv.ask(new SimpleResponse({
+								speech: "Error while creating task",
+								text: "Error while creating task"
+							}));
+							reject(err);
+						} 
+						else{
+							
+							conv.ask(new SimpleResponse({
+									speech: resp,
+									text: resp
+							}));
+							resolve(resp);
+							
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
+
 var port = process.env.PORT || 3000;
 
 
