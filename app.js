@@ -464,7 +464,7 @@ app.intent('Run a batch job', (conv,params) => {
 					
 					//var finlClassName = params.className.replace(/\s/g,'').replace(/underscore/g,'_');
 					
-					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + '';
+					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + "";
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
@@ -526,14 +526,14 @@ app.intent('BatchSize-Custom', (conv,params) => {
 						else {
 							if (resp == 'Pass') {
 								conv.ask(new SimpleResponse({
-								speech: "Okay. Batch job for batch class named " + params.batchClassName + " with scope " + params.batchSize + " has been submitted for execution.",
-								text: "Okay. Batch job for batch class named " + params.batchClassName + " with scope " + params.batchSize + " has been submitted for execution."
+								speech: "Okay. Batch job for batch class named " + batchClassName + " with scope " + params.batchSize + " has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + batchClassName + " with scope " + params.batchSize + " has been submitted for execution."
 								}));
 							} 
 							else {
 								conv.ask(new SimpleResponse({
-									speech: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name.",
-									text: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name."
+									speech: "There is no batch class with name " + batchClassName + " Please try again with the correct class name.",
+									text: "There is no batch class with name " + batchClassName + " Please try again with the correct class name."
 								}));
 							}
 							resolve(resp);
@@ -564,7 +564,7 @@ app.intent('BatchSize-Default', (conv,params) => {
 					console.log(batchClassName);
 					//var fnlClassNme = batchClassName.replace(/\s/g,'').replace(/underscore/g,'_');
 					var defaultBatchSize = '200';
-					var restURL = "/runBatchJob?batchClassName=" + batchClassName + "&batchSize=" + defaultBatchSize;
+					var restURL = "/runBatchJob?batchClassName=" + batchClassName + "&batchSize=" + "200";
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
@@ -577,14 +577,14 @@ app.intent('BatchSize-Default', (conv,params) => {
 						else {
 							if (resp == 'Pass') {
 								conv.ask(new SimpleResponse({
-								speech: "Okay. Batch job for batch class named " + params.batchClassName + " with default scope 200 has been submitted for execution.",
-								text: "Okay. Batch job for batch class named " + params.batchClassName + " with default scope 200 has been submitted for execution."
+								speech: "Okay. Batch job for batch class named " + batchClassName + " with default scope 200 has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + batchClassName + " with default scope 200 has been submitted for execution."
 								}));
 							} 
 							else {
 								conv.ask(new SimpleResponse({
-									speech: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name.",
-									text: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name."
+									speech: "There is no batch class with name " + batchClassName + " Please try again with the correct class name.",
+									text: "There is no batch class with name " + batchClassName + " Please try again with the correct class name."
 								}));
 							}
 							resolve(resp);
