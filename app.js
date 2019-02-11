@@ -340,32 +340,6 @@ var EstablishConnection = function(accesstoken, callback) {
 
 
 
-var executeBatchWithSize = function(batchClassName, batchSize) {
-    return new Promise((resolve, reject) => {
-        conn.login(process.env.username, process.env.pass, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                var header = 'Bearer ' + conn.accessToken;
-                var options = {
-                    Authorization: header
-                };
-
-                conn.apex.get("/runBatchJob?batchClassName=" + batchClassName + "&batchSize=" + batchSize, options, function(err, res) {
-
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-
-            }
-        });
-    });
-}
-
-
 
 
 app.intent('Get CRUD permissions', (conv,params) => {
@@ -474,63 +448,104 @@ app.intent('Assign Permission Set', (conv,params) => {
 });
 
 
-app.intent('BatchSize-Custom', (conv, params) => {
-
-    console.log('this should be triggered for custom batch size');
-
-    const batchClassName = conv.contexts.get('runabatchjob-followup').parameters['batchClassName'];
-    console.log(batchClassName);
-
-    return executeBatchWithSize(batchClassName, params.batchSize).then((resp) => {
-            if (resp == 'Pass') {
-                conv.ask(new SimpleResponse({
-                    speech: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution.",
-                    text: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution."
-                }));
-            } else {
-                conv.ask(new SimpleResponse({
-                    speech: "There is no batch class with " + batchClassName,
-                    text: "There is no batch class " + batchClassName
-                }));
-            }
-        })
-        .catch((err) => {
-            console.log('err-->' + err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while submitting batch job for execution",
-                text: "Error while submitting batch job for execution"
-            }));
+app.intent('BatchSize-Custom', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					const batchClassName = conv.contexts.get('runabatchjob-followup').parameters['batchClassName'];
+					console.log(batchClassName);
+					var restURL = "/runBatchJob?batchClassName=" + batchClassName + "&batchSize=" + params.batchSize;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Exception encountered. Please contact your admin team",
+								text: "Exception encountered. Please contact your admin team"
+							}));
+							reject(err);
+						} 
+						else {
+							if (resp == 'Pass') {
+								conv.ask(new SimpleResponse({
+								speech: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution."
+								}));
+							} 
+							else {
+								conv.ask(new SimpleResponse({
+									speech: "There is no batch class with " + batchClassName,
+									text: "There is no batch class " + batchClassName
+								}));
+							}
+							resolve(resp);
+						}
+					});
+				}
+			});
         });
+    });
 });
 
-app.intent('BatchSize-Default', (conv, params) => {
 
-    console.log('this should be triggered for default batch size');
-
-    const batchClassName = conv.contexts.get('runabatchjob-followup').parameters['batchClassName'];
-
-    return executeBatchWithSize(batchClassName, 200).then((resp) => {
-            if (resp == 'Pass') {
-                conv.ask(new SimpleResponse({
-                    speech: "Okay. Batch job for batch class named " + batchClassName + " with default size 200" + " has been submitted for execution.",
-                    text: "Okay. Batch job for batch class named " + batchClassName + " with default size 200" + " has been submitted for execution."
-                }));
-            } else {
-                conv.ask(new SimpleResponse({
-                    speech: "There is no batch class with " + batchClassName,
-                    text: "There is no batch class " + batchClassName
-                }));
-            }
-        })
-        .catch((err) => {
-            a
-            console.log('err-->' + err);
-            conv.ask(new SimpleResponse({
-                speech: "Error while submitting batch job for execution",
-                text: "Error while submitting batch job for execution"
-            }));
+app.intent('BatchSize-Default', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					const batchClassName = conv.contexts.get('runabatchjob-followup').parameters['batchClassName'];
+					console.log(batchClassName);
+					var defaultBatchSize = '200';
+					var restURL = "/runBatchJob?batchClassName=" + batchClassName + "&batchSize=" + defaultBatchSize;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Exception encountered. Please contact your admin team",
+								text: "Exception encountered. Please contact your admin team"
+							}));
+							reject(err);
+						} 
+						else {
+							if (resp == 'Pass') {
+								conv.ask(new SimpleResponse({
+								speech: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution."
+								}));
+							} 
+							else {
+								conv.ask(new SimpleResponse({
+									speech: "There is no batch class with " + batchClassName,
+									text: "There is no batch class " + batchClassName
+								}));
+							}
+							resolve(resp);
+						}
+					});
+				}
+			});
         });
+    });
 });
+
 
 
 
