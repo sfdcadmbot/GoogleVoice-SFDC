@@ -477,8 +477,8 @@ app.intent('BatchSize-Custom', (conv,params) => {
 						else {
 							if (resp == 'Pass') {
 								conv.ask(new SimpleResponse({
-								speech: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution.",
-								text: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution."
+								speech: "Okay. Batch job for batch class named " + batchClassName + " with scope " + params.batchSize + " has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + batchClassName + " with scope " + params.batchSize + " has been submitted for execution."
 								}));
 							} 
 							else {
@@ -527,8 +527,8 @@ app.intent('BatchSize-Default', (conv,params) => {
 						else {
 							if (resp == 'Pass') {
 								conv.ask(new SimpleResponse({
-								speech: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution.",
-								text: "Okay. Batch job for batch class named " + batchClassName + " and scope " + params.batchSize + " has been submitted for execution."
+								speech: "Okay. Batch job for batch class named " + batchClassName + " with default scope 200 has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + batchClassName + " with default scope 200 has been submitted for execution."
 								}));
 							} 
 							else {
