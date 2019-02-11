@@ -461,8 +461,8 @@ app.intent('Run a batch job', (conv,params) => {
                     conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
 				}
 				else{
-					String blnkBatchsIZE = '';
-					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + blnkBatchsIZE;
+					var blnkBatchSize = '';
+					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + blnkBatchSize;
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
