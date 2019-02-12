@@ -481,7 +481,13 @@ app.intent('Run a batch job', (conv,params) => {
 								text: "Would you like to set any specific batch size ?  Please note that if you don't then default size of the batch would be set to 200."
 								}));
 							} 
-							else {
+							else if(resp != 'Pass' && resp != 'Fail'){
+								conv.ask(new SimpleResponse({
+									speech: resp,
+									text: resp
+								}));
+							}
+							else if(resp == 'Fail'){
 								conv.ask(new SimpleResponse({
 									speech: "There is no batch class with name " + params.batchClassName + ". Please try again with the correct class name.",
 									text: "There is no batch class with name " + params.batchClassName + ". Please try again with the correct class name."
