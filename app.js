@@ -481,6 +481,53 @@ app.intent('Assign Permission Set', (conv,params) => {
     });
 });
 
+app.intent('Run Batch Job With Size now', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					
+					
+					
+					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + params.batchSize;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Exception encountered. Please contact your admin team",
+								text: "Exception encountered. Please contact your admin team"
+							}));
+							reject(err);
+						} 
+						else{
+							if (resp == 'Pass') {
+								conv.ask(new SimpleResponse({
+								speech: "Okay. Batch job for batch class named " + params.batchClassName + " has been submitted for execution.",
+								text: "Okay. Batch job for batch class named " + params.batchClassName + " has been submitted for execution."
+								}));
+							} 
+							else {
+								conv.ask(new SimpleResponse({
+									speech: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name.",
+									text: "There is no batch class with name " + params.batchClassName + " Please try again with the correct class name."
+								}));
+							}
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
+});
 
 app.intent('Run a batch job', (conv,params) => {
     return new Promise((resolve, reject) => {
