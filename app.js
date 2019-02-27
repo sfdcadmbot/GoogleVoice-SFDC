@@ -800,38 +800,48 @@ app.intent('Enter Mandatory Fields Data', (conv,params) => {
 				}
 				else{
 					const objectName = conv.contexts.get('createagenericobjectrecord-followup').parameters['objectName'];
-					var restURL = "/insertGenericRecSrvc?objectName=" + objectName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;
-                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-					response.apex.get(restURL, options, function(err, resp) {
-						console.log('resp line 806--->'+resp);
-						if (err){
-							console.log('err line 808 --->'+err);
-							conv.ask(new SimpleResponse({
-								speech: "Error while creating record",
-								text: "Error while creating record"
-							}));
-							//reject(err);
-						} 
-						else{
-							console.log('resp line 816 --->'+resp);
-							if (resp === 'Success') {
-								console.log('resp line 818 --->'+resp);
+					console.log('fieldNames----------->'+params.fieldNames);
+					console.log('fieldNames----------->'+params.fieldValues);
+					if(params.fieldNames != null && params.fieldValues != null){
+						var restURL = "/insertGenericRecSrvc?objectName=" + objectName + "&fieldNames=" + params.fieldNames + "&fieldValues=" + params.fieldValues;
+						restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+						response.apex.get(restURL, options, function(err, resp) {
+							console.log('resp line 806--->'+resp);
+							if (err){
+								console.log('err line 808 --->'+err);
 								conv.ask(new SimpleResponse({
-										speech: objectName + " record has been created successfully.",
-										text: objectName + " record has been created successfully."
+									speech: "Error while creating record",
+									text: "Error while creating record"
 								}));
-								//resolve(resp);
+								reject(err);
 							} 
 							else{
-								console.log('resp line 826 --->'+resp);
-								conv.ask(new SimpleResponse({
-									speech: "Error received while creating record . " + resp,
-									text: "Error received while creating record . " + resp
-								}));
-								//reject(err);
+								console.log('resp line 816 --->'+resp);
+								if (resp === 'Success') {
+									console.log('resp line 818 --->'+resp);
+									conv.ask(new SimpleResponse({
+											speech: objectName + " record has been created successfully.",
+											text: objectName + " record has been created successfully."
+									}));
+									resolve(resp);
+								} 
+								else{
+									console.log('resp line 826 --->'+resp);
+									conv.ask(new SimpleResponse({
+										speech: "Error received while creating record . " + resp,
+										text: "Error received while creating record . " + resp
+									}));
+									reject(err);
+								}
 							}
-						}
-					});
+						});
+					}
+					else{
+						conv.ask(new SimpleResponse({
+							speech: "Could you please repeat the sentence again with correct wordings.",
+							text: "Could you please repeat the sentence again with correct wordings. "
+						}));
+					}
 				}
 			});
         });
