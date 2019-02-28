@@ -720,8 +720,8 @@ app.intent('Check Batch Job Status', (conv,params) => {
 							var s = params.className.replace(/\s/g,'').replace(/underscore/g,'_');
 							if (!resp.includes('There')) {
 								conv.ask(new SimpleResponse({
-									speech: "Sure! Status of batch job for class named " + s + " is " + resp + ".",
-									text: "Sure! Status of batch job for class named " + s + " is " + resp + "."
+									speech: "Status of apex batch job for class named " + s + " is " + resp + ".",
+									text: "Status of apex batch job for class named " + s + " is " + resp + "."
 								}));
 							} else {
 								conv.ask(new SimpleResponse({
