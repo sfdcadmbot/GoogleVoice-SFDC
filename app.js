@@ -49,6 +49,7 @@ var oauth2 = new jsforce.OAuth2(config.oauth);
 // Serve static assets
 server.use('/', function(req, res, next) {
     console.log('Header:'+JSON.stringify(req.headers));
+	console.log('Body:'+JSON.stringify(req.body));
     let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
 	 //console.log('req.headers['x-access-token']'+req.headers['x-access-token']);
          //console.log('req.headers['authorization']:'+req.headers['authorization']);
