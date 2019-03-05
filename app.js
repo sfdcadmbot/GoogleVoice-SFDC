@@ -148,6 +148,7 @@ server.all('/token2', async (req, res) => {
 server.get('/token', async (req, res) => {
     console.log('The request in token:' + JSON.stringify(req.body));
 	 //console.log('The OrgName:' + JSON.stringify(req.body.OrgName));
+	 var googleredirecturl=config.googleassistantdefaultredirecturl.redirectUri;
     const conn = new jsforce.Connection({
         oauth2: oauth2
     });
@@ -229,8 +230,11 @@ server.get('/token', async (req, res) => {
         console.log(req.session.redirect_uri)
         if (req.session.redirect_uri) {
             res.redirect(req.session.redirect_uri + '?code=' + code + "&state=" + req.session.state)
-        } else
-            res.redirect('/');
+        }
+		else
+			
+            //res.redirect('/');
+			res.redirect(googleredirecturl+ '?code=' + code + "&state=" + req.session.state)
         ///res.send(JSON.stringify(Object.assign(userInfo,user,{session:req.session}, { rows: (!result ? result : result.rows) })))
     } catch (e) {
         await db.query('ROLLBACK')
