@@ -28,7 +28,6 @@
             form.appendChild(setAttributes(document.createElement("input"),{"type": "hidden","name": "state","value":query.state }));
         }
         window.onload=parseQuery
-
 </script>
 <body>
     <div class="wrapper">
@@ -36,7 +35,7 @@
             <h1>Welcome to Salesforce Connect</h1>
 
             <form class="form" action="/auth/login" method="post">
-                    <label class="form-group radio">Log in to Production Org
+                    <label class="form-group radio">Log in to Production/Developer Org
                         <input type="radio" checked="checked" name="org" value="Production">
                         <span class="checkmark"></span>
                     </label>
@@ -47,22 +46,13 @@
                     <label class="form-group text">
                         <input type="text"  name="orgurl"  placeholder="Custom Url">
                     </label>
+					  <label class="form-group text">Organization Name
+                        <input type="text"  name="OrgName"  placeholder="OrgName" required="true">
+                    </label>
                 <button type="submit" id="login-button">Login</button>
             </form>
         </div>
 
-        <ul class="bg-bubbles">
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-        </ul>
     </div>
 </body>
 
