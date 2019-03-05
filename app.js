@@ -64,12 +64,18 @@ server.use(express.static('public'))
 server.all("/auth/login", function(req, res) {
     // Redirect to Salesforce login/authorization page
 	console.log('config.googleassistantdefaultredirecturl.redirectUri'+config.googleassistantdefaultredirecturl.redirectUri);
-	req.session.redirect_uri = 'https://oauth-redirect.googleusercontent.com';
-    if (req.body.redirect_uri) {
+	
+    if (req.body.redirect_uri!=undefined) {
         console.log("Setting redirect url " + req.body.redirect_uri)
         req.session.redirect_uri = req.body.redirect_uri
         req.session.state = req.body.state
     }
+	if(req.body.redirect_uri==undefined)
+	{
+		console.log("Setting redirect url here " + req.body.redirect_uri)
+        req.session.redirect_uri = 'https://oauth-redirect.googleusercontent.com';
+        req.session.state = 'https://oauth-redirect.googleusercontent.com';
+	}
     if (req.body.orgurl) {
         oauth2 = new jsforce.OAuth2(Object.assign(config.oauth, {
             loginUrl: req.body.orgurl
@@ -83,7 +89,7 @@ server.all("/auth/login", function(req, res) {
             loginUrl: 'https://test.salesforce.com'
         }))
     }
-
+     req.session.organizationnickname=req.body.OrgName;
     console.log(req.body)
     res.redirect(oauth2.getAuthorizationUrl({
         scope: 'api id web refresh_token'
@@ -185,7 +191,8 @@ server.get('/token', async (req, res) => {
             salesforceid: userInfo.id,
             organizationid: userInfo.organizationId,
             authorizationcode: code,
-            accesstokennew: ''
+            accesstokennew: '',
+			organizationnickname :req.session.organizationnickname
         })
         await db.query('COMMIT')
         console.log('The inserted detail in SFDC:' + req.session.userid);
