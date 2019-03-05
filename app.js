@@ -82,8 +82,9 @@ server.all("/auth/login", function(req, res) {
             loginUrl: 'https://test.salesforce.com'
         }))
     }
-
+    req.session.OrgName=req.body.OrgName;
     console.log(req.body)
+	console.log('req.session.OrgName:'+req.session.OrgName);
     res.redirect(oauth2.getAuthorizationUrl({
         scope: 'api id web refresh_token'
     }));
@@ -146,6 +147,7 @@ server.all('/token2', async (req, res) => {
 })
 server.get('/token', async (req, res) => {
     console.log('The request in token:' + JSON.stringify(req.body));
+	 //console.log('The OrgName:' + JSON.stringify(req.body.OrgName));
     const conn = new jsforce.Connection({
         oauth2: oauth2
     });
@@ -184,7 +186,8 @@ server.get('/token', async (req, res) => {
             salesforceid: userInfo.id,
             organizationid: userInfo.organizationId,
             authorizationcode: code,
-            accesstokennew: ''
+            accesstokennew: '',
+			organizationnickname: req.session.OrgName
         })
         await db.query('COMMIT')
         console.log('The inserted detail in SFDC:' + req.session.userid);
