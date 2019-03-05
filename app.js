@@ -49,7 +49,6 @@ var oauth2 = new jsforce.OAuth2(config.oauth);
 // Serve static assets
 server.use('/', function(req, res, next) {
     console.log('Header:'+JSON.stringify(req.headers));
-	console.log('Body:'+JSON.stringify(req.body));
     let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
 	 //console.log('req.headers['x-access-token']'+req.headers['x-access-token']);
          //console.log('req.headers['authorization']:'+req.headers['authorization']);
@@ -64,6 +63,7 @@ server.use(express.static('public'))
  */
 server.all("/auth/login", function(req, res) {
     // Redirect to Salesforce login/authorization page
+	req.session.redirect_uri = config.googleassistantdefaultredirecturl.redirectUri;
     if (req.body.redirect_uri) {
         console.log("Setting redirect url " + req.body.redirect_uri)
         req.session.redirect_uri = req.body.redirect_uri
@@ -82,9 +82,8 @@ server.all("/auth/login", function(req, res) {
             loginUrl: 'https://test.salesforce.com'
         }))
     }
-    req.session.OrgName=req.body.OrgName;
+
     console.log(req.body)
-	console.log('req.session.OrgName:'+req.session.OrgName);
     res.redirect(oauth2.getAuthorizationUrl({
         scope: 'api id web refresh_token'
     }));
@@ -147,8 +146,6 @@ server.all('/token2', async (req, res) => {
 })
 server.get('/token', async (req, res) => {
     console.log('The request in token:' + JSON.stringify(req.body));
-	 //console.log('The OrgName:' + JSON.stringify(req.body.OrgName));
-	 var googleredirecturl=config.googleassistantdefaultredirecturl.redirectUri;
     const conn = new jsforce.Connection({
         oauth2: oauth2
     });
@@ -187,8 +184,7 @@ server.get('/token', async (req, res) => {
             salesforceid: userInfo.id,
             organizationid: userInfo.organizationId,
             authorizationcode: code,
-            accesstokennew: '',
-			organizationnickname: req.session.OrgName
+            accesstokennew: ''
         })
         await db.query('COMMIT')
         console.log('The inserted detail in SFDC:' + req.session.userid);
@@ -228,13 +224,11 @@ server.get('/token', async (req, res) => {
 
         // }
         console.log(req.session.redirect_uri)
-        if (req.session.redirect_uri!=undefined) {
+        if (req.session.redirect_uri) {
+			console.log('value redirect');
             res.redirect(req.session.redirect_uri + '?code=' + code + "&state=" + req.session.state)
-        }
-		else
-			
-            //res.redirect('/');
-			res.redirect(googleredirecturl+ '?code=' + code + "&state=" + req.session.state)
+        } else
+            res.redirect('/');
         ///res.send(JSON.stringify(Object.assign(userInfo,user,{session:req.session}, { rows: (!result ? result : result.rows) })))
     } catch (e) {
         await db.query('ROLLBACK')
