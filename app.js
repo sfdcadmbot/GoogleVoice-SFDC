@@ -63,7 +63,8 @@ server.use(express.static('public'))
  */
 server.all("/auth/login", function(req, res) {
     // Redirect to Salesforce login/authorization page
-	req.session.redirect_uri = config.googleassistantdefaultredirecturl.redirectUri;
+	console.log('config.googleassistantdefaultredirecturl.redirectUri'+config.googleassistantdefaultredirecturl.redirectUri);
+	req.session.redirect_uri = 'https://oauth-redirect.googleusercontent.com';
     if (req.body.redirect_uri) {
         console.log("Setting redirect url " + req.body.redirect_uri)
         req.session.redirect_uri = req.body.redirect_uri
