@@ -10,6 +10,10 @@ const config = {
     //redirectUri : 'http://localhost:' + port +'/token'
     redirectUri: 'https://node-js-google-sfdc-app.herokuapp.com/token'
   },
+  'googleassistantdefaultredirecturl':
+  {
+    redirectUri: 'https://oauth-redirect.googleusercontent.com'
+  },
  
   "db": {
     user: 'avtzfmffgvnnfl',
