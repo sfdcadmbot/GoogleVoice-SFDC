@@ -758,7 +758,7 @@ app.intent('Check Batch Job Status', (conv,params) => {
 app.intent('create a generic object record', (conv, params) => {
 
     console.log('sobject label passed from google' + params.objectName);
-
+    console.log('conv.user:' + conv.user);
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
