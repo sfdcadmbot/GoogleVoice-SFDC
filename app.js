@@ -563,6 +563,7 @@ app.intent('Run a batch job', (conv,params) => {
 					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + "";
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
+						console.log('resp from run batch job-->'+resp);
 						if (err) {
 							conv.ask(new SimpleResponse({
 								speech: "Exception encountered. Please contact your admin team",
