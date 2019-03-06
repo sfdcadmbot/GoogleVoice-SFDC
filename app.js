@@ -90,7 +90,7 @@ server.all("/auth/login", function(req, res) {
         }))
     }
      req.session.organizationnickname=req.body.OrgName;
-	 req.session.googleemailaddress=req.body.googleemailaddress;
+	 req.session.googleid=req.body.googleemailaddress;
     console.log(req.body)
     res.redirect(oauth2.getAuthorizationUrl({
         scope: 'api id web refresh_token'
@@ -193,7 +193,8 @@ server.get('/token', async (req, res) => {
             organizationid: userInfo.organizationId,
             authorizationcode: code,
             accesstokennew: '',
-			organizationnickname :req.session.organizationnickname
+			organizationnickname :req.session.organizationnickname,
+			googleid: req.session.googleid
         })
         await db.query('COMMIT')
         console.log('The inserted detail in SFDC:' + req.session.userid);
