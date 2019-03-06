@@ -63,19 +63,14 @@ server.use(express.static('public'))
  */
 server.all("/auth/login", function(req, res) {
     // Redirect to Salesforce login/authorization page
-	console.log('config.googleassistantdefaultredirecturl.redirectUri'+config.googleassistantdefaultredirecturl.redirectUri);
 	
-    if (req.body.redirect_uri!="undefined") {
+	
+    if (req.body.redirect_uri) {
         console.log("Setting redirect url " + req.body.redirect_uri)
         req.session.redirect_uri = req.body.redirect_uri
         req.session.state = req.body.state
     }
-	if(req.body.redirect_uri=="undefined")
-	{
-		console.log("Setting redirect url here " + req.body.redirect_uri)
-        req.session.redirect_uri = 'https://oauth-redirect.googleusercontent.com';
-        req.session.state = 'https://oauth-redirect.googleusercontent.com';
-	}
+	
     if (req.body.orgurl) {
         oauth2 = new jsforce.OAuth2(Object.assign(config.oauth, {
             loginUrl: req.body.orgurl
@@ -90,6 +85,7 @@ server.all("/auth/login", function(req, res) {
         }))
     }
      req.session.organizationnickname=req.body.OrgName;
+	 req.session.googleemailaddress=req.body.googleemailaddress;
     console.log(req.body)
     res.redirect(oauth2.getAuthorizationUrl({
         scope: 'api id web refresh_token'
@@ -232,11 +228,12 @@ server.get('/token', async (req, res) => {
 
         // }
         console.log(req.session.redirect_uri)
-        if (req.session.redirect_uri) {
+        if (typeof req.session.redirect_uri !='undefined') {
 			console.log('value redirect');
             res.redirect(req.session.redirect_uri + '?code=' + code + "&state=" + req.session.state)
         } else
-            res.redirect('/');
+            //res.redirect('/');
+		      res.redirect('https://node-js-google-sfdc-app.herokuapp.com/user.html');
         ///res.send(JSON.stringify(Object.assign(userInfo,user,{session:req.session}, { rows: (!result ? result : result.rows) })))
     } catch (e) {
         await db.query('ROLLBACK')
