@@ -70,7 +70,11 @@ server.all("/auth/login", function(req, res) {
         req.session.redirect_uri = req.body.redirect_uri
         req.session.state = req.body.state
     }
-	
+	else{
+		console.log('here redirect');
+		req.session.redirect_uri = null;
+        
+	}
 	
     if (req.body.orgurl) {
         oauth2 = new jsforce.OAuth2(Object.assign(config.oauth, {
@@ -229,7 +233,7 @@ server.get('/token', async (req, res) => {
 
         // }
         console.log(req.session.redirect_uri)
-        if (!req.session.redirect_uri) {
+        if (req.session.redirect_uri!=null) {
 			console.log('value redirect');
             res.redirect(req.session.redirect_uri + '?code=' + code + "&state=" + req.session.state)
         } else
