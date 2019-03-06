@@ -228,7 +228,7 @@ server.get('/token', async (req, res) => {
 
         // }
         console.log(req.session.redirect_uri)
-        if (typeof req.session.redirect_uri !=="undefined") {
+        if (typeof req.session.redirect_uri !==undefined) {
 			console.log('value redirect');
             res.redirect(req.session.redirect_uri + '?code=' + code + "&state=" + req.session.state)
         } else
