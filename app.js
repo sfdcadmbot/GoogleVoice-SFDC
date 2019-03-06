@@ -562,7 +562,8 @@ app.intent('Run a batch job', (conv,params) => {
 					
 					var restURL = "/runBatchJob?batchClassName=" + params.batchClassName + "&batchSize=" + "";
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-					response.apex.get(restURL, options, function(err, resp) {
+					response.apex.get(restURL, options, n batch function(err, resp) {
+						console.log('**response from run batch salesforce service**-->'+resp);
 						if (err) {
 							conv.ask(new SimpleResponse({
 								speech: "Exception encountered. Please contact your admin team",
@@ -572,6 +573,7 @@ app.intent('Run a batch job', (conv,params) => {
 						} 
 						else {
 							if (resp == 'Pass') {
+								console.log('should be here run batch test 1');
 								conv.ask(new SimpleResponse({
 								speech: "Would you like to set any specific batch size ?  Please note that if you don't then default size of the batch would be set to 200.",
 								text: "Would you like to set any specific batch size ?  Please note that if you don't then default size of the batch would be set to 200."
@@ -758,7 +760,7 @@ app.intent('Check Batch Job Status', (conv,params) => {
 app.intent('create a generic object record', (conv, params) => {
 
     console.log('sobject label passed from google' + params.objectName);
-    console.log('conv.user:' + conv.user);
+
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
