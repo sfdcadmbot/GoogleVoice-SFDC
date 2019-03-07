@@ -40,7 +40,7 @@ debugger;
 	  var parameters = { orgnameval: $(this).val() };
        $.get( '/searching',parameters, function(data) {
        //$('#errormsg').html(data);
-     });
+     })
     .done(function(data) {
 	    
     alert( "second success" +data);
