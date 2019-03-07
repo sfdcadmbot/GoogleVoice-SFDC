@@ -32,7 +32,11 @@
 		
 $(document).ready(function(){
 debugger;
- 
+  $("login-button").click(function(event)
+  {
+    event.preventDefault(); // cancel default behavior
+
+  });
   $("#orgname").keyup(function(e){
   debugger;
     //$("#orgname").css("background-color", "pink");
@@ -60,11 +64,7 @@ debugger;
   });
 
 });
-	function my_button_click_handler()
-	{
-		debugger;
-		alert('Hello');
-	}
+	
 </script>
 <body>
     <div class="wrapper">
@@ -90,7 +90,7 @@ debugger;
                         <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true" id="orgname">
                     </label>
 					<span style="display:none" id="errormsg">This organization nickname already exists. Please provide a unique one</span>
-                <button type="submit" id="login-button" onclick="my_button_click_handler">Login</button>
+                <button type="submit" id="login-button">Login</button>
             </form>
         </div>
 
