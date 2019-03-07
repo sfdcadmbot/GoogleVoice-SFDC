@@ -61,6 +61,7 @@ server.get('/searching', function(req, res){
  // input value from search
  var val = req.query.orgnameval;
  console.log('search val:'+val);
+	res.send('Hello world');
 });
 
 /**
