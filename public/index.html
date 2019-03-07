@@ -66,7 +66,7 @@ debugger;
 	{
 		debugger;
 		
-		if($("#errormsg").attr("style")=='display: block; color: red;')
+		if($("#errormsg").attr("style")=='display: block; color: red;position: relative;bottom: 8px;font-size: 18px;')
 		{
 			return false;
 			}
@@ -105,7 +105,7 @@ debugger;
 			         <label class="form-group text">Organization Nickname
                         <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true" id="orgname">
                     </label>
-					<span style="display:none" id="errormsg">This organization nickname already exists. Please provide a unique one</span>
+		    <span style="display:none;position: relative;bottom: 8px;font-size: 18px;" id="errormsg">This organization nickname already exists. Please provide a unique one</span>
                 <!--<button type="submit" id="login-button">Login</button>-->
 		  <input type="submit" value="Login" onclick="JavaScript:return Validator();" id="login-button" style="
       background-color: blue;
