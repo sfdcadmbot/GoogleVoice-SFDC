@@ -41,6 +41,13 @@ debugger;
        $.get( '/searching',parameters, function(data) {
        //$('#errormsg').html(data);
      });
+    .done(function(data) {
+	    
+    alert( "second success" +data);
+  })
+  .fail(function(data) {
+    alert( "error" );
+  })
   
   });
 });
