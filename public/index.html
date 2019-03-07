@@ -2,7 +2,8 @@
 
 <head>
         <link rel="stylesheet" type="text/css" href="css/main.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="scripts/main.js"></script>
 </head>
 <script>
@@ -28,6 +29,20 @@
             form.appendChild(setAttributes(document.createElement("input"),{"type": "hidden","name": "state","value":query.state }));
         }
         window.onload=parseQuery
+		
+$(document).ready(function(){
+debugger;
+ 
+  $("#orgname").keyup(function(){
+  debugger;
+    //$("#orgname").css("background-color", "pink");
+	
+	  var parameters = { orgnameval: $(this).val() };
+       $.get( '/searching',parameters, function(data) {
+       //$('#errormsg').html(data);
+     });
+  });
+});
 </script>
 <body>
     <div class="wrapper">
@@ -49,9 +64,10 @@
 		    <label class="form-group text">Enter Email address associated with Google
                         <input type="email"  name="googleemailaddress"  placeholder="Google Email Address" required="true" pattern=".+@gmail.com">
                     </label>
-			<label class="form-group text">Organization Nickname
-                        <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true">
+			         <label class="form-group text">Organization Nickname
+                        <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true" id="orgname">
                     </label>
+					<span style="display:none" id="errormsg"></span>
                 <button type="submit" id="login-button">Login</button>
             </form>
         </div>
