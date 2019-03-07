@@ -55,6 +55,8 @@ debugger;
   })
   .fail(function(data) {
    // alert( "error" );
+ $("#errormsg").css("display", "none");       
+
   })
   
   });
@@ -64,7 +66,7 @@ debugger;
 	{
 		debugger;
 		
-		if($("#errormsg").attr("style")=='display:block')
+		if($("#errormsg").attr("style")=='display: block; color: red;')
 		{
 			return false;
 			}
