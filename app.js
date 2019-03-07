@@ -59,7 +59,7 @@ server.use(express.static('public'))
 server.get('/searching', function(req, res){
 
  // input value from search
- var val = req.query.search;
+ var val = req.query.orgnameval;
  console.log('search val:'+val);
 });
 
