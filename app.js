@@ -74,7 +74,8 @@ server.get('/searching', function(req, res){
                 console.log('The error ret org nick name:' + err);
                 
             } else {
-                console.log('The value here then google user id-->' + JSON.stringify(result.rows));
+                console.log('The value here then org nickname-->' + JSON.stringify(result.rows));
+		    console.log('The value here then org nickname-->' + result.rows.size());
 
                 if (result.rows[0].organizationnickname== val) {
                     
