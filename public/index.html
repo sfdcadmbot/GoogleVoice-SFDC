@@ -58,11 +58,13 @@ debugger;
   })
   
   });
-  $("#login-button").submit(function () {
-	  debugger;
-  return false;
+
 });
-});
+	function my_button_click_handler()
+	{
+		debugger;
+		alert('Hello');
+	}
 </script>
 <body>
     <div class="wrapper">
@@ -88,7 +90,7 @@ debugger;
                         <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true" id="orgname">
                     </label>
 					<span style="display:none" id="errormsg">This organization nickname already exists. Please provide a unique one</span>
-                <button type="submit" id="login-button">Login</button>
+                <button type="submit" id="login-button" onclick="my_button_click_handler">Login</button>
             </form>
         </div>
 
