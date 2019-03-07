@@ -36,14 +36,12 @@ debugger;
   $("#orgname").keyup(function(e){
   debugger;
     //$("#orgname").css("background-color", "pink");
-	 if(e.keyCode === 13) 
-	 {
-		 debugger;
+
 	  var parameters = { orgnameval: $(this).val() };
        $.get( '/searching',parameters, function(data) {
        //$('#errormsg').html(data);
      });
-  };
+  
   });
 });
 </script>
