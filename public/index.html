@@ -48,7 +48,10 @@ debugger;
         $("#errormsg").css("color", "red");
 
       }
-    //alert( "second success" +data);
+	 else
+	   {
+		$("#errormsg").css("display", "none");       
+	}
   })
   .fail(function(data) {
    // alert( "error" );
