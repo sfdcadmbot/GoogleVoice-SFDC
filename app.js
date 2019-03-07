@@ -77,7 +77,7 @@ server.get('/searching', function(req, res){
                 console.log('The value here then org nickname-->' + JSON.stringify(result.rows));
 		    console.log('The value here then org nickname-->' + result.rows.length);
 
-                if (result.rows[0].organizationnickname== val) {
+                if (result.rows.length > 0) {
                     
 		res.send('Duplicate');
 
