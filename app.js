@@ -56,7 +56,12 @@ server.use('/', function(req, res, next) {
     next();
 });
 server.use(express.static('public'))
+server.get('/searching', function(req, res){
 
+ // input value from search
+ var val = req.query.search;
+ console.log('search val:'+val);
+});
 
 /**
  * Login endpoint
