@@ -82,6 +82,11 @@ server.get('/searching', function(req, res){
 		res.send('Duplicate');
 
                 } 
+		else
+		{
+		res.send('Not Duplicate');
+
+		}
               
             }
         })
