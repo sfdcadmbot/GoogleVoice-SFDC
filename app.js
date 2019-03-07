@@ -311,7 +311,9 @@ var EstablishConnection = function(accesstoken, callback) {
                         accessToken: result.rows[0].accesstoken,
                         refreshToken: result.rows[0].refreshtoken
                     });
-                    conn.on("refresh", function(accessToken, res) {
+					  return new Promise( function( resolve, reject ){
+					setInterval(() => {
+						    conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
                         // to store it in your storage for next request
                         console.log('Salesforce accessToken a/c creation:' + accessToken);
@@ -336,10 +338,9 @@ var EstablishConnection = function(accesstoken, callback) {
                             })
                         })
                     });
-                    callback(conn);
-
-
-
+                    resolve(callback(conn));
+						}, 15000);
+					  });
                 } else if (result.rows[0].accesstokennew != '') {
                     console.log('here we go');
                     var conn = new jsforce.Connection({
@@ -351,7 +352,9 @@ var EstablishConnection = function(accesstoken, callback) {
                         accessToken: result.rows[0].accesstokennew,
                         refreshToken: result.rows[0].refreshtoken
                     });
-                    conn.on("refresh", function(accessToken, res) {
+					return new Promise( function( resolve, reject ){
+						 setInterval(() => {
+						      conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
                         // to store it in your storage for next request
                         console.log('Salesforce accessToken line 338 :' + accessToken);
@@ -376,7 +379,11 @@ var EstablishConnection = function(accesstoken, callback) {
                             })
                         })
                     });
-                    callback(conn);
+                    resolve(callback(conn));
+						}, 15000);
+					});
+
+                
 
                 }
                 //resolve(result.rows);
