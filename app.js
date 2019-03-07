@@ -75,7 +75,7 @@ server.get('/searching', function(req, res){
                 
             } else {
                 console.log('The value here then org nickname-->' + JSON.stringify(result.rows));
-		    console.log('The value here then org nickname-->' + result.rows.size());
+		    console.log('The value here then org nickname-->' + result.rows.length);
 
                 if (result.rows[0].organizationnickname== val) {
                     
