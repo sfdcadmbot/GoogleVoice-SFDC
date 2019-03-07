@@ -61,7 +61,30 @@ server.get('/searching', function(req, res){
  // input value from search
  var val = req.query.orgnameval;
  console.log('search val:'+val);
-	res.send('Hello world');
+ //res.send('Hello world');
+	
+	 pool.connect(function(err, client, done) {
+        if (err) {
+            console.log("Can not connect to the DB" + err);
+         
+        }
+        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "organizationnickname" = $1, [val], function(err, result) {
+            done();
+            if (err) {
+                console.log('The error ret org nick name:' + err);
+                
+            } else {
+                console.log('The value here then google user id-->' + JSON.stringify(result.rows));
+
+                if (result.rows[0].organizationnickname== val) {
+                    
+					res.send('This organization nickname already exists. Please provide a unique one');
+
+                } 
+              
+            }
+        })
+    })
 });
 
 /**
