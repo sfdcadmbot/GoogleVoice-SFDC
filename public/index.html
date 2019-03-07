@@ -42,7 +42,10 @@ debugger;
        //$('#errormsg').html(data);
      })
     .done(function(data) {
-	    
+      if(data=='This organization nickname already exists. Please provide a unique one')
+      {
+	      $(#errormsg).style.display='block';
+      }
     //alert( "second success" +data);
   })
   .fail(function(data) {
@@ -75,7 +78,7 @@ debugger;
 			         <label class="form-group text">Organization Nickname
                         <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true" id="orgname">
                     </label>
-					<span style="display:none" id="errormsg"></span>
+					<span style="display:none" id="errormsg">This organization nickname already exists. Please provide a unique one</span>
                 <button type="submit" id="login-button">Login</button>
             </form>
         </div>
