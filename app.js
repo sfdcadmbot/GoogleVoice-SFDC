@@ -68,7 +68,7 @@ server.get('/searching', function(req, res){
             console.log("Can not connect to the DB" + err);
          
         }
-        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "organizationnickname" = $1, [val], function(err, result) {
+        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "organizationnickname" = $1', [val], function(err, result) {
             done();
             if (err) {
                 console.log('The error ret org nick name:' + err);
@@ -78,7 +78,7 @@ server.get('/searching', function(req, res){
 
                 if (result.rows[0].organizationnickname== val) {
                     
-					res.send('This organization nickname already exists. Please provide a unique one');
+		res.send('Duplicate');
 
                 } 
               
