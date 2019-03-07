@@ -32,11 +32,7 @@
 		
 $(document).ready(function(){
 debugger;
-  $("login-button").click(function(event)
-  {
-    event.preventDefault(); // cancel default behavior
-
-  });
+ 
   $("#orgname").keyup(function(e){
   debugger;
     //$("#orgname").css("background-color", "pink");
@@ -64,14 +60,29 @@ debugger;
   });
 
 });
+	function Validator()
+	{
+		debugger;
+		
+		if($("#errormsg").attr("style")=='display:block')
+		{
+			return false;
+			}
+			else{
+			 document.getElementById('custompage').action='/auth/login'; // Where to go
+                          document.getElementById('custompage').submit(); // Send POST data and go there
+			 return true;
+			}
 	
+	}	
 </script>
 <body>
     <div class="wrapper">
         <div class="container">
             <h1>Welcome to Salesforce Connect</h1>
+            <!--<form class="form" action="/auth/login" method="post" id="custompage">-->
 
-            <form class="form" action="/auth/login" method="post">
+            <form class="form" method="post" id="custompage">
                     <label class="form-group radio">Log in to Production/Developer Org
                         <input type="radio" checked="checked" name="org" value="Production">
                         <span class="checkmark"></span>
@@ -90,7 +101,9 @@ debugger;
                         <input type="text"  name="OrgName"  placeholder="Org Nickname" required="true" id="orgname">
                     </label>
 					<span style="display:none" id="errormsg">This organization nickname already exists. Please provide a unique one</span>
-                <button type="submit" id="login-button">Login</button>
+                <!--<button type="submit" id="login-button">Login</button>-->
+		  <input type="submit" value="Send" onclick="JavaScript:return Validator();" />
+
             </form>
         </div>
 
