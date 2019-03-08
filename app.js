@@ -336,7 +336,7 @@ var EstablishConnection = function(accesstoken, callback) {
                             })
                         })
                     });
-                    callback(conn);
+                    setTimeout(callback(conn),15000);
 
 
 
@@ -376,7 +376,7 @@ var EstablishConnection = function(accesstoken, callback) {
                             })
                         })
                     });
-                    callback(conn);
+                    setTimeout(callback(conn),15000);
 
                 }
                 //resolve(result.rows);
@@ -797,11 +797,8 @@ app.intent('create a generic object record', (conv, params) => {
     console.log('sobject label passed from google' + params.objectName);
       conv.user.storage.sandboxname='Dev';
 	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
-	  
-	  
-
     return new Promise((resolve, reject) => {
-        EstablishConnection(conv.user.access.token, setTimeout(function(response) {
+        EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
             var options = {
                 Authorization: header
@@ -837,7 +834,7 @@ app.intent('create a generic object record', (conv, params) => {
                     resolve(resp);
                 }
             });
-        },15000));
+        });
     });
 });
 
