@@ -336,7 +336,7 @@ var EstablishConnection = function(accesstoken, callback) {
                             })
                         })
                     });
-                    setTimeout(callback(conn),15000);
+                    setTimeout((function(){callback(conn);},15000);
 
 
 
@@ -376,7 +376,7 @@ var EstablishConnection = function(accesstoken, callback) {
                             })
                         })
                     });
-                    setTimeout(callback(conn),15000);
+                    setTimeout((function(){callback(conn);},15000);
 
                 }
                 //resolve(result.rows);
