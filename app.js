@@ -316,14 +316,9 @@ var EstablishConnection = function(accesstoken, callback) {
                         // to store it in your storage for next request
                         console.log('Salesforce accessToken a/c creation:' + accessToken);
                         console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
-                        pool.connect(function(err, client, done) {
-                            if (err) {
-                                console.log("Can not connect to the DB a/c creation" + err);
-                                //return err;
-                                //reject(err);
-                            }
-                            client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
-                                done();
+                      
+                         client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
+                                //done();
                                 if (err) {
                                     console.log('The error ret data a/c creation:' + err);
                                     //return err;
@@ -334,7 +329,7 @@ var EstablishConnection = function(accesstoken, callback) {
                                     //resolve(conn);
                                 }
                             })
-                        })
+                        
                     });
 					callback(conn);
                     
@@ -357,14 +352,9 @@ var EstablishConnection = function(accesstoken, callback) {
                         // to store it in your storage for next request
                         console.log('Salesforce accessToken line 338 :' + accessToken);
                         console.log('Salesforce res line 339:' + JSON.stringify(res));
-                        pool.connect(function(err, client, done) {
-                            if (err) {
-                                console.log("Can not connect to the DB line 342" + err);
-                                //return err;
-                                //reject(err);
-                            }
+                      
                             client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)', [accessToken, result.rows[0].accesstokennew], function(err, result) {
-                                done();
+                                //done();
                                 if (err) {
                                     console.log('The error ret data line 349:' + err);
                                     //return err;
@@ -375,7 +365,7 @@ var EstablishConnection = function(accesstoken, callback) {
                                     //resolve(conn);
                                 }
                             })
-                        })
+                        
                     });
 					callback(conn);
                    
