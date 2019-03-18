@@ -416,7 +416,57 @@ app.intent('Get CRUD permissions', (conv,params) => {
     });
 });
 
+app.intent('Default Welcome Intent', (conv,params) => {
+	 return new Promise((resolve, reject) => {
+        pool.connect(function(err, client, done) {
+        if (err) {
+            console.log("Can not connect to the DB" + err);
+         
+        }
+        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "googleid" = $1', [params.EmailAddress], function(err, result) {
+            done();
+            if (err) {
+                console.log('The error occured while retrieved record:' + err);
+				conv.ask(new SimpleResponse({
+								speech: "Sorry the email address is not linked to Google",
+								text: "Sorry the email address is not linked to Google"
+							}));
+							reject(err);
+                
+            } 
+			else {
+                console.log('The value here then line 438-->' + JSON.stringify(result.rows));
+		    console.log('The value here then line 439-->' + result.rows.length);
 
+		  
+			 if(result.rows.length >0)
+			 {
+		     var strNamefinal='You are connected to ';
+		     var strName='';
+		  for (var i = 0; i < result.rows.length; i++) {
+           strName += result.rows[i].organizationnickname + ',';
+            }
+			strName = strName.replace(/,\s*$/, "");
+             strNamefinal=strNamefinal+ strName;
+			 conv.ask(new SimpleResponse({
+								speech: strNamefinal,
+								text: strNamefinal
+							}));
+							resolve(err);
+			 }
+			 else
+			 {
+				 conv.ask(new SimpleResponse({
+								speech: "Sorry the email address is not linked to Google",
+								text: "Sorry the email address is not linked to Google"
+							}));
+							resolve(err);
+			 }
+            }
+        })
+    })
+    });
+});
 
 app.intent('Check Permission Set Assignment', (conv,params) => {
     return new Promise((resolve, reject) => {
