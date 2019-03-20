@@ -516,7 +516,9 @@ app.intent('Search for custom settings', (conv,params) => {
                     conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
 				}
 				else{
-					var restURL = "/getCustomSettings?custSettName=" + params.custSettName;
+					var custSettNameUnderScore = params.custSettName.split(' ').join('_')+'__c';
+					var actualCustSettName = (result.records[0].NamespacePrefix != null) ? result.records[0].NamespacePrefix + custSettNameUnderScore ? custSettNameUnderScore;
+					var restURL = "/getCustomSettings?custSettName=" + actualCustSettName';
                     restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						if (err) {
