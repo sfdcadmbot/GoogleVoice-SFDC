@@ -536,6 +536,41 @@ app.intent('Search for custom settings', (conv,params) => {
     });
 });
 
+app.intent('Search for Custom Setting Name', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					const custSettName = conv.contexts.get('Searchforcustomsettings-followup').parameters['custSettName'];
+					var restURL = "/getCustomSettings?custSettName=" + custSettName + "&recordName=" + params.recordName;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Error while fetching recent records",
+								text: "Error while fetching recent records"
+							}));
+							reject(err);
+						} else {
+							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
 app.intent('Get Recent Records', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
