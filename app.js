@@ -537,6 +537,7 @@ app.intent('Search for custom settings', (conv,params) => {
 });
 
 app.intent('Search for Custom Setting Name', (conv,params) => {
+	console.log('Inside Search for Cust sett name');
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
