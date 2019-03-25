@@ -572,6 +572,52 @@ app.intent('Search for Custom Setting Name', (conv,params) => {
     });
 });
 
+app.intent('Search Custom Settings Field Values', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					console.log('fieldNames----------->'+params.fieldNames);
+					console.log('custSettName----------->'+params.custSettName);
+					console.log('recordName----------->'+params.recordName);
+					if(params.fieldNames != null){
+						var restURL = "/getCustomSettings?custSettName=" + custSettName + "&fieldNames=" + params.fieldNames + "&recordName=" + params.recordName;
+						restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+						response.apex.get(restURL, options, function(err, resp) {
+							console.log('resp line 806--->'+resp);
+							if (err){
+								console.log('err line 808 --->'+err);
+								conv.ask(new SimpleResponse({
+									speech: "Error while creating record",
+									text: "Error while creating record"
+								}));
+								reject(err);
+							} 
+							else{
+								conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							}
+						});
+					}
+					else{
+						conv.ask(new SimpleResponse({
+							speech: "Could you please repeat the sentence again with correct wordings.",
+							text: "Could you please repeat the sentence again with correct wordings. "
+						}));
+					}
+				}
+			});
+        });
+    });
+});
+
 app.intent('Get Recent Records', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
