@@ -589,7 +589,46 @@ app.intent('Search Custom Settings Field Values', (conv,params) => {
 					console.log('fieldNames----------->'+params.fieldNames);
 					console.log('custSettName----------->'+params.custSettName);
 					console.log('recordName----------->'+params.recordName);
-					var restURL = "/getCustomSettings?custSettName=" + custSettName + "&fieldNames=" + params.fieldNames + "&recordName=" + params.recordName + "&namespace" + result.records[0].NamespacePrefix;
+					var restURL = "/getCustomSettings?custSettName=" + params.custSettName + "&fieldNames=" + params.fieldNames + "&recordName=" + params.recordName + "&namespace" + result.records[0].NamespacePrefix + "&isUpdate=false";
+					restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						console.log('resp line 806--->'+resp);
+						if (err){
+							console.log('err line 808 --->'+err);
+							conv.ask(new SimpleResponse({
+								speech: "Error while creating record",
+								text: "Error while creating record"
+							}));
+							reject(err);
+						} 
+						else{
+							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
+app.intent('Update Custom Settings Field Values', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					console.log('fieldNames----------->'+params.fieldNames);
+					console.log('custSettName----------->'+params.custSettName);
+					console.log('recordName----------->'+params.recordName);
+					var restURL = "/getCustomSettings?custSettName=" + params.custSettName + "&fieldNames=" + params.fieldNames + "&recordName=" + params.recordName + "&namespace" + result.records[0].NamespacePrefix + "&isUpdate=true" + "&fieldValues=" + ;
 					restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						console.log('resp line 806--->'+resp);
