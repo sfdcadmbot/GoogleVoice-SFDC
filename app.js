@@ -569,6 +569,7 @@ app.intent('Search Custom Settings Field Values', (conv,params) => {
 						} 
 						else{
 							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
 						}
 					});
 				}
@@ -608,6 +609,7 @@ app.intent('Update Custom Settings Field Values', (conv,params) => {
 						} 
 						else{
 							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
 						}
 					});
 				}
