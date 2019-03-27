@@ -553,8 +553,10 @@ app.intent('Search Custom Settings Field Values', (conv,params) => {
 					console.log('fieldNames----------->'+params.fieldNames);
 					console.log('custSettName----------->'+params.custSettName);
 					console.log('recordName----------->'+params.recordName);
+					console.log('namespace ------------->+result.records[0].NamespacePrefix);
 					var restURL = "/getCustomSettings?custSettName=" + params.custSettName + "&fieldNames=" + params.fieldNames + "&recordName=" + params.recordName + "&namespace" + result.records[0].NamespacePrefix + "&isUpdate=false";
 					restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					console.log('URL ----------->'+restURL);
 					response.apex.get(restURL, options, function(err, resp) {
 						console.log('resp line 806--->'+resp);
 						if (err){
