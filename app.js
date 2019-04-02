@@ -1225,6 +1225,79 @@ app.intent('Create Task on Opportunity', (conv,params) => {
     });
 });
 
+app.intent('Create a New Custom Label', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {			
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{	
+					var restURL = "/createCustomLabel?customLabelName=" + params.customLabelName + "&customLabelValue=" + params.customLabelValue;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err){
+							conv.ask(new SimpleResponse({
+								speech: "Error while creating Custom Label",
+								text: "Error while creating Custom Label"
+							}));
+							reject(err);
+						} 
+						else{
+							conv.ask(new SimpleResponse({
+									speech: resp,
+									text: resp
+							}));
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
+app.intent('Update Value of Custom Label', (conv,params) => {
+    return new Promise((resolve, reject) => {
+        EstablishConnection(conv.user.access.token, function(response) {
+            var header = 'Bearer ' + conv.user.access.token;
+            var options = {
+                Authorization: header
+            };
+			response.query("SELECT NamespacePrefix FROM Organization", function(err, result) {			
+				if (err) {
+                    conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{	
+					var restURL = "/updateCustomLabel?customLabelName=" + params.customLabelName + "&customLabelValue=" + params.customLabelValue;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					response.apex.get(restURL, options, function(err, resp) {
+						if (err){
+							conv.ask(new SimpleResponse({
+								speech: "Error while updating Custom Label",
+								text: "Error while updating Custom Label"
+							}));
+							reject(err);
+						} 
+						else{
+							conv.ask(new SimpleResponse({
+									speech: resp,
+									text: resp
+							}));
+							resolve(resp);
+						}
+					});
+				}
+			});
+        });
+    });
+});
+
+
 
 var port = process.env.PORT || 3000;
 
