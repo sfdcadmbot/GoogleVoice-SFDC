@@ -498,7 +498,7 @@ app.intent('Connect to salesforce', (conv,params) => {
 		conv.user.storage.connectionprop=value;
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
-		console.log('value.conn:' + value);
+		//console.log('value.conn:' + value);
 		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
