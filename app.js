@@ -493,17 +493,21 @@ app.intent('Connect to salesforce', (conv,params) => {
 		conv.user.storage.accesstokennew=value.accesstokennew;
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
+		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
 								text: "Connected to Salesforce"
 							}));
+							
 		
 	}).catch(function(value)
 	{
+		reject('Not connected');
 		conv.ask(new SimpleResponse({
 								speech: "Error while Connecting to Salesforce",
 								text: "Error while Connecting to Salesforce"
 							}));
+							
 	})
 	});
 	
