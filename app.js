@@ -380,7 +380,7 @@ var EstablishConnection = function(accesstoken, callback) {
 }*/
 
 var EstablishConnection = function(accesstoken) {
-	return new promise((resolve,reject)=>{
+	return new Promise((resolve,reject)=>{
 		var accesstokendetails={};
 		
 		pool.connect(function(err, client, done) {
@@ -509,7 +509,7 @@ app.intent('Connect to salesforce', (conv,params) => {
 });
 
 app.intent('create a generic object record', (conv, params) => {
-     return new promise((resolve,reject)=>{
+     return new Promise((resolve,reject)=>{
 		  console.log('sobject label passed from google' + params.objectName);
       conv.user.storage.sandboxname='Dev';
 	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
