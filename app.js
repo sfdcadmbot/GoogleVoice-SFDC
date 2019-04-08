@@ -495,8 +495,10 @@ app.intent('Connect to salesforce', (conv,params) => {
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
+		conv.user.storage.connectionprop=value.conn;
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
+		console.log('value.conn:' + value.conn);
 		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
@@ -536,6 +538,7 @@ app.intent('create a generic object record', (conv, params) => {
             var options = {
                 Authorization: header
             };
+			var response=conv.user.storage.connectionprop;
             response.apex.get("/getMandFields/?objectName=" + params.objectName, options, function(err, resp) {
                 if (err) {
                     conv.ask(new SimpleResponse({
