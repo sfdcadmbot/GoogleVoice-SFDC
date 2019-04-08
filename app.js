@@ -409,6 +409,7 @@ var EstablishConnection = function(accesstoken) {
                     });
 					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					accesstokendetails.accesstokennew='';
+					var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
                         // to store it in your storage for next request
@@ -426,14 +427,15 @@ var EstablishConnection = function(accesstoken) {
                                     console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
-                                    resolve(accesstokendetails);
+									var returnedTarget = Object.assign(conn, accesstokendetails);
+                                    resolve(returnedTarget);
                                 }
                             })
                         
                     });
 					
                     
-                   resolve(accesstokendetails);
+                   resolve(returnedTarget);
 
 
                 } else if (result.rows[0].accesstokennew != '') {
@@ -449,6 +451,7 @@ var EstablishConnection = function(accesstoken) {
                     });
 					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					accesstokendetails.accesstokennew='';
+					var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
                         // to store it in your storage for next request
@@ -466,12 +469,13 @@ var EstablishConnection = function(accesstoken) {
                                     console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
-                                    resolve(accesstokendetails);
+									var returnedTarget = Object.assign(conn, accesstokendetails);
+                                    resolve(returnedTarget);
                                 }
                             })
                         
                     });
-					resolve(accesstokendetails);
+					resolve(returnedTarget);
                    
 
                 }
