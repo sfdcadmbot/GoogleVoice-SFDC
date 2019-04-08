@@ -1,3 +1,4 @@
+  
 // dependencies
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -283,7 +284,7 @@ server.get('/token', async (req, res) => {
     }
 });
 
-
+/*
 var EstablishConnection = function(accesstoken, callback) {
 
 
@@ -376,9 +377,189 @@ var EstablishConnection = function(accesstoken, callback) {
         })
     })
 
-}
+}*/
+
+var EstablishConnection = function(accesstoken) {
+	return new promise((resolve,reject)=>{
+		var accesstokendetails={};
+		
+		pool.connect(function(err, client, done) {
+        if (err) {
+            console.log("Can not connect to the DB" + err);
+            reject(err);
+        }
+        client.query('SELECT * FROM public."googleauthenticatedusers" WHERE "accesstoken" = $1 or "accesstokennew" =$2', [accesstoken, accesstoken], function(err, result) {
+            done();
+            if (err) {
+                console.log('The error ret google user id:' + err);
+                reject(err);
+                //res.status(400).send(err);
+            } else {
+                console.log('The value here then google user id-->' + JSON.stringify(result.rows));
+
+                if (result.rows[0].accesstokennew == '') {
+                    var conn = new jsforce.Connection({
+                        oauth2: {
+                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+                            clientSecret: '4635706799290406853'
+                        },
+                        instanceUrl: result.rows[0].instanceurl,
+                        accessToken: result.rows[0].accesstoken,
+                        refreshToken: result.rows[0].refreshtoken
+                    });
+					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					accesstokendetails.accesstokennew='';
+                    conn.on("refresh", function(accessToken, res) {
+                        // Refresh event will be fired when renewed access token
+                        // to store it in your storage for next request
+                        console.log('Salesforce accessToken a/c creation:' + accessToken);
+                        console.log('Salesforce res access a/c creation :' + JSON.stringify(res));
+                      
+                         client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstoken" =($2)', [accessToken, result.rows[0].accesstoken], function(err, result) {
+                                //done();
+                                if (err) {
+                                    console.log('The error ret data a/c creation:' + err);
+                                    //return err;
+                                    reject(err);
+                                    //res.status(400).send(err);
+                                } else {
+                                    console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
+									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					                accesstokendetails.accesstokennew=accessToken;
+                                    resolve(accesstokendetails);
+                                }
+                            })
+                        
+                    });
+					
+                    
+                   resolve(accesstokendetails);
 
 
+                } else if (result.rows[0].accesstokennew != '') {
+                    console.log('here we go');
+                    var conn = new jsforce.Connection({
+                        oauth2: {
+                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+                            clientSecret: '4635706799290406853'
+                        },
+                        instanceUrl: result.rows[0].instanceurl,
+                        accessToken: result.rows[0].accesstokennew,
+                        refreshToken: result.rows[0].refreshtoken
+                    });
+					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					accesstokendetails.accesstokennew='';
+                    conn.on("refresh", function(accessToken, res) {
+                        // Refresh event will be fired when renewed access token
+                        // to store it in your storage for next request
+                        console.log('Salesforce accessToken line 338 :' + accessToken);
+                        console.log('Salesforce res line 339:' + JSON.stringify(res));
+                      
+                            client.query('Update public."googleauthenticatedusers" set "accesstokennew" = ($1) WHERE "accesstokennew" =($2)', [accessToken, result.rows[0].accesstokennew], function(err, result) {
+                                //done();
+                                if (err) {
+                                    console.log('The error ret data line 349:' + err);
+                                    //return err;
+                                    reject(err);
+                                    //res.status(400).send(err);
+                                } else {
+                                    console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
+									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					                accesstokendetails.accesstokennew=accessToken;
+                                    resolve(accesstokendetails);
+                                }
+                            })
+                        
+                    });
+					resolve(accesstokendetails);
+                   
+
+                }
+                //resolve(result.rows);
+            }
+        })
+    })
+		
+	});
+};
+
+
+
+app.intent('Connect to salesforce', (conv,params) => {
+	
+	EstablishConnection(conv.user.access.token).then(function(value)
+	{
+		conv.user.storage.accesstoneold=value.oldaccesstoken;
+		conv.user.storage.accesstokennew=value.accesstokennew;
+		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
+		console.log('value.accesstokennew:' + value.accesstokennew);
+		conv.ask(new SimpleResponse({
+								speech: "Connected to Salesforce",
+								text: "Connected to Salesforce"
+							}));
+		
+	}).catch(function(value)
+	{
+		conv.ask(new SimpleResponse({
+								speech: "Error while Connecting to Salesforce",
+								text: "Error while Connecting to Salesforce"
+							}));
+	})
+
+});
+
+app.intent('create a generic object record', (conv, params) => {
+     return new promise((resolve,reject)=>{
+		  console.log('sobject label passed from google' + params.objectName);
+      conv.user.storage.sandboxname='Dev';
+	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
+	  
+	  if(conv.user.storage.accesstokennew=='')
+	  {
+		   var header = 'Bearer ' + conv.user.storage.oldaccesstoken;
+	  }
+	  else if(conv.user.storage.accesstokennew!='')
+	  {
+		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
+	  }
+	 
+            var options = {
+                Authorization: header
+            };
+            response.apex.get("/getMandFields/?objectName=" + params.objectName, options, function(err, resp) {
+                if (err) {
+                    conv.ask(new SimpleResponse({
+                        speech: "Error while creating generic record",
+                        text: "Error while creating generic record"
+                    }));
+                    reject(err);
+                }
+				else {
+                    console.log("response: ", resp);
+                    if (resp.length == 1) {
+                        conv.ask(new SimpleResponse({
+                            speech: "Hey, there is a mandatory field named " + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation " + " , " + " enter the values for " + resp[0] + " .",
+                            text: "Hey, there is a mandatory field named " + resp[0] + " required for record creation." + " " + "Should you want to proceed with record creation " + " , " + " enter the values for " + resp[0] + " ."
+                        }));
+                    } 
+					else{
+						var strName = '';
+                        for (var i = 0; i < resp.length; i++) {
+                            strName += resp[i] + ',';
+                        }
+                        conv.ask(new SimpleResponse({
+                            speech: "Hey, there are mandatory fields required for record creation. They are " + resp + " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields.",
+                            text: "Hey, there are mandatory fields required for record creation. They are " + resp + " . " + " Should you want to proceed with record creation" + " , " + "enter the values for respective fields."
+                        }));
+
+
+                    }
+                    resolve(resp);
+                }
+            });
+		 
+	 });
+});
 
 
 
@@ -467,6 +648,8 @@ app.intent('Default Welcome Intent', (conv,params) => {
     })
     });
 });
+
+
 
 app.intent('Check Permission Set Assignment', (conv,params) => {
     return new Promise((resolve, reject) => {
@@ -986,7 +1169,7 @@ app.intent('Check Batch Job Status', (conv,params) => {
 
 
 
-
+/*
 app.intent('create a generic object record', (conv, params) => {
 
     console.log('sobject label passed from google' + params.objectName);
@@ -1031,7 +1214,7 @@ app.intent('create a generic object record', (conv, params) => {
             });
         });
     });
-});
+});*/
 
 
 app.intent('Enter Mandatory Fields Data', (conv,params) => {
