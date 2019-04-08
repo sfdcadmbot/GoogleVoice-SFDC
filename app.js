@@ -428,14 +428,14 @@ var EstablishConnection = function(accesstoken) {
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
 									//var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve(accesstokendetails,conn);
+                                    resolve([accesstokendetails,conn]);
                                 }
                             })
                         
                     });
 					
                     
-                   resolve(accesstokendetails,conn);
+                   resolve([accesstokendetails,conn]);
 
 
                 } else if (result.rows[0].accesstokennew != '') {
@@ -470,12 +470,12 @@ var EstablishConnection = function(accesstoken) {
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
 									//var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve(accesstokendetails,conn);
+                                    resolve([accesstokendetails,conn]);
                                 }
                             })
                         
                     });
-					resolve(accesstokendetails,conn);
+					resolve([accesstokendetails,conn]);
                    
 
                 }
@@ -491,14 +491,14 @@ var EstablishConnection = function(accesstoken) {
 
 app.intent('Connect to salesforce', (conv,params) => {
 	return new Promise((resolve,reject)=>{
-		EstablishConnection(conv.user.access.token).then(function(value,valueconn)
+		EstablishConnection(conv.user.access.token).then(function(value)
 	{
-		conv.user.storage.accesstoneold=value.oldaccesstoken;
-		conv.user.storage.accesstokennew=value.accesstokennew;
-		conv.user.storage.connectionprop=valueconn;
-		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
-		console.log('value.accesstokennew:' + value.accesstokennew);
-		console.log('value.conn:' + valueconn);
+		conv.user.storage.accesstoneold=value[0].oldaccesstoken;
+		conv.user.storage.accesstokennew=value[0].accesstokennew;
+		conv.user.storage.connectionprop=value[1].conn;
+		console.log('value.oldaccesstoken:' + value[0].oldaccesstoken);
+		console.log('value.accesstokennew:' + value[0].accesstokennew);
+		console.log('value.conn:' + value[1].conn);
 		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
