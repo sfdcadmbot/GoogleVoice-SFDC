@@ -409,7 +409,7 @@ var EstablishConnection = function(accesstoken) {
                     });
 					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					accesstokendetails.accesstokennew='';
-					var returnedTarget = Object.assign(conn, accesstokendetails);
+					//var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
                         // to store it in your storage for next request
@@ -427,15 +427,15 @@ var EstablishConnection = function(accesstoken) {
                                     console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
-									var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve(returnedTarget);
+									//var returnedTarget = Object.assign(conn, accesstokendetails);
+                                    resolve(accesstokendetails,conn);
                                 }
                             })
                         
                     });
 					
                     
-                   resolve(returnedTarget);
+                   resolve(accesstokendetails,conn);
 
 
                 } else if (result.rows[0].accesstokennew != '') {
@@ -451,7 +451,7 @@ var EstablishConnection = function(accesstoken) {
                     });
 					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					accesstokendetails.accesstokennew='';
-					var returnedTarget = Object.assign(conn, accesstokendetails);
+					//var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
                         // to store it in your storage for next request
@@ -469,13 +469,13 @@ var EstablishConnection = function(accesstoken) {
                                     console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
-									var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve(returnedTarget);
+									//var returnedTarget = Object.assign(conn, accesstokendetails);
+                                    resolve(accesstokendetails,conn);
                                 }
                             })
                         
                     });
-					resolve(returnedTarget);
+					resolve(accesstokendetails,conn);
                    
 
                 }
@@ -491,14 +491,14 @@ var EstablishConnection = function(accesstoken) {
 
 app.intent('Connect to salesforce', (conv,params) => {
 	return new Promise((resolve,reject)=>{
-		EstablishConnection(conv.user.access.token).then(function(value)
+		EstablishConnection(conv.user.access.token).then(function(value,valueconn)
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
-		conv.user.storage.connectionprop=value.conn;
+		conv.user.storage.connectionprop=valueconn;
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
-		console.log('value.conn:' + value.conn);
+		console.log('value.conn:' + valueconn);
 		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
