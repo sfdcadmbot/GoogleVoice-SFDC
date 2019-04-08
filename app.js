@@ -407,8 +407,8 @@ var EstablishConnection = function(accesstoken) {
                         accessToken: result.rows[0].accesstoken,
                         refreshToken: result.rows[0].refreshtoken
                     });
-					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
-					accesstokendetails.accesstokennew='';
+					conn.oldaccesstoken=result.rows[0].accesstoken;
+					conn.accesstokennew='';
 					//var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
@@ -425,17 +425,17 @@ var EstablishConnection = function(accesstoken) {
                                     //res.status(400).send(err);
                                 } else {
                                     console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
-									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
-					                accesstokendetails.accesstokennew=accessToken;
+									conn.oldaccesstoken=result.rows[0].accesstoken;
+					                conn.accesstokennew=accessToken;
 									//var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve([accesstokendetails,conn]);
+                                    resolve(conn);
                                 }
                             })
                         
                     });
 					
                     
-                   resolve([accesstokendetails,conn]);
+                   resolve(conn);
 
 
                 } else if (result.rows[0].accesstokennew != '') {
@@ -449,8 +449,8 @@ var EstablishConnection = function(accesstoken) {
                         accessToken: result.rows[0].accesstokennew,
                         refreshToken: result.rows[0].refreshtoken
                     });
-					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
-					accesstokendetails.accesstokennew='';
+					conn.oldaccesstoken=result.rows[0].accesstoken;
+					conn.accesstokennew='';
 					//var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
@@ -467,15 +467,15 @@ var EstablishConnection = function(accesstoken) {
                                     //res.status(400).send(err);
                                 } else {
                                     console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
-									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
-					                accesstokendetails.accesstokennew=accessToken;
+									conn.oldaccesstoken=result.rows[0].accesstoken;
+					                conn.accesstokennew=accessToken;
 									//var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve([accesstokendetails,conn]);
+                                    resolve(conn);
                                 }
                             })
                         
                     });
-					resolve([accesstokendetails,conn]);
+					resolve(conn);
                    
 
                 }
@@ -493,12 +493,12 @@ app.intent('Connect to salesforce', (conv,params) => {
 	return new Promise((resolve,reject)=>{
 		EstablishConnection(conv.user.access.token).then(function(value)
 	{
-		conv.user.storage.accesstoneold=value[0].oldaccesstoken;
-		conv.user.storage.accesstokennew=value[0].accesstokennew;
-		conv.user.storage.connectionprop=value[1].conn;
-		console.log('value.oldaccesstoken:' + value[0].oldaccesstoken);
-		console.log('value.accesstokennew:' + value[0].accesstokennew);
-		console.log('value.conn:' + value[1].conn);
+		conv.user.storage.accesstoneold=value.oldaccesstoken;
+		conv.user.storage.accesstokennew=value.accesstokennew;
+		conv.user.storage.connectionprop=value;
+		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
+		console.log('value.accesstokennew:' + value.accesstokennew);
+		console.log('value.conn:' + value);
 		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
