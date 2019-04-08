@@ -495,7 +495,7 @@ app.intent('Connect to salesforce', (conv,params) => {
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
-		conv.user.storage.connectionprop=value;
+		conv.user.storage.connectionprop=JSON.stringify(value);
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
 		//console.log('value.conn:' + value);
