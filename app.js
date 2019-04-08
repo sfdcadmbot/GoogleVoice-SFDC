@@ -486,8 +486,8 @@ var EstablishConnection = function(accesstoken) {
 
 
 app.intent('Connect to salesforce', (conv,params) => {
-	
-	EstablishConnection(conv.user.access.token).then(function(value)
+	return new Promise((resolve,reject)=>{
+		EstablishConnection(conv.user.access.token).then(function(value)
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
@@ -505,6 +505,8 @@ app.intent('Connect to salesforce', (conv,params) => {
 								text: "Error while Connecting to Salesforce"
 							}));
 	})
+	});
+	
 
 });
 
