@@ -407,8 +407,10 @@ var EstablishConnection = function(accesstoken) {
                         accessToken: result.rows[0].accesstoken,
                         refreshToken: result.rows[0].refreshtoken
                     });
-					conn.oldaccesstoken=result.rows[0].accesstoken;
-					conn.accesstokennew='';
+					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					accesstokendetails.accesstokennew='';
+					accesstokendetails.instanceUrl=result.rows[0].instanceurl;
+					accesstokendetails.refreshToken=result.rows[0].refreshtoken;
 					//var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
@@ -425,17 +427,19 @@ var EstablishConnection = function(accesstoken) {
                                     //res.status(400).send(err);
                                 } else {
                                     console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
-									conn.oldaccesstoken=result.rows[0].accesstoken;
-					                conn.accesstokennew=accessToken;
+									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					                accesstokendetails.accesstokennew=accessToken;
+									accesstokendetails.instanceUrl=result.rows[0].instanceurl;
+					                accesstokendetails.refreshToken=result.rows[0].refreshtoken;
 									//var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve(conn);
+                                    resolve(accesstokendetails);
                                 }
                             })
                         
                     });
 					
                     
-                   resolve(conn);
+                   resolve(accesstokendetails);
 
 
                 } else if (result.rows[0].accesstokennew != '') {
@@ -449,8 +453,10 @@ var EstablishConnection = function(accesstoken) {
                         accessToken: result.rows[0].accesstokennew,
                         refreshToken: result.rows[0].refreshtoken
                     });
-					conn.oldaccesstoken=result.rows[0].accesstoken;
-					conn.accesstokennew='';
+					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					accesstokendetails.accesstokennew='';
+					accesstokendetails.instanceUrl=result.rows[0].instanceurl;
+					accesstokendetails.refreshToken=result.rows[0].refreshtoken;
 					//var returnedTarget = Object.assign(conn, accesstokendetails);
                     conn.on("refresh", function(accessToken, res) {
                         // Refresh event will be fired when renewed access token
@@ -467,15 +473,17 @@ var EstablishConnection = function(accesstoken) {
                                     //res.status(400).send(err);
                                 } else {
                                     console.log('The value here after updating renewed access token line 356-->' + JSON.stringify(result));
-									conn.oldaccesstoken=result.rows[0].accesstoken;
-					                conn.accesstokennew=accessToken;
+									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
+					                accesstokendetails.accesstokennew=accessToken;
+									accesstokendetails.instanceUrl=result.rows[0].instanceurl;
+					                accesstokendetails.refreshToken=result.rows[0].refreshtoken;
 									//var returnedTarget = Object.assign(conn, accesstokendetails);
-                                    resolve(conn);
+                                    resolve(accesstokendetails);
                                 }
                             })
                         
                     });
-					resolve(conn);
+					resolve(accesstokendetails);
                    
 
                 }
@@ -495,9 +503,12 @@ app.intent('Connect to salesforce', (conv,params) => {
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
-		conv.user.storage.connectionprop=JSON.stringify(value);
+		conv.user.storage.instanceUrl=value.instanceurl;
+		conv.user.storage.refreshToken=value.refreshToken;
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
+		console.log('value.instanceUrl:' + value.instanceUrl);
+		console.log('value.refreshToken:' + value.refreshToken);
 		//console.log('value.conn:' + value);
 		resolve('connected');
 		conv.ask(new SimpleResponse({
@@ -529,17 +540,35 @@ app.intent('create a generic object record', (conv, params) => {
 	  if(conv.user.storage.accesstokennew=='')
 	  {
 		   var header = 'Bearer ' + conv.user.storage.oldaccesstoken;
+		      var conn = new jsforce.Connection({
+                        oauth2: {
+                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+                            clientSecret: '4635706799290406853'
+                        },
+                        instanceUrl: conv.user.storage.instanceUrl,
+                        accessToken: conv.user.storage.accesstoneold,
+                        refreshToken: conv.user.storage.refreshToken
+                    });
 	  }
 	  else if(conv.user.storage.accesstokennew!='')
 	  {
 		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
+		     var conn = new jsforce.Connection({
+                        oauth2: {
+                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+                            clientSecret: '4635706799290406853'
+                        },
+                        instanceUrl: conv.user.storage.instanceUrl,
+                        accessToken: conv.user.storage.accesstokennew,
+                        refreshToken: conv.user.storage.refreshToken
+                    });
 	  }
 	 
             var options = {
                 Authorization: header
             };
-			var response=conv.user.storage.connectionprop;
-            response.apex.get("/getMandFields/?objectName=" + params.objectName, options, function(err, resp) {
+			//var response=conv.user.storage.connectionprop;
+            conn.apex.get("/getMandFields/?objectName=" + params.objectName, options, function(err, resp) {
                 if (err) {
                     conv.ask(new SimpleResponse({
                         speech: "Error while creating generic record",
