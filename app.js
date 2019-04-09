@@ -503,7 +503,7 @@ app.intent('Connect to salesforce', (conv,params) => {
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
-		conv.user.storage.instanceUrl=value.instanceurl;
+		conv.user.storage.instanceUrl=value.instanceUrl; 
 		conv.user.storage.refreshToken=value.refreshToken;
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
