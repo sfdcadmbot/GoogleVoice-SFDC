@@ -536,10 +536,13 @@ app.intent('create a generic object record', (conv, params) => {
 		  console.log('sobject label passed from google' + params.objectName);
       conv.user.storage.sandboxname='Dev';
 	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
-	  
+	  console.log('conv.user.storage.instanceUrl:'+conv.user.storage.instanceUrl);
+	  console.log('conv.user.storage.accesstoneold:'+conv.user.storage.accesstoneold);
+	  console.log('conv.user.storage.refreshToken:'+conv.user.storage.refreshToken);
 	  if(conv.user.storage.accesstokennew=='')
 	  {
 		  console.log('here');
+		  
 		   var header = 'Bearer ' + conv.user.storage.accesstoneold;
 		      var conn = new jsforce.Connection({
                         oauth2: {
