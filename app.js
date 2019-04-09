@@ -454,7 +454,7 @@ var EstablishConnection = function(accesstoken) {
                         refreshToken: result.rows[0].refreshtoken
                     });
 					accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
-					accesstokendetails.accesstokennew='';
+					accesstokendetails.accesstokennew=result.rows[0].accesstokennew;
 					accesstokendetails.instanceUrl=result.rows[0].instanceurl;
 					accesstokendetails.refreshToken=result.rows[0].refreshtoken;
 					//var returnedTarget = Object.assign(conn, accesstokendetails);
@@ -539,6 +539,7 @@ app.intent('create a generic object record', (conv, params) => {
 	  console.log('conv.user.storage.instanceUrl:'+conv.user.storage.instanceUrl);
 	  console.log('conv.user.storage.accesstoneold:'+conv.user.storage.accesstoneold);
 	  console.log('conv.user.storage.refreshToken:'+conv.user.storage.refreshToken);
+	  console.log('conv.user.storage.accesstokennew:'+conv.user.storage.accesstokennew);
 	  if(conv.user.storage.accesstokennew=='')
 	  {
 		  console.log('here');
