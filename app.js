@@ -539,6 +539,7 @@ app.intent('create a generic object record', (conv, params) => {
 	  
 	  if(conv.user.storage.accesstokennew=='')
 	  {
+		  console.log('here');
 		   var header = 'Bearer ' + conv.user.storage.oldaccesstoken;
 		      var conn = new jsforce.Connection({
                         oauth2: {
@@ -552,6 +553,7 @@ app.intent('create a generic object record', (conv, params) => {
 	  }
 	  else if(conv.user.storage.accesstokennew!='')
 	  {
+		  console.log('here 556');
 		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
 		     var conn = new jsforce.Connection({
                         oauth2: {
