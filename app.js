@@ -781,7 +781,7 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
     });
 });*/
 
-app.intent('Search for custom settings', (conv, params) => {
+/*app.intent('Search for custom settings', (conv, params) => {
      return new Promise((resolve,reject)=>{
 		  console.log('sobject label passed from google' + params.objectName);
       conv.user.storage.sandboxname='Dev';
@@ -848,7 +848,7 @@ app.intent('Search for custom settings', (conv, params) => {
 				}
 			}
 	    });
-});
+});*/
 
 app.intent('Search Custom Settings Field Values', (conv,params) => {
     return new Promise((resolve, reject) => {
