@@ -850,6 +850,76 @@ app.intent('Search for custom settings', (conv, params) => {
 	    });
 });
 
+app.intent('Search for Custom Setting Name', (conv, params) => {
+     return new Promise((resolve,reject)=>{
+		  console.log('sobject label passed from google' + params.objectName);
+      conv.user.storage.sandboxname='Dev';
+	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
+	  console.log('conv.user.storage.instanceUrl:'+conv.user.storage.instanceUrl);
+	  console.log('conv.user.storage.accesstoneold:'+conv.user.storage.accesstoneold);
+	  console.log('conv.user.storage.refreshToken:'+conv.user.storage.refreshToken);
+	  console.log('conv.user.storage.accesstokennew:'+conv.user.storage.accesstokennew);
+	  if(conv.user.storage.accesstokennew=='')
+	  {
+		  console.log('here');
+		  
+		   var header = 'Bearer ' + conv.user.storage.accesstoneold;
+		      var conn = new jsforce.Connection({
+                        oauth2: {
+                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+                            clientSecret: '4635706799290406853'
+                        },
+                        instanceUrl: conv.user.storage.instanceUrl,
+                        accessToken: conv.user.storage.accesstoneold,
+                        refreshToken: conv.user.storage.refreshToken
+                    });
+	  }
+	  else if(conv.user.storage.accesstokennew!='')
+	  {
+		  console.log('here 556');
+		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
+		    var conn = new jsforce.Connection({
+                        oauth2: {
+                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
+                            clientSecret: '4635706799290406853'
+                        },
+                        instanceUrl: conv.user.storage.instanceUrl,
+                        accessToken: conv.user.storage.accesstokennew,
+                        refreshToken: conv.user.storage.refreshToken
+                    });
+	  }
+	 
+            var options = {
+                Authorization: header
+            };
+			//var response=conv.user.storage.connectionprop;
+			conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
+				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
+				//conv.ask(new SimpleResponse({speech:result,text:result}));
+				if (err) {
+					conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
+				}
+				else{
+					const custSettName = conv.contexts.get('Searchforcustomsettings-followup').parameters['custSettName'];
+					var restURL = "/getCustomSettings?custSettName=" + custSettName + "&recordName=" + params.recordName;
+                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
+					conn.apex.get(restURL, options, function(err, resp) {
+						if (err) {
+							conv.ask(new SimpleResponse({
+								speech: "Error while fetching recent records",
+								text: "Error while fetching recent records"
+							}));
+							reject(err);
+						} else {
+							conv.ask(new SimpleResponse({speech:resp,text:resp}));
+							resolve(resp);
+						}
+					});
+				}
+			});
+	    });
+});
+
 app.intent('Search Custom Settings Field Values', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
