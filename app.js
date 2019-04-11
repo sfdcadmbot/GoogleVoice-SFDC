@@ -1002,7 +1002,7 @@ app.intent('Update Custom Settings Field Values', (conv,params) => {
     });
 });
 
-app.intent('Search for Custom Setting Name', (conv,params) => {
+/*app.intent('Search for Custom Setting Name', (conv,params) => {
 	console.log('Inside Search for Cust sett name');
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
@@ -1036,7 +1036,7 @@ app.intent('Search for Custom Setting Name', (conv,params) => {
 			});
         });
     });
-});
+});*/
 
 
 app.intent('Get Recent Records', (conv,params) => {
