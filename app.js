@@ -380,7 +380,7 @@ var EstablishConnection = function(accesstoken, callback) {
 }*/
 
 var EstablishConnection = function(accesstoken) {
-	return new Promise((resolve,reject)=>{
+	return new promise((resolve,reject)=>{
 		var accesstokendetails={};
 		
 		pool.connect(function(err, client, done) {
@@ -429,9 +429,6 @@ var EstablishConnection = function(accesstoken) {
                                     console.log('The value here after updating renewed access token a/c creation-->' + JSON.stringify(result));
 									accesstokendetails.oldaccesstoken=result.rows[0].accesstoken;
 					                accesstokendetails.accesstokennew=accessToken;
-									accesstokendetails.instanceUrl=result.rows[0].instanceurl;
-					                accesstokendetails.refreshToken=result.rows[0].refreshtoken;
-									//var returnedTarget = Object.assign(conn, accesstokendetails);
                                     resolve(accesstokendetails);
                                 }
                             })
@@ -498,97 +495,47 @@ var EstablishConnection = function(accesstoken) {
 
 
 app.intent('Connect to salesforce', (conv,params) => {
-	return new Promise((resolve,reject)=>{
-		EstablishConnection(conv.user.access.token).then(function(value)
+	
+	EstablishConnection(conv.user.access.token).then(function(value)
 	{
 		conv.user.storage.accesstoneold=value.oldaccesstoken;
 		conv.user.storage.accesstokennew=value.accesstokennew;
-		conv.user.storage.instanceUrl=value.instanceUrl; 
-		conv.user.storage.refreshToken=value.refreshToken;
-		
-		//Code to fetch the Namespace - Start
-		/*value.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-			console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
-			//conv.ask(new SimpleResponse({speech:result,text:result}));
-			if (err) {
-				conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
-			}
-			else{
-				conv.user.storage.namespace = result.records[0].NamespacePrefix;
-			}
-		}*/
-		//Code to fetch the Namespace - End
-		
 		console.log('value.oldaccesstoken:' + value.oldaccesstoken);
 		console.log('value.accesstokennew:' + value.accesstokennew);
-		console.log('value.instanceUrl:' + value.instanceUrl);
-		console.log('value.refreshToken:' + value.refreshToken);
-		//console.log('value.conn:' + value);
-		resolve('connected');
 		conv.ask(new SimpleResponse({
 								speech: "Connected to Salesforce",
 								text: "Connected to Salesforce"
 							}));
-							
 		
 	}).catch(function(value)
 	{
-		reject('Not connected');
 		conv.ask(new SimpleResponse({
 								speech: "Error while Connecting to Salesforce",
 								text: "Error while Connecting to Salesforce"
 							}));
-							
 	})
-	});
-	
 
 });
 
 app.intent('create a generic object record', (conv, params) => {
-     return new Promise((resolve,reject)=>{
+     return new promise((resolve,reject)=>{
 		  console.log('sobject label passed from google' + params.objectName);
       conv.user.storage.sandboxname='Dev';
 	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
-	  console.log('conv.user.storage.instanceUrl:'+conv.user.storage.instanceUrl);
-	  console.log('conv.user.storage.accesstoneold:'+conv.user.storage.accesstoneold);
-	  console.log('conv.user.storage.refreshToken:'+conv.user.storage.refreshToken);
-	  console.log('conv.user.storage.accesstokennew:'+conv.user.storage.accesstokennew);
+	  
 	  if(conv.user.storage.accesstokennew=='')
 	  {
-		  console.log('here');
-		  
-		   var header = 'Bearer ' + conv.user.storage.accesstoneold;
-		      var conn = new jsforce.Connection({
-                        oauth2: {
-                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                            clientSecret: '4635706799290406853'
-                        },
-                        instanceUrl: conv.user.storage.instanceUrl,
-                        accessToken: conv.user.storage.accesstoneold,
-                        refreshToken: conv.user.storage.refreshToken
-                    });
+		   var header = 'Bearer ' + conv.user.storage.oldaccesstoken;
 	  }
 	  else if(conv.user.storage.accesstokennew!='')
 	  {
-		  console.log('here 556');
 		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
-		     var conn = new jsforce.Connection({
-                        oauth2: {
-                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                            clientSecret: '4635706799290406853'
-                        },
-                        instanceUrl: conv.user.storage.instanceUrl,
-                        accessToken: conv.user.storage.accesstokennew,
-                        refreshToken: conv.user.storage.refreshToken
-                    });
 	  }
 	 
             var options = {
                 Authorization: header
             };
-			//var response=conv.user.storage.connectionprop;
-            conn.apex.get("/getMandFields/?objectName=" + params.objectName, options, function(err, resp) {
+            response.apex.get("/getMandFields/?objectName=" + params.objectName, options, function(err, resp) {
                 if (err) {
                     conv.ask(new SimpleResponse({
                         speech: "Error while creating generic record",
@@ -747,7 +694,7 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
     });
 });
 
-/*app.intent('Search for custom settings', (conv,params) => {
+app.intent('Search for custom settings', (conv,params) => {
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
             var header = 'Bearer ' + conv.user.access.token;
@@ -779,145 +726,6 @@ app.intent('Check Permission Set Assignment', (conv,params) => {
 			});
         });
     });
-});*/
-
-app.intent('Search for custom settings', (conv, params) => {
-     return new Promise((resolve,reject)=>{
-		  console.log('sobject label passed from google' + params.objectName);
-      conv.user.storage.sandboxname='Dev';
-	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
-	  console.log('conv.user.storage.instanceUrl:'+conv.user.storage.instanceUrl);
-	  console.log('conv.user.storage.accesstoneold:'+conv.user.storage.accesstoneold);
-	  console.log('conv.user.storage.refreshToken:'+conv.user.storage.refreshToken);
-	  console.log('conv.user.storage.accesstokennew:'+conv.user.storage.accesstokennew);
-	  if(conv.user.storage.accesstokennew=='')
-	  {
-		  console.log('here');
-		  
-		   var header = 'Bearer ' + conv.user.storage.accesstoneold;
-		      var conn = new jsforce.Connection({
-                        oauth2: {
-                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                            clientSecret: '4635706799290406853'
-                        },
-                        instanceUrl: conv.user.storage.instanceUrl,
-                        accessToken: conv.user.storage.accesstoneold,
-                        refreshToken: conv.user.storage.refreshToken
-                    });
-	  }
-	  else if(conv.user.storage.accesstokennew!='')
-	  {
-		  console.log('here 556');
-		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
-		  var conn = new jsforce.Connection({
-                        oauth2: {
-                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                            clientSecret: '4635706799290406853'
-                        },
-                        instanceUrl: conv.user.storage.instanceUrl,
-                        accessToken: conv.user.storage.accesstokennew,
-                        refreshToken: conv.user.storage.refreshToken
-                    });
-	  }
-	 
-            var options = {
-                Authorization: header
-            };
-			//var response=conv.user.storage.connectionprop;
-			conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
-				//conv.ask(new SimpleResponse({speech:result,text:result}));
-				if (err) {
-					conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
-				}
-				else{
-					var restURL = "/getCustomSettings?custSettName=" + params.custSettName + "&namespace=" + result.records[0].NamespacePrefix;
-                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-					conn.apex.get(restURL, options, function(err, resp) {
-						if (err) {
-							conv.ask(new SimpleResponse({
-								speech: "Error while fetching recent records",
-								text: "Error while fetching recent records"
-							}));
-							reject(err);
-						} else {
-							conv.ask(new SimpleResponse({speech:resp,text:resp}));
-							resolve(resp);
-						}
-					});
-				}
-			});
-	    });
-});
-
-app.intent('Search for Custom Setting Name', (conv, params) => {
-     return new Promise((resolve,reject)=>{
-		  console.log('sobject label passed from google' + params.objectName);
-      conv.user.storage.sandboxname='Dev';
-	  console.log('conv.user.storage.sandboxname:'+conv.user.storage.sandboxname);
-	  console.log('conv.user.storage.instanceUrl:'+conv.user.storage.instanceUrl);
-	  console.log('conv.user.storage.accesstoneold:'+conv.user.storage.accesstoneold);
-	  console.log('conv.user.storage.refreshToken:'+conv.user.storage.refreshToken);
-	  console.log('conv.user.storage.accesstokennew:'+conv.user.storage.accesstokennew);
-	  if(conv.user.storage.accesstokennew=='')
-	  {
-		  console.log('here');
-		  
-		   var header = 'Bearer ' + conv.user.storage.accesstoneold;
-		      var conn = new jsforce.Connection({
-                        oauth2: {
-                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                            clientSecret: '4635706799290406853'
-                        },
-                        instanceUrl: conv.user.storage.instanceUrl,
-                        accessToken: conv.user.storage.accesstoneold,
-                        refreshToken: conv.user.storage.refreshToken
-                    });
-	  }
-	  else if(conv.user.storage.accesstokennew!='')
-	  {
-		  console.log('here 556');
-		  var header = 'Bearer ' + conv.user.storage.accesstokennew;
-		    var conn = new jsforce.Connection({
-                        oauth2: {
-                            clientId: '3MVG9YDQS5WtC11qk.ArHtRRClgxBVv6.UbLdC7H6Upq8xs2G1EepruAJuuuogDIdevglKadHRNQDhITAnhif',
-                            clientSecret: '4635706799290406853'
-                        },
-                        instanceUrl: conv.user.storage.instanceUrl,
-                        accessToken: conv.user.storage.accesstokennew,
-                        refreshToken: conv.user.storage.refreshToken
-                    });
-	  }
-	 
-            var options = {
-                Authorization: header
-            };
-			//var response=conv.user.storage.connectionprop;
-			conn.query("SELECT NamespacePrefix FROM Organization", function(err, result) {
-				console.log('Namespace result ----> ' + result.records[0].NamespacePrefix);
-				//conv.ask(new SimpleResponse({speech:result,text:result}));
-				if (err) {
-					conv.ask(new SimpleResponse({speech:"Error while fetching Namespace",text:"Error while fetching namespace"}));
-				}
-				else{
-					const custSettName = conv.contexts.get('Searchforcustomsettings-followup').parameters['custSettName'];
-					var restURL = "/getCustomSettings?custSettName=" + custSettName + "&recordName=" + params.recordName;
-                    restURL = (result.records[0].NamespacePrefix != null) ? ("/" + result.records[0].NamespacePrefix + restURL) : (restURL);
-					conn.apex.get(restURL, options, function(err, resp) {
-						if (err) {
-							conv.ask(new SimpleResponse({
-								speech: "Error while fetching recent records",
-								text: "Error while fetching recent records"
-							}));
-							reject(err);
-						} else {
-							conv.ask(new SimpleResponse({speech:resp,text:resp}));
-							resolve(resp);
-						}
-					});
-				}
-			});
-	    });
 });
 
 app.intent('Search Custom Settings Field Values', (conv,params) => {
@@ -1002,7 +810,7 @@ app.intent('Update Custom Settings Field Values', (conv,params) => {
     });
 });
 
-/*app.intent('Search for Custom Setting Name', (conv,params) => {
+app.intent('Search for Custom Setting Name', (conv,params) => {
 	console.log('Inside Search for Cust sett name');
     return new Promise((resolve, reject) => {
         EstablishConnection(conv.user.access.token, function(response) {
@@ -1036,7 +844,7 @@ app.intent('Update Custom Settings Field Values', (conv,params) => {
 			});
         });
     });
-});*/
+});
 
 
 app.intent('Get Recent Records', (conv,params) => {
