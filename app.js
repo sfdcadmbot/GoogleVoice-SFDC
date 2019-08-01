@@ -125,8 +125,8 @@ server.all("/auth/login", function(req, res) {
             loginUrl: 'https://test.salesforce.com'
         }))
     }
-     req.session.organizationnickname=req.body.OrgName;
-	 req.session.googleid=req.body.googleemailaddress;
+     //req.session.organizationnickname=req.body.OrgName;
+	 //req.session.googleid=req.body.googleemailaddress;
     console.log(req.body)
     res.redirect(oauth2.getAuthorizationUrl({
         scope: 'api id web refresh_token'
@@ -228,9 +228,7 @@ server.get('/token', async (req, res) => {
             salesforceid: userInfo.id,
             organizationid: userInfo.organizationId,
             authorizationcode: code,
-            accesstokennew: '',
-			organizationnickname :req.session.organizationnickname,
-			googleid: req.session.googleid
+            accesstokennew: ''
         })
         await db.query('COMMIT')
         console.log('The inserted detail in SFDC:' + req.session.userid);
