@@ -629,13 +629,14 @@ app.intent('Default Welcome Intent', (conv,params) => {
 		  
 			 if(result.rows.length >0)
 			 {
-		     var strNamefinal='You are connected to ';
+		     var strNamefinal='You are connected to Organization';
+			 /*
 		     var strName='';
 		  for (var i = 0; i < result.rows.length; i++) {
            strName += result.rows[i].organizationnickname + ',';
             }
 			strName = strName.replace(/,\s*$/, "");
-             strNamefinal=strNamefinal+ strName;
+             strNamefinal=strNamefinal+ strName;*/
 			 conv.ask(new SimpleResponse({
 								speech: strNamefinal,
 								text: strNamefinal
