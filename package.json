@@ -7,7 +7,7 @@
   "dependencies": {
     "actions-on-google": "^2.3.0",
     "app-root-path": "^2.1.0",
-    "auth0": "^2.14.0",
+    "auth0": "^2.27.1",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
